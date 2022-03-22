@@ -11,7 +11,7 @@ git config --global user.email rmg.build.agent@users.noreply.github.com
 # variables
 export APP_NAME=$(node -p "require('./package.json').name")
 BRANCH=$(git branch | grep \* | cut -d ' ' -f2 | tr '/' '.')
-UAT_REPO_NAME=rmg-repositories
+UAT_REPO_NAME=railmapgen.github.io
 
 # npm config
 npm config set tag-version-prefix "${APP_NAME}-"
@@ -42,13 +42,6 @@ if [ "$BRANCH" = "master" ]
 then
   git push --atomic origin HEAD "${APP_NAME}-${RMG_VER}"
 fi
-
-### WRITE INFO.JSON
-cat >>$UAT_REPO_NAME/"$APP_NAME"/"$RMG_VER"/info.json <<EOF
-{
-  "version": "$RMG_VER"
-}
-EOF
 
 ### UPLOAD ARTIFACTS
 cd $UAT_REPO_NAME/

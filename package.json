@@ -1,9 +1,9 @@
 {
-    "homepage": "https://railmapgen.github.io/seed-project",
-    "name": "seed-project",
-    "repository": "github:railmapgen/seed-project",
+    "homepage": "https://railmapgen.github.io/",
+    "name": "railmapgen.github.io",
+    "repository": "github:railmapgen/railmapgen.github.io",
     "bugs": {
-        "url": "https://github.com/railmapgen/seed-project/issues"
+        "url": "https://github.com/railmapgen/railmapgen.github.io/issues"
     },
     "license": "GPL-3.0-only",
     "dependencies": {
