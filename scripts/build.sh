@@ -11,7 +11,7 @@ git config --global user.email rmg.build.agent@users.noreply.github.com
 # variables
 export APP_NAME=$(node -p "require('./package.json').name")
 BRANCH=$(git branch | grep \* | cut -d ' ' -f2 | tr '/' '.')
-UAT_REPO_NAME=railmapgen.github.io
+UAT_REPO_NAME=rmg-repositories
 
 # npm config
 npm config set tag-version-prefix "${APP_NAME}-"
