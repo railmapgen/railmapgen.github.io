@@ -3,6 +3,7 @@ import React from 'react';
 import WindowHeader from './window-header';
 import { useAppSelector } from '../redux';
 import { componentList } from '../util/constants';
+import StatusDataTable from './data-table/status-data-table';
 
 export default function AppRoot() {
     const exampleState = useAppSelector(state => state.app.exampleState);
@@ -18,6 +19,7 @@ export default function AppRoot() {
                     </ListItem>
                 ))}
             </UnorderedList>
+            <StatusDataTable />
         </Flex>
     );
 }
