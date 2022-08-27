@@ -2,7 +2,8 @@
 set -eux
 
 # run tests
-npm run test:no-watch
+npm run lint
+npm run test
 
 # git config
 git config --global user.name "RMG Build Agent"
@@ -51,3 +52,4 @@ git push --force
 
 
 echo "Build Success: $APP_NAME-$RMG_VER"
+echo "::set-output name=RMG_VER::$RMG_VER"
