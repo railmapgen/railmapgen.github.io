@@ -1,21 +1,23 @@
 import { ChakraProvider } from '@chakra-ui/react';
 import React, { StrictMode } from 'react';
-import * as ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import AppRoot from './components/app-root';
-import chakraTheme from './theme/theme';
 import store from './redux';
+import { createRoot, Root } from 'react-dom/client';
+import { rmgChakraTheme } from '@railmapgen/rmg-components';
+
+let root: Root;
 
 const renderApp = () => {
-    ReactDOM.render(
+    root = createRoot(document.getElementById('root') as HTMLDivElement);
+    root.render(
         <Provider store={store}>
-            <ChakraProvider theme={chakraTheme}>
+            <ChakraProvider theme={rmgChakraTheme}>
                 <StrictMode>
                     <AppRoot />
                 </StrictMode>
             </ChakraProvider>
-        </Provider>,
-        document.getElementById('root')
+        </Provider>
     );
 };
 
