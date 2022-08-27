@@ -58,7 +58,7 @@
             "last 1 safari version"
         ]
     },
-    "version": "0.2.1",
+    "version": "0.2.2",
     "jest": {
         "transformIgnorePatterns": [
             "/node_modules/(?!(@railmapgen/.*))"
