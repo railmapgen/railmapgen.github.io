@@ -6,8 +6,8 @@ npm run lint
 npm run test
 
 # git config
-git config --global user.name "RMG Build Agent"
-git config --global user.email rmg.build.agent@users.noreply.github.com
+git config --global user.name 'github-actions[bot]'
+git config --global user.email 'github-actions[bot]@users.noreply.github.com'
 
 # variables
 export APP_NAME=$(node -p "require('./package.json').name")
