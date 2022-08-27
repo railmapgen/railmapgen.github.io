@@ -1,22 +1,22 @@
-import { Flex, Link, ListItem, UnorderedList } from '@chakra-ui/react';
+import { Flex } from '@chakra-ui/react';
 import React from 'react';
 import WindowHeader from './window-header';
-import { componentList } from '../util/constants';
-import StatusDataTable from './data-table/status-data-table';
+import Workspace from './workspace/workspace';
+import { RmgPage, RmgWindow } from '@railmapgen/rmg-components';
+import AllAppsSection from './menu/all-apps-section';
 
 export default function AppRoot() {
     return (
-        <Flex direction="column" height="100%" overflow="hidden">
+        <RmgWindow>
             <WindowHeader />
 
-            <UnorderedList>
-                {Object.entries(componentList).map(([id, name]) => (
-                    <ListItem key={id}>
-                        <Link href={'/' + id}>{name}</Link>
-                    </ListItem>
-                ))}
-            </UnorderedList>
-            <StatusDataTable />
-        </Flex>
+            <RmgPage>
+                <Flex flex={1}>
+                    <AllAppsSection />
+
+                    <Workspace />
+                </Flex>
+            </RmgPage>
+        </RmgWindow>
     );
 }

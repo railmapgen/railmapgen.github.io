@@ -1,3 +1,4 @@
+import './index.css';
 import { ChakraProvider } from '@chakra-ui/react';
 import React, { StrictMode } from 'react';
 import { Provider } from 'react-redux';

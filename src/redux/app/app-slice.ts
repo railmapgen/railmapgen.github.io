@@ -1,22 +1,34 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { AppId, componentList, WorkspaceApp } from '../../util/constants';
 
 interface AppState {
-    counter: number;
+    openedApps: WorkspaceApp[];
+    activeApp?: AppId;
 }
 
 const initialState: AppState = {
-    counter: 0,
+    openedApps: [],
+    activeApp: undefined,
 };
 
 const appSlice = createSlice({
     name: 'app',
     initialState,
     reducers: {
-        bumpCounter: state => {
-            state.counter++;
+        openApp: (state, action: PayloadAction<AppId>) => {
+            const id = action.payload;
+            if (state.openedApps.some(app => app.id === id)) {
+                state.activeApp = id;
+            } else {
+                state.openedApps.push({
+                    id,
+                    name: componentList[id],
+                });
+                state.activeApp = id;
+            }
         },
     },
 });
 
-export const { bumpCounter } = appSlice.actions;
+export const { openApp } = appSlice.actions;
 export default appSlice.reducer;
