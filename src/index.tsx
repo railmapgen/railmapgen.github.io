@@ -12,13 +12,13 @@ let root: Root;
 const renderApp = () => {
     root = createRoot(document.getElementById('root') as HTMLDivElement);
     root.render(
-        <Provider store={store}>
-            <ChakraProvider theme={rmgChakraTheme}>
-                <StrictMode>
+        <StrictMode>
+            <Provider store={store}>
+                <ChakraProvider theme={rmgChakraTheme}>
                     <AppRoot />
-                </StrictMode>
-            </ChakraProvider>
-        </Provider>
+                </ChakraProvider>
+            </Provider>
+        </StrictMode>
     );
 };
 
