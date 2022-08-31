@@ -6,6 +6,8 @@ import AppRoot from './components/app-root';
 import store from './redux';
 import { createRoot, Root } from 'react-dom/client';
 import { rmgChakraTheme } from '@railmapgen/rmg-components';
+import rmgRuntime from '@railmapgen/rmg-runtime';
+import { openApp } from './redux/app/app-slice';
 
 let root: Root;
 
@@ -21,5 +23,7 @@ const renderApp = () => {
         </StrictMode>
     );
 };
+
+rmgRuntime.onAppOpen(app => store.dispatch(openApp(app)));
 
 renderApp();
