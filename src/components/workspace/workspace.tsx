@@ -3,6 +3,7 @@ import React from 'react';
 import { useRootDispatch, useRootSelector } from '../../redux';
 import { closeApp, openApp } from '../../redux/app/app-slice';
 import { componentList } from '../../util/constants';
+import { useTranslation } from 'react-i18next';
 
 const style: SystemStyleObject = {
     display: 'flex',
@@ -35,6 +36,7 @@ const style: SystemStyleObject = {
 };
 
 export default function Workspace() {
+    const { t } = useTranslation();
     const dispatch = useRootDispatch();
     const { openedApps, activeApp } = useRootSelector(state => state.app);
 
@@ -45,7 +47,7 @@ export default function Workspace() {
             <TabList>
                 {openedApps.map(appId => (
                     <Tab key={appId} as={Box} onClick={() => dispatch(openApp(appId))}>
-                        {componentList[appId]}
+                        {t(componentList[appId])}
                         <CloseButton
                             size="sm"
                             onClick={e => {

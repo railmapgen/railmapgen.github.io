@@ -4,6 +4,7 @@ import { AppId, componentList } from '../../util/constants';
 import { Badge, Button, SystemStyleObject } from '@chakra-ui/react';
 import { useRootDispatch } from '../../redux';
 import { getVersion } from '../../service/info-service';
+import { useTranslation } from 'react-i18next';
 
 const style: SystemStyleObject = {
     w: '100%',
@@ -26,6 +27,7 @@ interface AppItemProps {
 
 export default function AppItemButton(props: AppItemProps) {
     const { appId } = props;
+    const { t } = useTranslation();
     const dispatch = useRootDispatch();
 
     const [version, setVersion] = useState('unknown');
@@ -35,8 +37,14 @@ export default function AppItemButton(props: AppItemProps) {
     }, [appId]);
 
     return (
-        <Button variant="ghost" size="sm" onClick={() => dispatch(openApp(appId))} sx={style}>
-            <span>{componentList[appId]}</span>
+        <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => dispatch(openApp(appId))}
+            title={t(componentList[appId])}
+            sx={style}
+        >
+            <span>{t(componentList[appId])}</span>
             <Badge>{version}</Badge>
         </Button>
     );
