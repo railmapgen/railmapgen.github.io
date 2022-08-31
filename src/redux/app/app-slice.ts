@@ -15,6 +15,14 @@ const appSlice = createSlice({
     name: 'app',
     initialState,
     reducers: {
+        setOpenedApps: (state, action: PayloadAction<AppId[]>) => {
+            state.openedApps = action.payload;
+        },
+
+        setActiveApp: (state, action: PayloadAction<AppId | undefined>) => {
+            state.activeApp = action.payload;
+        },
+
         openApp: (state, action: PayloadAction<AppId>) => {
             const id = action.payload;
             if (!state.openedApps.includes(id)) {
@@ -40,5 +48,5 @@ const appSlice = createSlice({
     },
 });
 
-export const { openApp, closeApp } = appSlice.actions;
+export const { setOpenedApps, setActiveApp, openApp, closeApp } = appSlice.actions;
 export default appSlice.reducer;

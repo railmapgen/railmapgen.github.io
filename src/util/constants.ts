@@ -12,3 +12,9 @@ export interface WorkspaceApp {
     id: AppId;
     name: string;
 }
+
+// localStorage key
+export enum LocalStorageKey {
+    OPENED_APPS = 'rmg-home__openedApps',
+    ACTIVE_APP = 'rmg-home__activeApp',
+}

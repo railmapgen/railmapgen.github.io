@@ -1,8 +1,38 @@
-import { Box, CloseButton, Tab, TabList, TabPanel, TabPanels, Tabs } from '@chakra-ui/react';
+import { Box, CloseButton, SystemStyleObject, Tab, TabList, TabPanel, TabPanels, Tabs } from '@chakra-ui/react';
 import React from 'react';
 import { useRootDispatch, useRootSelector } from '../../redux';
 import { closeApp, openApp } from '../../redux/app/app-slice';
 import { componentList } from '../../util/constants';
+
+const style: SystemStyleObject = {
+    display: 'flex',
+    flex: 1,
+    flexDirection: 'column',
+    overflow: 'hidden',
+
+    '& .chakra-tabs__tablist': {
+        whiteSpace: 'nowrap',
+        overflowX: 'auto',
+        overflowY: 'hidden',
+    },
+
+    '& .chakra-tabs__tab': {
+        '& button': {
+            ml: 1,
+        },
+    },
+
+    '& .chakra-tabs__tab-panels': {
+        flex: 1,
+    },
+
+    '& .chakra-tabs__tab-panel': {
+        p: 0,
+        w: '100%',
+        h: '100%',
+        '&>iframe': { w: '100%', h: '100%' },
+    },
+};
 
 export default function Workspace() {
     const dispatch = useRootDispatch();
@@ -11,9 +41,8 @@ export default function Workspace() {
     const tabIndex = activeApp ? openedApps.indexOf(activeApp) : -1;
 
     return (
-        <Tabs variant="enclosed" index={tabIndex} display="flex" flex={1} flexDirection="column" overflow="hidden">
-            <TabList whiteSpace="nowrap" overflowX="auto" overflowY="hidden">
-                {/* FIXME: bottom border of selected tab is missing */}
+        <Tabs variant="enclosed" index={tabIndex} sx={style}>
+            <TabList>
                 {openedApps.map(appId => (
                     <Tab key={appId} as={Box} onClick={() => dispatch(openApp(appId))}>
                         {componentList[appId]}
@@ -23,16 +52,15 @@ export default function Workspace() {
                                 e.stopPropagation();
                                 dispatch(closeApp(appId));
                             }}
-                            ml={1}
                         />
                     </Tab>
                 ))}
             </TabList>
 
-            <TabPanels sx={{ flex: 1, '&>div': { p: 0, w: '100%', h: '100%', '&>iframe': { w: '100%', h: '100%' } } }}>
+            <TabPanels>
                 {openedApps.map(appId => (
                     <TabPanel key={appId}>
-                        <iframe src={'/' + appId} title={componentList[appId]} />
+                        <iframe src={'/' + appId + '/'} title={componentList[appId]} />
                     </TabPanel>
                 ))}
             </TabPanels>
