@@ -27,7 +27,7 @@ export enum LanguageCode {
 
 export type Translation = { [l in LanguageCode]?: string };
 
-export type AppId = 'rmg' | 'rmg-palette' | 'rmg-components' | 'rmg-templates' | 'seed-project';
+export type AppId = 'rmg' | 'rmg-palette' | 'rmg-components' | 'rmg-templates' | 'seed-project' | 'rmg-translate';
 
 export const componentList: Record<AppId, string> = {
     rmg: 'Rail Map Generator',
@@ -35,6 +35,7 @@ export const componentList: Record<AppId, string> = {
     'rmg-components': 'Components',
     'rmg-templates': 'Templates',
     'seed-project': 'Seed Project',
+    'rmg-translate': 'Translate',
 };
 
 export interface WorkspaceApp {
