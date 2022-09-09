@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { openApp } from '../../redux/app/app-slice';
-import { AppId, getAppList } from '../../util/constants';
+import { appEnablement, AppId } from '../../util/constants';
 import { Badge, Button, SystemStyleObject } from '@chakra-ui/react';
 import { useRootDispatch } from '../../redux';
 import { getVersion } from '../../service/info-service';
 import { useTranslation } from 'react-i18next';
-import rmgRuntime from '@railmapgen/rmg-runtime';
 
 const style: SystemStyleObject = {
     w: '100%',
@@ -32,7 +31,6 @@ export default function AppItemButton(props: AppItemProps) {
     const dispatch = useRootDispatch();
 
     const [version, setVersion] = useState('unknown');
-    const componentList = getAppList(rmgRuntime.getEnv());
 
     useEffect(() => {
         getVersion(appId).then(data => setVersion(data));
@@ -43,10 +41,10 @@ export default function AppItemButton(props: AppItemProps) {
             variant="ghost"
             size="sm"
             onClick={() => dispatch(openApp(appId))}
-            title={t(componentList[appId] ?? '')}
+            title={t(appEnablement[appId].name)}
             sx={style}
         >
-            <span>{t(componentList[appId] ?? '')}</span>
+            <span>{t(appEnablement[appId].name)}</span>
             <Badge>{version}</Badge>
         </Button>
     );

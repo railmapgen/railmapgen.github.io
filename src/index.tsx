@@ -8,6 +8,7 @@ import { createRoot, Root } from 'react-dom/client';
 import { rmgChakraTheme } from '@railmapgen/rmg-components';
 import rmgRuntime from '@railmapgen/rmg-runtime';
 import { openApp } from './redux/app/app-slice';
+import { getAvailableApps } from './util/constants';
 
 let root: Root;
 
@@ -25,6 +26,10 @@ const renderApp = () => {
 };
 
 rmgRuntime.ready().then(() => {
-    rmgRuntime.onAppOpen(app => store.dispatch(openApp(app)));
+    rmgRuntime.onAppOpen(app => {
+        if (getAvailableApps(rmgRuntime.getEnv()).includes(app)) {
+            store.dispatch(openApp(app));
+        }
+    });
     renderApp();
 });

@@ -2,11 +2,13 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AppId } from '../../util/constants';
 
 export interface AppState {
+    isShowMenu: boolean;
     openedApps: AppId[];
     activeApp?: AppId;
 }
 
 const initialState: AppState = {
+    isShowMenu: true,
     openedApps: [],
     activeApp: undefined,
 };
@@ -15,6 +17,10 @@ const appSlice = createSlice({
     name: 'app',
     initialState,
     reducers: {
+        toggleMenu: state => {
+            state.isShowMenu = !state.isShowMenu;
+        },
+
         setOpenedApps: (state, action: PayloadAction<AppId[]>) => {
             state.openedApps = action.payload;
         },
@@ -48,5 +54,5 @@ const appSlice = createSlice({
     },
 });
 
-export const { setOpenedApps, setActiveApp, openApp, closeApp } = appSlice.actions;
+export const { toggleMenu, setOpenedApps, setActiveApp, openApp, closeApp } = appSlice.actions;
 export default appSlice.reducer;

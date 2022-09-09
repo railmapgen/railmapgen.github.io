@@ -7,7 +7,7 @@ interface AppDetail {
     allowedEnvs: RmgEnv[];
 }
 
-const appEnablement: Record<AppId, AppDetail> = {
+export const appEnablement: Record<AppId, AppDetail> = {
     rmg: {
         name: 'Rail Map Generator',
         allowedEnvs: [RmgEnv.DEV, RmgEnv.UAT, RmgEnv.PRD],
@@ -34,12 +34,10 @@ const appEnablement: Record<AppId, AppDetail> = {
     },
 };
 
-export const getAppList = (env: RmgEnv): Partial<Record<AppId, string>> => {
+export const getAvailableApps = (env: RmgEnv): AppId[] => {
     return Object.entries(appEnablement)
         .filter(([_, component]) => component.allowedEnvs.includes(env))
-        .reduce<Partial<Record<AppId, string>>>((acc, [appId, component]) => {
-            return { ...acc, [appId as AppId]: component.name };
-        }, {});
+        .map(([appId]) => appId as AppId);
 };
 
 export interface WorkspaceApp {
