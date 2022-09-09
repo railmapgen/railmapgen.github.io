@@ -15,6 +15,12 @@ const style: SystemStyleObject = {
         whiteSpace: 'nowrap',
         overflowX: 'auto',
         overflowY: 'hidden',
+        ml: 10,
+        transition: '0.3s ease-in-out',
+
+        '.show-menu &': {
+            ml: 0,
+        },
     },
 
     '& .chakra-tabs__tab': {
@@ -43,7 +49,7 @@ export default function Workspace() {
     const tabIndex = activeApp ? openedApps.indexOf(activeApp) : -1;
 
     return (
-        <Tabs variant="enclosed" index={tabIndex} sx={style}>
+        <Tabs as="section" variant="enclosed" index={tabIndex} sx={style}>
             <TabList>
                 {openedApps.map(appId => (
                     <Tab key={appId} as={Box} onClick={() => dispatch(openApp(appId))}>
