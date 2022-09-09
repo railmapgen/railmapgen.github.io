@@ -2,8 +2,9 @@ import { Box, CloseButton, SystemStyleObject, Tab, TabList, TabPanel, TabPanels,
 import React from 'react';
 import { useRootDispatch, useRootSelector } from '../../redux';
 import { closeApp, openApp } from '../../redux/app/app-slice';
-import { componentList } from '../../util/constants';
 import { useTranslation } from 'react-i18next';
+import { getAppList } from '../../util/constants';
+import rmgRuntime from '@railmapgen/rmg-runtime';
 
 const style: SystemStyleObject = {
     display: 'flex',
@@ -40,6 +41,8 @@ export default function Workspace() {
     const dispatch = useRootDispatch();
     const { openedApps, activeApp } = useRootSelector(state => state.app);
 
+    const componentList = getAppList(rmgRuntime.getEnv());
+
     const tabIndex = activeApp ? openedApps.indexOf(activeApp) : -1;
 
     return (
@@ -47,7 +50,7 @@ export default function Workspace() {
             <TabList>
                 {openedApps.map(appId => (
                     <Tab key={appId} as={Box} onClick={() => dispatch(openApp(appId))}>
-                        {t(componentList[appId])}
+                        {t(componentList[appId] ?? '')}
                         <CloseButton
                             size="sm"
                             onClick={e => {

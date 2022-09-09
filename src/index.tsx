@@ -24,6 +24,7 @@ const renderApp = () => {
     );
 };
 
-rmgRuntime.onAppOpen(app => store.dispatch(openApp(app)));
-
-renderApp();
+rmgRuntime.ready().then(() => {
+    rmgRuntime.onAppOpen(app => store.dispatch(openApp(app)));
+    renderApp();
+});

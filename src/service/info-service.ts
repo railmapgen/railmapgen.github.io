@@ -1,5 +1,3 @@
-import { componentList } from '../util/constants';
-
 export const getVersion = async (component: string): Promise<string> => {
     let url: string = `/${component}/info.json`;
     try {
@@ -20,7 +18,7 @@ export interface InfoStatus {
 
 export const getStatus = (): Promise<InfoStatus[]> => {
     return Promise.all(
-        Object.keys(componentList).map(async component => {
+        Object.keys({}).map(async component => {
             return {
                 id: component,
                 uat: await getVersion(component),

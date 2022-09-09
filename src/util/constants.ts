@@ -1,41 +1,45 @@
-export enum LanguageCode {
-    Azerbaijani = 'az',
-    Arabic = 'ar',
-    Catalan = 'ca',
-    Chinese = 'zh',
-    ChineseCN = 'zh-CN',
-    ChineseSimp = 'zh-Hans',
-    ChineseTrad = 'zh-Hant',
-    ChineseHK = 'zh-HK',
-    ChineseTW = 'zh-TW',
-    English = 'en',
-    French = 'fr',
-    Gaelic = 'ga',
-    German = 'de',
-    Hindi = 'hi',
-    Japanese = 'ja',
-    Korean = 'ko',
-    Malay = 'ms',
-    Norwegian = 'no',
-    Spanish = 'es',
-    Persian = 'fa',
-    Portuguese = 'pt',
-    Russian = 'ru',
-    Swedish = 'sv',
-    Turkish = 'tr',
-}
-
-export type Translation = { [l in LanguageCode]?: string };
+import { RmgEnv } from '@railmapgen/rmg-runtime';
 
 export type AppId = 'rmg' | 'rmg-palette' | 'rmg-components' | 'rmg-templates' | 'seed-project' | 'rmg-translate';
 
-export const componentList: Record<AppId, string> = {
-    rmg: 'Rail Map Generator',
-    'rmg-palette': 'Palette',
-    'rmg-components': 'Components',
-    'rmg-templates': 'Templates',
-    'seed-project': 'Seed Project',
-    'rmg-translate': 'Translate',
+interface AppDetail {
+    name: string;
+    allowedEnvs: RmgEnv[];
+}
+
+const appEnablement: Record<AppId, AppDetail> = {
+    rmg: {
+        name: 'Rail Map Generator',
+        allowedEnvs: [RmgEnv.DEV, RmgEnv.UAT, RmgEnv.PRD],
+    },
+    'rmg-palette': {
+        name: 'Palette',
+        allowedEnvs: [RmgEnv.DEV, RmgEnv.UAT, RmgEnv.PRD],
+    },
+    'rmg-components': {
+        name: 'Components',
+        allowedEnvs: [RmgEnv.DEV, RmgEnv.UAT],
+    },
+    'rmg-templates': {
+        name: 'Templates',
+        allowedEnvs: [RmgEnv.DEV],
+    },
+    'seed-project': {
+        name: 'Seed Project',
+        allowedEnvs: [RmgEnv.DEV, RmgEnv.UAT],
+    },
+    'rmg-translate': {
+        name: 'Translate',
+        allowedEnvs: [RmgEnv.DEV, RmgEnv.UAT],
+    },
+};
+
+export const getAppList = (env: RmgEnv): Partial<Record<AppId, string>> => {
+    return Object.entries(appEnablement)
+        .filter(([_, component]) => component.allowedEnvs.includes(env))
+        .reduce<Partial<Record<AppId, string>>>((acc, [appId, component]) => {
+            return { ...acc, [appId as AppId]: component.name };
+        }, {});
 };
 
 export interface WorkspaceApp {
