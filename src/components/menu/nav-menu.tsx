@@ -5,6 +5,7 @@ import rmgRuntime from '@railmapgen/rmg-runtime';
 import { RmgEnvBadge } from '@railmapgen/rmg-components';
 import AppsSection from './apps-section';
 import SettingsSection from './settings-section';
+import NavMenuFooter from './nav-menu-footer';
 
 const style: SystemStyleObject = {
     flexShrink: 0,
@@ -38,6 +39,7 @@ const style: SystemStyleObject = {
         '& > div:nth-child(2)': {
             // body
             flexDirection: 'column',
+            flex: 1,
             overflowY: 'auto',
         },
     },
@@ -64,7 +66,7 @@ export default function NavMenu() {
                 </Flex>
 
                 {/* menu-footer */}
-                {/*<Flex>footer</Flex>*/}
+                <NavMenuFooter />
             </Flex>
         </Flex>
     );

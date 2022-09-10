@@ -11,7 +11,7 @@ module.exports = app => {
     });
 
     app.use(
-        ['/rmg', '/rmg-palette', '/rmg-components', '/rmg-templates', '/seed-project', '/rmg-translate'],
+        ['/rmg', '/rmp', '/rmg-palette', '/rmg-components', '/rmg-templates', '/seed-project', '/rmg-translate'],
         createProxyMiddleware({
             target: 'https://uat-railmapgen.github.io',
             changeOrigin: true,

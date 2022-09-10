@@ -1,1 +1,7 @@
-{}
+{
+    "NavMenuFooter": {
+        "currentMirror": "你正在浏览 <1>{{mirror}}</1> 镜像"
+    },
+
+    "Switch to": "切换至"
+}

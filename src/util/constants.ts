@@ -1,6 +1,13 @@
-import { RmgEnv } from '@railmapgen/rmg-runtime';
+import { RmgEnv, RmgInstance } from '@railmapgen/rmg-runtime';
 
-export type AppId = 'rmg' | 'rmg-palette' | 'rmg-components' | 'rmg-templates' | 'seed-project' | 'rmg-translate';
+export type AppId =
+    | 'rmg'
+    | 'rmp'
+    | 'rmg-palette'
+    | 'rmg-components'
+    | 'rmg-templates'
+    | 'seed-project'
+    | 'rmg-translate';
 
 interface AppDetail {
     name: string;
@@ -11,6 +18,10 @@ export const appEnablement: Record<AppId, AppDetail> = {
     rmg: {
         name: 'Rail Map Generator',
         allowedEnvs: [RmgEnv.DEV, RmgEnv.UAT, RmgEnv.PRD],
+    },
+    rmp: {
+        name: 'Rail Map Painter',
+        allowedEnvs: [RmgEnv.DEV, RmgEnv.UAT],
     },
     'rmg-palette': {
         name: 'Palette',
@@ -50,3 +61,16 @@ export enum LocalStorageKey {
     OPENED_APPS = 'rmg-home__openedApps',
     ACTIVE_APP = 'rmg-home__activeApp',
 }
+
+export const mirrorName: Record<RmgInstance, string> = {
+    GitHub: 'GitHub Pages',
+    GitLab: 'GitLab Pages',
+    localhost: 'localhost',
+    unknown: 'unknown',
+};
+
+export const getMirrorUrl = (instance: RmgInstance, env: RmgEnv) => {
+    return `https://${env === RmgEnv.PRD ? '' : 'uat-'}railmapgen.${
+        instance === RmgInstance.GITLAB ? 'gitlab' : 'github'
+    }.io`;
+};
