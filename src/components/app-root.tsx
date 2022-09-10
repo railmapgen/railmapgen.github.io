@@ -15,7 +15,7 @@ export default function AppRoot() {
     const isShowMenu = useRootSelector(state => state.app.isShowMenu);
 
     return (
-        <RmgWindow className={`rmg-window ${isShowMenu ? 'show-menu' : ''}`}>
+        <RmgWindow className={isShowMenu ? 'show-menu' : ''}>
             <IconButton
                 variant="ghost"
                 size="md"

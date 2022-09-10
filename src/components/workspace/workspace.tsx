@@ -49,7 +49,7 @@ export default function Workspace() {
     const tabIndex = activeApp ? openedApps.indexOf(activeApp) : -1;
 
     return (
-        <Tabs as="section" variant="enclosed" index={tabIndex} sx={style}>
+        <Tabs as="section" variant="enclosed" colorScheme="primary" index={tabIndex} sx={style}>
             <TabList>
                 {openedApps.map(appId => (
                     <Tab key={appId} as={Box} onClick={() => dispatch(openApp(appId))}>

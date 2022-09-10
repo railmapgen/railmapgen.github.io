@@ -26,12 +26,19 @@ const style: SystemStyleObject = {
         h: '100%',
         w: { base: '100vw', sm: 240 },
 
-        '& > div:first-of-type': {
+        '& > div:nth-child(1)': {
+            // header
             flex: 0,
             flexDirection: 'row',
             alignItems: 'center',
             minHeight: 10,
             pl: 12,
+        },
+
+        '& > div:nth-child(2)': {
+            // body
+            flexDirection: 'column',
+            overflowY: 'auto',
         },
     },
 };
@@ -42,6 +49,7 @@ export default function NavMenu() {
     return (
         <Flex as="section" sx={style}>
             <Flex>
+                {/* menu-header */}
                 <Flex>
                     <Heading as="h4" size="md">
                         {t('RMG Home')}
@@ -49,8 +57,14 @@ export default function NavMenu() {
                     <RmgEnvBadge environment={rmgRuntime.getEnv()} version={rmgRuntime.getAppVersion()} />
                 </Flex>
 
-                <AppsSection />
-                <SettingsSection />
+                {/* menu-body */}
+                <Flex>
+                    <AppsSection />
+                    <SettingsSection />
+                </Flex>
+
+                {/* menu-footer */}
+                {/*<Flex>footer</Flex>*/}
             </Flex>
         </Flex>
     );
