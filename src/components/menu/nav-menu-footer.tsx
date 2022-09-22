@@ -7,9 +7,6 @@ import { getMirrorUrl, mirrorName } from '../../util/constants';
 import HelpModal from '../modal/help-modal';
 import ContributorModal from '../modal/contributor-modal';
 
-const INSTANCE = rmgRuntime.getInstance();
-const SWITCH_INSTANCE = INSTANCE === RmgInstance.GITHUB ? RmgInstance.GITLAB : RmgInstance.GITHUB;
-
 export default function NavMenuFooter() {
     const { t } = useTranslation();
     const linkColour = useColorModeValue('primary.500', 'primary.300');
@@ -17,7 +14,9 @@ export default function NavMenuFooter() {
     const [isContributorModalOpen, setIsContributorModalOpen] = useState(false);
     const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
 
-    const mirror = mirrorName[INSTANCE];
+    const instance = rmgRuntime.getInstance();
+    const switchInstance = instance === RmgInstance.GITHUB ? RmgInstance.GITLAB : RmgInstance.GITHUB;
+    const mirror = mirrorName[instance];
 
     return (
         <Flex direction="column">
@@ -27,8 +26,8 @@ export default function NavMenuFooter() {
                 </Trans>
                 <br />
                 {t('Switch to') + ' '}
-                <Link color={linkColour} href={getMirrorUrl(SWITCH_INSTANCE, rmgRuntime.getEnv())} isExternal={true}>
-                    {mirrorName[SWITCH_INSTANCE]} <Icon as={MdOpenInNew} />
+                <Link color={linkColour} href={getMirrorUrl(switchInstance, rmgRuntime.getEnv())} isExternal={true}>
+                    {mirrorName[switchInstance]} <Icon as={MdOpenInNew} />
                 </Link>
             </Text>
 
