@@ -52,7 +52,7 @@ export default function Workspace() {
         <Tabs as="section" variant="enclosed" colorScheme="primary" index={tabIndex} sx={style}>
             <TabList>
                 {openedApps.map(appId => (
-                    <Tab key={appId} as={Box} onClick={() => dispatch(openApp(appId))}>
+                    <Tab key={appId} as={Box} onClick={() => dispatch(openApp(appId))} cursor="pointer">
                         {t(appEnablement[appId].name)}
                         <CloseButton
                             size="sm"
@@ -60,6 +60,7 @@ export default function Workspace() {
                                 e.stopPropagation();
                                 dispatch(closeApp(appId));
                             }}
+                            title={t('Close')}
                         />
                     </Tab>
                 ))}
