@@ -1,9 +1,11 @@
-import { Box, CloseButton, SystemStyleObject, Tab, TabList, TabPanel, TabPanels, Tabs } from '@chakra-ui/react';
+import { Box, CloseButton, SystemStyleObject, Tab, TabList, Tabs } from '@chakra-ui/react';
 import React from 'react';
 import { useRootDispatch, useRootSelector } from '../../redux';
 import { closeApp, openApp } from '../../redux/app/app-slice';
 import { useTranslation } from 'react-i18next';
 import { appEnablement } from '../../util/constants';
+import Welcome from './welcome';
+import AppContainer from './app-container';
 
 const style: SystemStyleObject = {
     display: 'flex',
@@ -28,17 +30,6 @@ const style: SystemStyleObject = {
             ml: 1,
         },
     },
-
-    '& .chakra-tabs__tab-panels': {
-        flex: 1,
-    },
-
-    '& .chakra-tabs__tab-panel': {
-        p: 0,
-        w: '100%',
-        h: '100%',
-        '&>iframe': { w: '100%', h: '100%' },
-    },
 };
 
 export default function Workspace() {
@@ -47,6 +38,10 @@ export default function Workspace() {
     const { openedApps, activeApp } = useRootSelector(state => state.app);
 
     const tabIndex = activeApp ? openedApps.indexOf(activeApp) : -1;
+
+    if (openedApps.length === 0) {
+        return <Welcome />;
+    }
 
     return (
         <Tabs as="section" variant="enclosed" colorScheme="primary" index={tabIndex} sx={style}>
@@ -66,13 +61,9 @@ export default function Workspace() {
                 ))}
             </TabList>
 
-            <TabPanels>
-                {openedApps.map(appId => (
-                    <TabPanel key={appId}>
-                        <iframe src={'/' + appId + '/'} title={appEnablement[appId].name} />
-                    </TabPanel>
-                ))}
-            </TabPanels>
+            {openedApps.map(appId => (
+                <AppContainer key={appId} appId={appId} isActive={activeApp === appId} />
+            ))}
         </Tabs>
     );
 }

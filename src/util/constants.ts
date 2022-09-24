@@ -65,6 +65,7 @@ export enum LocalStorageKey {
 export const mirrorName: Record<RmgInstance, string> = {
     GitHub: 'GitHub Pages',
     GitLab: 'GitLab Pages',
+    Bitbucket: 'Bitbucket Cloud',
     localhost: 'localhost',
     unknown: 'unknown',
 };

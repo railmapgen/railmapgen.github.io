@@ -3,5 +3,14 @@
         "currentMirror": "你正在浏览 <1>{{mirror}}</1> 镜像"
     },
 
-    "Switch to": "切换至"
+    "Contribution Wiki": "贡献者指南",
+    "Contributors": "贡献者",
+    "Core contributors": "核心贡献者",
+    "Resource contributors": "资源贡献者",
+    "Resource Administrator": "资源管理员",
+    "Select an app to start your own rail map design!": "选择一个应用程序来开始你的线路图设计！",
+    "Switch to": "切换至",
+    "Terms and conditions": "条款与细则",
+    "Visit GitHub": "访问 GitHub",
+    "Welcome to RMG": "欢迎使用 RMG"
 }

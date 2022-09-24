@@ -1,7 +1,6 @@
 import React from 'react';
 import {
     Button,
-    Heading,
     Icon,
     Link,
     ListItem,
@@ -33,14 +32,10 @@ export default function HelpModal(props: HelpModalProps) {
         <Modal isOpen={isOpen} onClose={onClose} size="xl" scrollBehavior="inside">
             <ModalOverlay />
             <ModalContent>
-                <ModalHeader>{t('Help and support')}</ModalHeader>
+                <ModalHeader>{t('Terms and conditions')}</ModalHeader>
                 <ModalCloseButton />
 
                 <ModalBody>
-                    <Heading as="h5" size="sm" mb={2}>
-                        {t('Terms and conditions')}
-                    </Heading>
-
                     <OrderedList>
                         <ListItem>
                             The layout of the elements on the signage or rail map, is designed by{' '}

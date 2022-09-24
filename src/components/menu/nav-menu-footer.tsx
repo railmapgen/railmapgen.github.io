@@ -46,8 +46,8 @@ export default function NavMenuFooter() {
                 <IconButton
                     variant="ghost"
                     size="xs"
-                    aria-label={t('Help and support')}
-                    title={t('Help and support')}
+                    aria-label={t('Terms and conditions')}
+                    title={t('Terms and conditions')}
                     icon={<MdHelp />}
                     onClick={() => setIsHelpModalOpen(true)}
                 />
