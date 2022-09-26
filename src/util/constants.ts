@@ -21,7 +21,7 @@ export const appEnablement: Record<AppId, AppDetail> = {
     },
     rmp: {
         name: 'Rail Map Painter',
-        allowedEnvs: [RmgEnv.DEV, RmgEnv.UAT],
+        allowedEnvs: [RmgEnv.DEV, RmgEnv.UAT, RmgEnv.PRD],
     },
     'rmg-palette': {
         name: 'Palette',
@@ -33,7 +33,7 @@ export const appEnablement: Record<AppId, AppDetail> = {
     },
     'rmg-templates': {
         name: 'Templates',
-        allowedEnvs: [RmgEnv.DEV],
+        allowedEnvs: [RmgEnv.DEV, RmgEnv.UAT, RmgEnv.PRD],
     },
     'seed-project': {
         name: 'Seed Project',
