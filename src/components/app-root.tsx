@@ -7,12 +7,19 @@ import { toggleMenu } from '../redux/app/app-slice';
 import { useTranslation } from 'react-i18next';
 import { useRootDispatch, useRootSelector } from '../redux';
 import NavMenu from './menu/nav-menu';
+import rmgRuntime from '@railmapgen/rmg-runtime';
+import { Events } from '../util/constants';
 
 export default function AppRoot() {
     const { t } = useTranslation();
     const dispatch = useRootDispatch();
 
     const isShowMenu = useRootSelector(state => state.app.isShowMenu);
+
+    const handleToggle = () => {
+        dispatch(toggleMenu());
+        rmgRuntime.event(Events.TOGGLE_NAV_MENU, {});
+    };
 
     return (
         <RmgWindow className={isShowMenu ? 'show-menu' : ''}>
@@ -24,7 +31,7 @@ export default function AppRoot() {
                 icon={<MdMenu />}
                 position="absolute"
                 zIndex={100}
-                onClick={() => dispatch(toggleMenu())}
+                onClick={handleToggle}
             />
             <RmgPage sx={{ flexDirection: 'row' }}>
                 <NavMenu />

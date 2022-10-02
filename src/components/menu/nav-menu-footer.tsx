@@ -3,7 +3,7 @@ import rmgRuntime, { RmgInstance } from '@railmapgen/rmg-runtime';
 import React, { useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { MdHelp, MdOpenInNew, MdPeople } from 'react-icons/md';
-import { getMirrorUrl, mirrorName } from '../../util/constants';
+import { Events, getMirrorUrl, mirrorName } from '../../util/constants';
 import HelpModal from '../modal/help-modal';
 import ContributorModal from '../modal/contributor-modal';
 
@@ -18,6 +18,12 @@ export default function NavMenuFooter() {
     const switchInstance = instance === RmgInstance.GITHUB ? RmgInstance.GITLAB : RmgInstance.GITHUB;
     const mirror = mirrorName[instance];
 
+    const handleSwitchMirror = () => {
+        const mirrorUrl = getMirrorUrl(switchInstance, rmgRuntime.getEnv());
+        window.open(mirrorUrl, '_blank');
+        rmgRuntime.event(Events.SWITCH_MIRROR, { mirrorUrl });
+    };
+
     return (
         <Flex direction="column">
             <Text fontSize="xs" textAlign="center" width="100%">
@@ -26,7 +32,7 @@ export default function NavMenuFooter() {
                 </Trans>
                 <br />
                 {t('Switch to') + ' '}
-                <Link color={linkColour} href={getMirrorUrl(switchInstance, rmgRuntime.getEnv())} isExternal={true}>
+                <Link color={linkColour} onClick={handleSwitchMirror}>
                     {mirrorName[switchInstance]} <Icon as={MdOpenInNew} />
                 </Link>
             </Text>

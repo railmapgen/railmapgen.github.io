@@ -5,6 +5,7 @@ import { RmgFields, RmgFieldsField } from '@railmapgen/rmg-components';
 import { LanguageCode } from '@railmapgen/rmg-translate';
 import rmgRuntime from '@railmapgen/rmg-runtime';
 import { handleLanguageChange } from '../../i18n/config';
+import { Events } from '../../util/constants';
 
 const style: SystemStyleObject = {
     flexDirection: 'column',
@@ -36,6 +37,7 @@ export default function SettingsSection() {
                 const language = value as LanguageCode;
                 rmgRuntime.setLanguage(language);
                 handleLanguageChange(language);
+                rmgRuntime.event(Events.CHANGE_LANGUAGE, { language });
             },
         },
     ];

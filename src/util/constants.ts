@@ -75,3 +75,14 @@ export const getMirrorUrl = (instance: RmgInstance, env: RmgEnv) => {
         instance === RmgInstance.GITLAB ? 'gitlab' : 'github'
     }.io`;
 };
+
+export enum Events {
+    APP_LOAD = 'APP_LOAD',
+
+    OPEN_APP = 'OPEN_APP',
+    CLOSE_APP = 'CLOSE_APP',
+    TOGGLE_NAV_MENU = 'TOGGLE_NAV_MENU',
+    CHANGE_LANGUAGE = 'CHANGE_LANGUAGE',
+
+    SWITCH_MIRROR = 'SWITCH_MIRROR',
+}

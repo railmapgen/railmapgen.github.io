@@ -8,7 +8,7 @@ import { createRoot, Root } from 'react-dom/client';
 import { rmgChakraTheme } from '@railmapgen/rmg-components';
 import rmgRuntime from '@railmapgen/rmg-runtime';
 import { openApp } from './redux/app/app-slice';
-import { getAvailableApps } from './util/constants';
+import { Events, getAvailableApps } from './util/constants';
 import initStore from './redux/init';
 
 let root: Root;
@@ -35,4 +35,5 @@ rmgRuntime.ready().then(() => {
             store.dispatch(openApp(app));
         }
     });
+    rmgRuntime.event(Events.APP_LOAD, { openedApps: store.getState().app.openedApps });
 });
