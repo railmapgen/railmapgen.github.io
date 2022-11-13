@@ -19,12 +19,13 @@ describe('AppItemButton', () => {
         window.matchMedia = mockMatchMedia.mockImplementation(media => ({
             media,
             matches: false,
+            addListener: () => {},
             addEventListener: () => {},
             removeEventListener: () => {},
         }));
         render(<AppItemButton appId={'rmg'} />, { store: mockStore });
 
-        fireEvent.click(screen.getByRole('button'));
+        fireEvent.click(screen.getByRole('button', { name: 'Rail Map Generator' }));
 
         const actions = mockStore.getActions();
         expect(actions).toHaveLength(2);
@@ -35,12 +36,13 @@ describe('AppItemButton', () => {
         window.matchMedia = mockMatchMedia.mockImplementation(media => ({
             media,
             matches: true,
+            addListener: () => {},
             addEventListener: () => {},
             removeEventListener: () => {},
         }));
         render(<AppItemButton appId={'rmg'} />, { store: mockStore });
 
-        fireEvent.click(screen.getByRole('button'));
+        fireEvent.click(screen.getByRole('button', { name: 'Rail Map Generator' }));
 
         const actions = mockStore.getActions();
         expect(actions).toHaveLength(1);

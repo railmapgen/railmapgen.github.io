@@ -26,7 +26,7 @@ export default function NavMenuFooter() {
 
     return (
         <Flex direction="column">
-            <Text fontSize="xs" textAlign="center" width="100%">
+            <Text fontSize="sm" textAlign="center" width="100%">
                 <Trans i18nKey="NavMenuFooter.currentMirror" mirror={mirror}>
                     You're on {{ mirror }} mirror
                 </Trans>
@@ -42,7 +42,7 @@ export default function NavMenuFooter() {
             <HStack justifyContent="center">
                 <IconButton
                     variant="ghost"
-                    size="xs"
+                    size="sm"
                     aria-label={t('Contributor')}
                     title={t('Contributor')}
                     icon={<MdPeople />}
@@ -51,7 +51,7 @@ export default function NavMenuFooter() {
 
                 <IconButton
                     variant="ghost"
-                    size="xs"
+                    size="sm"
                     aria-label={t('Terms and conditions')}
                     title={t('Terms and conditions')}
                     icon={<MdHelp />}

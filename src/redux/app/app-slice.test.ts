@@ -1,5 +1,5 @@
 import store from '../index';
-import appReducer, { AppState, closeTab, openApp } from './app-slice';
+import appReducer, { AppState, closeTab, openApp, openAppInNew } from './app-slice';
 
 const realStore = store.getState();
 
@@ -11,30 +11,44 @@ describe('AppSlice', () => {
             state = appReducer(state, openApp('rmg-palette'));
 
             expect(state.openedTabs).toHaveLength(2);
-            expect(state.openedTabs).toContainEqual(expect.objectContaining({ app: 'rmg-palette' }));
-            const tabId = state.openedTabs.find(tab => tab.app === 'rmg-palette')?.id;
-            expect(state.activeTab).toBe(tabId);
-        });
-
-        it('Can switch active app', () => {
-            state = appReducer(state, openApp('rmg'));
-
-            // tab order remains the same
-            expect(state.openedTabs).toHaveLength(2);
             expect(state.openedTabs[0]).toHaveProperty('app', 'rmg');
             expect(state.openedTabs[1]).toHaveProperty('app', 'rmg-palette');
 
-            expect(state.activeTab).toBe('01');
+            expect(state.activeTab).toBe(state.openedTabs[1].id);
+        });
+
+        it('Can open multi-instance app in new app', () => {
+            state = appReducer(state, openAppInNew('rmg'));
+
+            expect(state.openedTabs).toHaveLength(3);
+            expect(state.openedTabs[0]).toHaveProperty('app', 'rmg');
+            expect(state.openedTabs[2]).toHaveProperty('app', 'rmg');
+
+            expect(state.activeTab).toBe(state.openedTabs[2].id);
+        });
+
+        it('Do not switch active app if it is active', () => {
+            state = appReducer(state, openApp('rmg'));
+
+            expect(state.openedTabs).toHaveLength(3);
+            expect(state.activeTab).toBe(state.openedTabs[2].id);
+        });
+
+        it('Can switch active app', () => {
+            state = appReducer(state, openApp('rmg-palette'));
+
+            expect(state.openedTabs).toHaveLength(3);
+            expect(state.activeTab).toBe(state.openedTabs[1].id);
         });
 
         it('Can close app and make the other app active', () => {
-            state = appReducer(state, closeTab('01'));
+            state = appReducer(state, closeTab(state.openedTabs[1].id));
 
-            expect(state.openedTabs).toHaveLength(1);
-            expect(state.openedTabs[0]).toHaveProperty('app', 'rmg-palette');
+            expect(state.openedTabs).toHaveLength(2);
+            expect(state.openedTabs[0]).toHaveProperty('app', 'rmg');
+            expect(state.openedTabs[1]).toHaveProperty('app', 'rmg');
 
-            const tabId = state.openedTabs.find(tab => tab.app === 'rmg-palette')?.id;
-            expect(state.activeTab).toBe(tabId);
+            expect(state.activeTab).toBe(state.openedTabs[1].id);
         });
     });
 });

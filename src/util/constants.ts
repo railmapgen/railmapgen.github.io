@@ -12,12 +12,14 @@ export type AppId =
 interface AppDetail {
     name: string;
     allowedEnvs: RmgEnv[];
+    allowMultiInstances?: boolean;
 }
 
 export const appEnablement: Record<AppId, AppDetail> = {
     rmg: {
         name: 'Rail Map Generator',
         allowedEnvs: [RmgEnv.DEV, RmgEnv.UAT, RmgEnv.PRD],
+        allowMultiInstances: true,
     },
     rmp: {
         name: 'Rail Map Painter',

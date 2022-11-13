@@ -32,16 +32,28 @@ const appSlice = createSlice({
 
         openApp: (state, action: PayloadAction<AppId>) => {
             const appId = action.payload;
+
+            const activeApp = state.openedTabs.find(({ id }) => id === state.activeTab);
             const openedApp = state.openedTabs.find(({ app }) => app === appId);
 
-            if (!openedApp) {
+            if (activeApp?.app === appId) {
+                // do nothing as app is opened
+                // this condition is required for multi-instance app
+            } else if (openedApp) {
+                // make app active
+                state.activeTab = openedApp.id;
+            } else {
+                // open app in new tab
                 const tabId = nanoid();
                 state.openedTabs.push({ id: tabId, app: appId });
                 state.activeTab = tabId;
-            } else {
-                // make app active
-                state.activeTab = openedApp.id;
             }
+        },
+
+        openAppInNew: (state, action: PayloadAction<AppId>) => {
+            const tabId = nanoid();
+            state.openedTabs.push({ id: tabId, app: action.payload });
+            state.activeTab = tabId;
         },
 
         closeTab: (state, action: PayloadAction<string>) => {
@@ -59,5 +71,5 @@ const appSlice = createSlice({
     },
 });
 
-export const { toggleMenu, setOpenedTabs, setActiveTab, openApp, closeTab } = appSlice.actions;
+export const { toggleMenu, setOpenedTabs, setActiveTab, openApp, openAppInNew, closeTab } = appSlice.actions;
 export default appSlice.reducer;

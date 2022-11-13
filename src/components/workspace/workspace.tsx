@@ -1,7 +1,7 @@
 import { Box, CloseButton, SystemStyleObject, Tab, TabList, Tabs } from '@chakra-ui/react';
 import React from 'react';
 import { useRootDispatch, useRootSelector } from '../../redux';
-import { closeTab, openApp } from '../../redux/app/app-slice';
+import { closeTab, setActiveTab } from '../../redux/app/app-slice';
 import { useTranslation } from 'react-i18next';
 import { appEnablement, AppId, Events } from '../../util/constants';
 import Welcome from './welcome';
@@ -54,15 +54,15 @@ export default function Workspace() {
         <Tabs as="section" variant="enclosed" colorScheme="primary" index={tabIndex} sx={style}>
             <TabList>
                 {openedTabs.map(({ id, app }) => (
-                    <Tab key={id} as={Box} onClick={() => dispatch(openApp(app))} cursor="pointer">
+                    <Tab key={id} as={Box} onClick={() => dispatch(setActiveTab(id))} cursor="pointer">
                         {t(appEnablement[app].name)}
                         <CloseButton size="sm" onClick={e => handleCloseTab(e, id, app)} title={t('Close')} />
                     </Tab>
                 ))}
             </TabList>
 
-            {openedTabs.map(({ id, app }) => (
-                <AppContainer key={id} appId={app} isActive={activeTab === id} />
+            {openedTabs.map(tab => (
+                <AppContainer key={tab.id} tab={tab} isActive={activeTab === tab.id} />
             ))}
         </Tabs>
     );

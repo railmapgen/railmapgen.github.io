@@ -30,7 +30,7 @@ export default function AppRoot() {
                 title={t('Toggle menu')}
                 icon={<MdMenu />}
                 position="absolute"
-                zIndex={100}
+                zIndex={110}
                 onClick={handleToggle}
             />
             <RmgPage sx={{ flexDirection: 'row' }}>

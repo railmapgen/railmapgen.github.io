@@ -3,9 +3,11 @@
         "currentMirror": "你正在浏览 <1>{{mirror}}</1> 镜像"
     },
 
+    "About": "关于",
     "Contribution Wiki": "贡献者指南",
     "Contributors": "贡献者",
     "Core contributors": "核心贡献者",
+    "Open in new Workspace": "在新 Workspace 中打开",
     "Resource contributors": "资源贡献者",
     "Resource Administrator": "资源管理员",
     "Select an app to start your own rail map design!": "选择一个应用程序来开始你的线路图设计！",

@@ -15,9 +15,11 @@ const style: SystemStyleObject = {
     transition: '0.3s ease-in-out',
     maxW: 0,
     visibility: 'hidden',
+    boxShadow: 'lg',
+    zIndex: 100,
 
     '.show-menu &': {
-        maxW: { base: '100%', sm: 240 },
+        maxW: { base: '100%', sm: 320 },
         w: { base: '100%', sm: 'unset' },
         visibility: 'initial',
     },
@@ -25,9 +27,9 @@ const style: SystemStyleObject = {
     '& > div': {
         flexDirection: 'column',
         h: '100%',
-        w: { base: '100vw', sm: 240 },
+        w: { base: '100vw', sm: 320 },
 
-        '& > div:nth-child(1)': {
+        '& > div:nth-of-type(1)': {
             // header
             flex: 0,
             flexDirection: 'row',
@@ -36,7 +38,7 @@ const style: SystemStyleObject = {
             pl: 12,
         },
 
-        '& > div:nth-child(2)': {
+        '& > div:nth-of-type(2)': {
             // body
             flexDirection: 'column',
             flex: 1,
