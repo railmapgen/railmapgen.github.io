@@ -1,16 +1,17 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { AppId } from '../../util/constants';
+import { AppId, WorkspaceTab } from '../../util/constants';
+import { nanoid } from 'nanoid';
 
 export interface AppState {
     isShowMenu: boolean;
-    openedApps: AppId[];
-    activeApp?: AppId;
+    openedTabs: WorkspaceTab[];
+    activeTab?: string;
 }
 
 const initialState: AppState = {
     isShowMenu: true,
-    openedApps: [],
-    activeApp: undefined,
+    openedTabs: [],
+    activeTab: undefined,
 };
 
 const appSlice = createSlice({
@@ -21,38 +22,42 @@ const appSlice = createSlice({
             state.isShowMenu = !state.isShowMenu;
         },
 
-        setOpenedApps: (state, action: PayloadAction<AppId[]>) => {
-            state.openedApps = action.payload;
+        setOpenedTabs: (state, action: PayloadAction<WorkspaceTab[]>) => {
+            state.openedTabs = action.payload;
         },
 
-        setActiveApp: (state, action: PayloadAction<AppId | undefined>) => {
-            state.activeApp = action.payload;
+        setActiveTab: (state, action: PayloadAction<string | undefined>) => {
+            state.activeTab = action.payload;
         },
 
         openApp: (state, action: PayloadAction<AppId>) => {
-            const id = action.payload;
-            if (!state.openedApps.includes(id)) {
-                state.openedApps.push(id);
-            }
+            const appId = action.payload;
+            const openedApp = state.openedTabs.find(({ app }) => app === appId);
 
-            // make app active
-            state.activeApp = id;
+            if (!openedApp) {
+                const tabId = nanoid();
+                state.openedTabs.push({ id: tabId, app: appId });
+                state.activeTab = tabId;
+            } else {
+                // make app active
+                state.activeTab = openedApp.id;
+            }
         },
 
-        closeApp: (state, action: PayloadAction<AppId>) => {
+        closeTab: (state, action: PayloadAction<string>) => {
             const id = action.payload;
-            const nextOpenedApps = state.openedApps.filter(appId => appId !== id);
+            const nextOpenedApps = state.openedTabs.filter(tab => tab.id !== id);
 
-            if (state.activeApp === id) {
-                const prevIndex = state.openedApps.indexOf(id);
-                state.openedApps = nextOpenedApps;
-                state.activeApp = nextOpenedApps[Math.min(prevIndex, nextOpenedApps.length - 1)];
+            if (state.activeTab === id) {
+                const prevIndex = state.openedTabs.findIndex(tab => tab.id === id);
+                state.openedTabs = nextOpenedApps;
+                state.activeTab = nextOpenedApps[Math.min(prevIndex, nextOpenedApps.length - 1)].id;
             } else {
-                state.openedApps = nextOpenedApps;
+                state.openedTabs = nextOpenedApps;
             }
         },
     },
 });
 
-export const { toggleMenu, setOpenedApps, setActiveApp, openApp, closeApp } = appSlice.actions;
+export const { toggleMenu, setOpenedTabs, setActiveTab, openApp, closeTab } = appSlice.actions;
 export default appSlice.reducer;

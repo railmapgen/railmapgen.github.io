@@ -1,7 +1,7 @@
 import { Box, CloseButton, SystemStyleObject, Tab, TabList, Tabs } from '@chakra-ui/react';
 import React from 'react';
 import { useRootDispatch, useRootSelector } from '../../redux';
-import { closeApp, openApp } from '../../redux/app/app-slice';
+import { closeTab, openApp } from '../../redux/app/app-slice';
 import { useTranslation } from 'react-i18next';
 import { appEnablement, AppId, Events } from '../../util/constants';
 import Welcome from './welcome';
@@ -36,33 +36,33 @@ const style: SystemStyleObject = {
 export default function Workspace() {
     const { t } = useTranslation();
     const dispatch = useRootDispatch();
-    const { openedApps, activeApp } = useRootSelector(state => state.app);
+    const { openedTabs, activeTab } = useRootSelector(state => state.app);
 
-    const tabIndex = activeApp ? openedApps.indexOf(activeApp) : -1;
+    const tabIndex = activeTab ? openedTabs.findIndex(tab => tab.id === activeTab) : -1;
 
-    const handleCloseApp = (event: React.MouseEvent<HTMLButtonElement>, appId: AppId) => {
+    const handleCloseTab = (event: React.MouseEvent<HTMLButtonElement>, tabId: string, app: AppId) => {
         event.stopPropagation();
-        dispatch(closeApp(appId));
-        rmgRuntime.event(Events.CLOSE_APP, { appId });
+        dispatch(closeTab(tabId));
+        rmgRuntime.event(Events.CLOSE_APP, { app });
     };
 
-    if (openedApps.length === 0) {
+    if (openedTabs.length === 0) {
         return <Welcome />;
     }
 
     return (
         <Tabs as="section" variant="enclosed" colorScheme="primary" index={tabIndex} sx={style}>
             <TabList>
-                {openedApps.map(appId => (
-                    <Tab key={appId} as={Box} onClick={() => dispatch(openApp(appId))} cursor="pointer">
-                        {t(appEnablement[appId].name)}
-                        <CloseButton size="sm" onClick={e => handleCloseApp(e, appId)} title={t('Close')} />
+                {openedTabs.map(({ id, app }) => (
+                    <Tab key={id} as={Box} onClick={() => dispatch(openApp(app))} cursor="pointer">
+                        {t(appEnablement[app].name)}
+                        <CloseButton size="sm" onClick={e => handleCloseTab(e, id, app)} title={t('Close')} />
                     </Tab>
                 ))}
             </TabList>
 
-            {openedApps.map(appId => (
-                <AppContainer key={appId} appId={appId} isActive={activeApp === appId} />
+            {openedTabs.map(({ id, app }) => (
+                <AppContainer key={id} appId={app} isActive={activeTab === id} />
             ))}
         </Tabs>
     );

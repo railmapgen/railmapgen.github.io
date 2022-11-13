@@ -51,15 +51,15 @@ export const getAvailableApps = (env: RmgEnv): AppId[] => {
         .map(([appId]) => appId as AppId);
 };
 
-export interface WorkspaceApp {
-    id: AppId;
-    name: string;
+export interface WorkspaceTab {
+    app: AppId;
+    id: string;
 }
 
 // localStorage key
 export enum LocalStorageKey {
-    OPENED_APPS = 'rmg-home__openedApps',
-    ACTIVE_APP = 'rmg-home__activeApp',
+    OPENED_TABS = 'rmg-home__openedTabs',
+    ACTIVE_TAB = 'rmg-home__activeTab',
 }
 
 export const mirrorName: Record<RmgInstance, string> = {

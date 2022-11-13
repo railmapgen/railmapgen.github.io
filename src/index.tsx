@@ -35,5 +35,5 @@ rmgRuntime.ready().then(() => {
             store.dispatch(openApp(app));
         }
     });
-    rmgRuntime.event(Events.APP_LOAD, { openedApps: store.getState().app.openedApps });
+    rmgRuntime.event(Events.APP_LOAD, { openedApps: store.getState().app.openedTabs.map(tab => tab.app) });
 });
