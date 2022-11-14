@@ -9,6 +9,9 @@ const realStore = rootReducer.getState();
 const mockStore = createMockRootStore({ ...realStore });
 
 const mockMatchMedia = jest.fn();
+const mockCallbacks = {
+    onAboutOpen: jest.fn(),
+};
 
 describe('AppItemButton', () => {
     afterEach(() => {
@@ -23,7 +26,7 @@ describe('AppItemButton', () => {
             addEventListener: () => {},
             removeEventListener: () => {},
         }));
-        render(<AppItemButton appId={'rmg'} />, { store: mockStore });
+        render(<AppItemButton appId={'rmg'} {...mockCallbacks} />, { store: mockStore });
 
         fireEvent.click(screen.getByRole('button', { name: 'Rail Map Generator' }));
 
@@ -40,7 +43,7 @@ describe('AppItemButton', () => {
             addEventListener: () => {},
             removeEventListener: () => {},
         }));
-        render(<AppItemButton appId={'rmg'} />, { store: mockStore });
+        render(<AppItemButton appId={'rmg'} {...mockCallbacks} />, { store: mockStore });
 
         fireEvent.click(screen.getByRole('button', { name: 'Rail Map Generator' }));
 

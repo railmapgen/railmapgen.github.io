@@ -1,9 +1,10 @@
-import React from 'react';
-import { getAvailableApps } from '../../util/constants';
+import React, { useState } from 'react';
+import { AppId, getAvailableApps } from '../../util/constants';
 import { Flex, Heading, SystemStyleObject } from '@chakra-ui/react';
 import AppItemButton from './app-item-button';
 import rmgRuntime from '@railmapgen/rmg-runtime';
 import { useTranslation } from 'react-i18next';
+import AboutModal from '../modal/about-modal';
 
 const style: SystemStyleObject = {
     flexDirection: 'column',
@@ -20,6 +21,9 @@ const style: SystemStyleObject = {
 
 export default function AppsSection() {
     const { t } = useTranslation();
+
+    const [aboutModalAppId, setAboutModalAppId] = useState<AppId>();
+
     const availableApps = getAvailableApps(rmgRuntime.getEnv());
 
     return (
@@ -29,9 +33,11 @@ export default function AppsSection() {
             </Heading>
             <Flex>
                 {availableApps.map(appId => (
-                    <AppItemButton key={appId} appId={appId} />
+                    <AppItemButton key={appId} appId={appId} onAboutOpen={() => setAboutModalAppId(appId)} />
                 ))}
             </Flex>
+
+            <AboutModal appId={aboutModalAppId} onClose={() => setAboutModalAppId(undefined)} />
         </Flex>
     );
 }
