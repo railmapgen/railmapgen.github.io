@@ -26,6 +26,11 @@ const appSlice = createSlice({
             state.openedTabs = action.payload;
         },
 
+        updateTabUrl: (state, action: PayloadAction<{ id: string; url: string }>) => {
+            const { id, url } = action.payload;
+            state.openedTabs = state.openedTabs.map(tab => (tab.id === id ? { ...tab, url } : tab));
+        },
+
         setActiveTab: (state, action: PayloadAction<string | undefined>) => {
             state.activeTab = action.payload;
         },
@@ -71,5 +76,6 @@ const appSlice = createSlice({
     },
 });
 
-export const { toggleMenu, setOpenedTabs, setActiveTab, openApp, openAppInNew, closeTab } = appSlice.actions;
+export const { toggleMenu, setOpenedTabs, updateTabUrl, setActiveTab, openApp, openAppInNew, closeTab } =
+    appSlice.actions;
 export default appSlice.reducer;

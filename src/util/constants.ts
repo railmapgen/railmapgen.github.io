@@ -56,6 +56,7 @@ export const getAvailableApps = (env: RmgEnv): AppId[] => {
 export interface WorkspaceTab {
     app: AppId;
     id: string;
+    url?: string;
 }
 
 // localStorage key
@@ -88,3 +89,5 @@ export enum Events {
 
     SWITCH_MIRROR = 'SWITCH_MIRROR',
 }
+
+export const FRAME_ID_PREFIX = 'rmg-home:frame-';

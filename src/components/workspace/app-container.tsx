@@ -1,5 +1,5 @@
-import React from 'react';
-import { WorkspaceTab } from '../../util/constants';
+import React, { useState } from 'react';
+import { FRAME_ID_PREFIX, WorkspaceTab } from '../../util/constants';
 import { Box } from '@chakra-ui/react';
 
 interface AppContainerProps {
@@ -10,11 +10,15 @@ interface AppContainerProps {
 export default function AppContainer(props: AppContainerProps) {
     const { tab, isActive } = props;
 
+    const [frameUrl] = useState(tab.url ?? '/' + tab.app + '/');
+
+    // setFrameUrl if tab.id is updated?
+
     return (
         <Box display={isActive ? 'block' : 'none'} flex={1}>
             <iframe
-                id={'rmg-home:frame-' + tab.id}
-                src={'/' + tab.app + '/'}
+                id={FRAME_ID_PREFIX + tab.id}
+                src={frameUrl}
                 loading="lazy"
                 title={tab.app}
                 width="100%"
