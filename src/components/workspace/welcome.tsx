@@ -8,7 +8,7 @@ export default function Welcome() {
     return (
         <VStack flex={1} justifyContent="center" mb={10}>
             <Image
-                src={process.env.PUBLIC_URL + '/logo512.png'}
+                src={import.meta.env.BASE_URL + 'logo512.png'}
                 w={120}
                 p={2}
                 mb={3}
