@@ -1,16 +1,16 @@
-import React from 'react';
 import { render } from '../../test-utils';
 import AppItemButton from './app-item-button';
 import rootReducer from '../../redux';
 import { createMockRootStore } from '../../setupTests';
 import { fireEvent, screen } from '@testing-library/react';
+import { vi } from 'vitest';
 
 const realStore = rootReducer.getState();
 const mockStore = createMockRootStore({ ...realStore });
 
-const mockMatchMedia = jest.fn();
+const mockMatchMedia = vi.fn();
 const mockCallbacks = {
-    onAboutOpen: jest.fn(),
+    onAboutOpen: vi.fn(),
 };
 
 describe('AppItemButton', () => {

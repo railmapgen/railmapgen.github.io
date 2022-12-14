@@ -1,3 +1,5 @@
+/// <reference types="vitest" />
+
 import { defineConfig, ProxyOptions, splitVendorChunkPlugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import checker from 'vite-plugin-checker';
@@ -34,5 +36,14 @@ export default defineConfig({
         proxy: {
             ...rmgProxies,
         },
+    },
+    test: {
+        globals: true,
+        environment: 'jsdom',
+        setupFiles: './src/setupTests.ts',
+        deps: {
+            fallbackCJS: true,
+        },
+        watch: false,
     },
 });
