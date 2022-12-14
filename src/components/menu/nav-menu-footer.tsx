@@ -1,6 +1,6 @@
 import { Divider, Flex, HStack, Icon, IconButton, Link, Text, useColorModeValue } from '@chakra-ui/react';
 import rmgRuntime, { RmgInstance } from '@railmapgen/rmg-runtime';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { MdHelp, MdOpenInNew, MdPeople } from 'react-icons/md';
 import { Events, getMirrorUrl, mirrorName } from '../../util/constants';
@@ -28,7 +28,7 @@ export default function NavMenuFooter() {
         <Flex direction="column">
             <Text fontSize="sm" textAlign="center" width="100%">
                 <Trans i18nKey="NavMenuFooter.currentMirror" mirror={mirror}>
-                    You're on {{ mirror }} mirror
+                    You&apos;re on {{ mirror }} mirror
                 </Trans>
                 <br />
                 {t('Switch to') + ' '}

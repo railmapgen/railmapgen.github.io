@@ -1,5 +1,5 @@
 export const getVersion = async (component: string): Promise<string> => {
-    let url: string = `/${component}/info.json`;
+    const url = `/${component}/info.json`;
     try {
         const res = await fetch(url);
         const data = await res.json();
