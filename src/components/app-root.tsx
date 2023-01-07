@@ -1,5 +1,5 @@
 import { IconButton } from '@chakra-ui/react';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Workspace from './workspace/workspace';
 import { RmgPage, RmgWindow } from '@railmapgen/rmg-components';
 import { MdMenu } from 'react-icons/md';
@@ -9,12 +9,20 @@ import { useRootDispatch, useRootSelector } from '../redux';
 import NavMenu from './menu/nav-menu';
 import rmgRuntime from '@railmapgen/rmg-runtime';
 import { Events } from '../util/constants';
+import CookiesModal from './modal/cookies-modal';
 
 export default function AppRoot() {
     const { t } = useTranslation();
     const dispatch = useRootDispatch();
 
     const isShowMenu = useRootSelector(state => state.app.isShowMenu);
+    const [isCookiesModalOpen, setIsCookiesModalOpen] = useState(false);
+
+    useEffect(() => {
+        if (!rmgRuntime.isAnalyticsQADone()) {
+            setIsCookiesModalOpen(true);
+        }
+    }, []);
 
     const handleToggle = () => {
         dispatch(toggleMenu());
@@ -34,9 +42,11 @@ export default function AppRoot() {
                 onClick={handleToggle}
             />
             <RmgPage sx={{ flexDirection: 'row' }}>
-                <NavMenu />
+                <NavMenu onCookiesModalOpen={() => setIsCookiesModalOpen(true)} />
                 <Workspace />
             </RmgPage>
+
+            <CookiesModal isOpen={isCookiesModalOpen} onClose={() => setIsCookiesModalOpen(false)} />
         </RmgWindow>
     );
 }

@@ -3,11 +3,22 @@
         "currentMirror": "你正在瀏覽 <1>{{mirror}}</1> 鏡像"
     },
 
+    "CookiesModal": {
+        "header": "本網站的 Cookies",
+        "text1": "在 RMG，我們使用 Cookies 以確保本網站及服務可以正常運作。這些 Cookies 是必需的，因此已預設啟用。",
+        "text2": "我們亦會以 Cookies 的方式：",
+        "item1": "分析閣下的使用模式，用來改進本網站",
+        "text3": "這些 Cookies 是可選的。如果閣下想容許所有可選 Cookies，請選擇「接受所有 Cookies」。如果閣下想禁用 Cookies，請選擇「拒絕」。",
+        "accept": "接受所有 Cookies",
+        "reject": "拒絕"
+    },
+
     "About": "關於",
     "Contribution Wiki": "貢獻者指南",
     "Contributors": "貢獻者",
     "Core contributors": "主要貢獻者",
     "Open in new Workspace": "在新 Workspace 中開啟",
+    "Privacy settings": "私隱設定",
     "Resource contributors": "資源貢獻者",
     "Resource Administrator": "資源管理員",
     "Select an app to start your own rail map design!": "選擇一個應用程式以開始你的路綫圖設計！",

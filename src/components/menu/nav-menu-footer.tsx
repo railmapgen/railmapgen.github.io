@@ -2,12 +2,17 @@ import { Divider, Flex, HStack, Icon, IconButton, Link, Text, useColorModeValue 
 import rmgRuntime, { RmgInstance } from '@railmapgen/rmg-runtime';
 import { useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { MdHelp, MdOpenInNew, MdPeople } from 'react-icons/md';
+import { MdHelp, MdOpenInNew, MdPeople, MdPrivacyTip } from 'react-icons/md';
 import { Events, getMirrorUrl, mirrorName } from '../../util/constants';
 import HelpModal from '../modal/help-modal';
 import ContributorModal from '../modal/contributor-modal';
 
-export default function NavMenuFooter() {
+interface NavMenuFooterProps {
+    onCookiesModalOpen: () => void;
+}
+
+export default function NavMenuFooter(props: NavMenuFooterProps) {
+    const { onCookiesModalOpen } = props;
     const { t } = useTranslation();
     const linkColour = useColorModeValue('primary.500', 'primary.300');
 
@@ -56,6 +61,15 @@ export default function NavMenuFooter() {
                     title={t('Terms and conditions')}
                     icon={<MdHelp />}
                     onClick={() => setIsHelpModalOpen(true)}
+                />
+
+                <IconButton
+                    variant="ghost"
+                    size="sm"
+                    aria-label={t('Privacy settings')}
+                    title={t('Privacy settings')}
+                    icon={<MdPrivacyTip />}
+                    onClick={onCookiesModalOpen}
                 />
             </HStack>
 

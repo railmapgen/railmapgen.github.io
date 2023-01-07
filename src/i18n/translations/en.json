@@ -1,1 +1,11 @@
-{}
+{
+    "CookiesModal": {
+        "header": "Cookies on this website",
+        "text1": "At RMG we use cookies to help ensure that our website and services are able to function properly. These cookies are necessary and so are set automatically.",
+        "text2": "We would also like to use some cookies to:",
+        "item1": "improve our website based on how you use it",
+        "text3": "These cookies are optional. If you'd like to accept all optional cookies, select 'Accept all cookies'. If you'd like to reject them, select 'Reject'.",
+        "accept": "Accept all cookies",
+        "reject": "Reject"
+    }
+}
