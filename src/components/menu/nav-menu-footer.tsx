@@ -6,18 +6,15 @@ import { MdHelp, MdOpenInNew, MdPeople, MdPrivacyTip } from 'react-icons/md';
 import { Events, getMirrorUrl, mirrorName } from '../../util/constants';
 import HelpModal from '../modal/help-modal';
 import ContributorModal from '../modal/contributor-modal';
+import PrivacyModal from '../modal/privacy-modal';
 
-interface NavMenuFooterProps {
-    onCookiesModalOpen: () => void;
-}
-
-export default function NavMenuFooter(props: NavMenuFooterProps) {
-    const { onCookiesModalOpen } = props;
+export default function NavMenuFooter() {
     const { t } = useTranslation();
     const linkColour = useColorModeValue('primary.500', 'primary.300');
 
     const [isContributorModalOpen, setIsContributorModalOpen] = useState(false);
     const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
+    const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
 
     const instance = rmgRuntime.getInstance();
     const switchInstance = instance === RmgInstance.GITHUB ? RmgInstance.GITLAB : RmgInstance.GITHUB;
@@ -69,12 +66,13 @@ export default function NavMenuFooter(props: NavMenuFooterProps) {
                     aria-label={t('Privacy settings')}
                     title={t('Privacy settings')}
                     icon={<MdPrivacyTip />}
-                    onClick={onCookiesModalOpen}
+                    onClick={() => setIsPrivacyModalOpen(true)}
                 />
             </HStack>
 
             <ContributorModal isOpen={isContributorModalOpen} onClose={() => setIsContributorModalOpen(false)} />
             <HelpModal isOpen={isHelpModalOpen} onClose={() => setIsHelpModalOpen(false)} />
+            <PrivacyModal isOpen={isPrivacyModalOpen} onClose={() => setIsPrivacyModalOpen(false)} />
         </Flex>
     );
 }

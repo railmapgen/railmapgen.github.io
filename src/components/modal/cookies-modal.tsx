@@ -13,6 +13,7 @@ import {
 } from '@chakra-ui/react';
 import rmgRuntime from '@railmapgen/rmg-runtime';
 import { useTranslation } from 'react-i18next';
+import { useRef } from 'react';
 
 interface CookiesModalProps {
     isOpen: boolean;
@@ -23,6 +24,7 @@ export default function CookiesModal(props: CookiesModalProps) {
     const { isOpen, onClose } = props;
 
     const { t } = useTranslation();
+    const acceptButtonRef = useRef<HTMLButtonElement>(null);
 
     const handleAccept = () => {
         rmgRuntime.allowAnalytics(true);
@@ -40,6 +42,7 @@ export default function CookiesModal(props: CookiesModalProps) {
 
     return (
         <Modal
+            initialFocusRef={acceptButtonRef}
             isOpen={isOpen}
             onClose={() => {
                 // modal must not close unless using allow or reject button
@@ -64,7 +67,7 @@ export default function CookiesModal(props: CookiesModalProps) {
                         <Button variant="ghost" onClick={handleReject}>
                             {t('CookiesModal.reject')}
                         </Button>
-                        <Button colorScheme="primary" onClick={handleAccept}>
+                        <Button ref={acceptButtonRef} colorScheme="primary" onClick={handleAccept}>
                             {t('CookiesModal.accept')}
                         </Button>
                     </HStack>

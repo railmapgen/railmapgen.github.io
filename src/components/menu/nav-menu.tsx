@@ -47,12 +47,7 @@ const style: SystemStyleObject = {
     },
 };
 
-interface NavMenuProps {
-    onCookiesModalOpen: () => void;
-}
-
-export default function NavMenu(props: NavMenuProps) {
-    const { onCookiesModalOpen } = props;
+export default function NavMenu() {
     const { t } = useTranslation();
 
     return (
@@ -73,7 +68,7 @@ export default function NavMenu(props: NavMenuProps) {
                 </Flex>
 
                 {/* menu-footer */}
-                <NavMenuFooter onCookiesModalOpen={onCookiesModalOpen} />
+                <NavMenuFooter />
             </Flex>
         </Flex>
     );

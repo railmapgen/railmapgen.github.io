@@ -42,7 +42,7 @@ export default function AppRoot() {
                 onClick={handleToggle}
             />
             <RmgPage sx={{ flexDirection: 'row' }}>
-                <NavMenu onCookiesModalOpen={() => setIsCookiesModalOpen(true)} />
+                <NavMenu />
                 <Workspace />
             </RmgPage>
 
