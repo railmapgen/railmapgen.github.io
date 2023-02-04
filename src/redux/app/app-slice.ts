@@ -65,7 +65,11 @@ const appSlice = createSlice({
             const id = action.payload;
             const nextOpenedApps = state.openedTabs.filter(tab => tab.id !== id);
 
-            if (state.activeTab === id) {
+            if (nextOpenedApps.length === 0) {
+                state.openedTabs = [];
+                state.activeTab = undefined;
+                state.isShowMenu = true;
+            } else if (state.activeTab === id) {
                 const prevIndex = state.openedTabs.findIndex(tab => tab.id === id);
                 state.openedTabs = nextOpenedApps;
                 state.activeTab = nextOpenedApps[Math.min(prevIndex, nextOpenedApps.length - 1)].id;

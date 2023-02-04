@@ -1,5 +1,5 @@
 import store from '../index';
-import appReducer, { AppState, closeTab, openApp, openAppInNew } from './app-slice';
+import appReducer, { AppState, closeTab, openApp, openAppInNew, toggleMenu } from './app-slice';
 
 const realStore = store.getState();
 
@@ -49,6 +49,19 @@ describe('AppSlice', () => {
             expect(state.openedTabs[1]).toHaveProperty('app', 'rmg');
 
             expect(state.activeTab).toBe(state.openedTabs[1].id);
+        });
+
+        it('Can close all apps and show app menu', () => {
+            // hide menu
+            state = appReducer(state, toggleMenu());
+            expect(state.isShowMenu).toBeFalsy();
+
+            while (state.openedTabs.length) {
+                state = appReducer(state, closeTab(state.openedTabs[0].id));
+            }
+            expect(state.isShowMenu).toBeTruthy();
+            expect(state.openedTabs).toHaveLength(0);
+            expect(state.activeTab).toBeUndefined();
         });
     });
 });
