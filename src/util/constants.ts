@@ -34,7 +34,7 @@ export const appEnablement: Record<AppId, AppDetail> = {
         allowedEnvs: [RmgEnv.DEV, RmgEnv.UAT],
     },
     'rmg-templates': {
-        name: 'Templates',
+        name: 'RMG Templates',
         allowedEnvs: [RmgEnv.DEV, RmgEnv.UAT, RmgEnv.PRD],
     },
     'seed-project': {
