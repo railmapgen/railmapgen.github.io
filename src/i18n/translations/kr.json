@@ -1,0 +1,32 @@
+{
+    "NavMenuFooter": {
+        "currentMirror": "당신은 미러를 <1>{{mirror}}</1> 훑어보고 있습니다"
+    },
+
+    "CookiesModal": {
+        "header": "이 웹 사이트의 쿠키",
+        "text1": "RMG에서는 쿠키를 사용하여 웹 사이트 및 서비스가 제대로 작동하는지 확인합니다.이러한 쿠키는 필수이므로 기본적으로 시작됩니다.",
+        "text2": "저희도 쿠키 방식으로：",
+        "item1": "당신의 사용 패턴을 분석하여, 본 사이트를 개선합니다",
+        "text3": "이 쿠키들은 선택 사항입니다.모든 선택 가능한 쿠키를 허용하려면 '모든 쿠키 허용'을 선택하십시오.쿠키를 사용하지 않으려면 '거부'를 선택하십시오.",
+        "accept": "모든 쿠키 허용",
+        "reject": "거부"
+    },
+
+    "About": "관한",
+    "Allow cookies to help improve our website": "쿠키를 사용하여 이 웹 사이트를 개선할 수 있도록 허용",
+    "Contribution Wiki": "기여자 안내",
+    "Contributors": "기여자",
+    "Core contributors": "핵심 기여자",
+    "Open in new Workspace": "새 Workspace에서 열기",
+    "Privacy settings": "개인 정보 보호 설정",
+    "Refreshing is required for changes to take effect.": "페이지를 새로 고친 후에만 변경 가능",
+    "Resource contributors": "자원 기여자",
+    "Resource Administrator": "자원 관리자",
+    "Save": "저장",
+    "Select an app to start your own rail map design!": "응용 프로그램을 선택하여 노선도 설계를 시작하십시오.",
+    "Switch to": "곳으로 전환",
+    "Terms and conditions": "조항과 세칙",
+    "Visit GitHub": "GitHub 방문하기",
+    "Welcome to RMG and RMP": "RMG와 RMP에 오신 것을 환영합니다"
+}
