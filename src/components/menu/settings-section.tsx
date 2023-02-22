@@ -29,9 +29,10 @@ export default function SettingsSection() {
             label: t('Language'),
             value: rmgRuntime.getLanguage(),
             options: {
-                [LanguageCode.English]: 'English',
-                [LanguageCode.ChineseSimp]: '简体中文',
-                [LanguageCode.ChineseTrad]: '繁體中文',
+                en: 'English',
+                'zh-Hans': '简体中文',
+                'zh-Hant': '繁體中文',
+                ko: '한국어',
             },
             onChange: value => {
                 const language = value as LanguageCode;
