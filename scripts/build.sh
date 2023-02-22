@@ -40,4 +40,4 @@ then
 fi
 
 echo "Build Success: $APP_NAME-$RMG_VER"
-echo "RMG_VER::$RMG_VER" >> $GITHUB_OUTPUT
+echo "RMG_VER=$RMG_VER" >> $GITHUB_OUTPUT
