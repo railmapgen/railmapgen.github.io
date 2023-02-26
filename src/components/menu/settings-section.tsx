@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Flex, Heading, SystemStyleObject } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 import { RmgFields, RmgFieldsField } from '@railmapgen/rmg-components';
-import { LanguageCode } from '@railmapgen/rmg-translate';
+import { LANGUAGE_NAMES, LanguageCode, SUPPORTED_LANGUAGES, SupportedLanguageCode } from '@railmapgen/rmg-translate';
 import rmgRuntime from '@railmapgen/rmg-runtime';
 import { handleLanguageChange } from '../../i18n/config';
 import { Events } from '../../util/constants';
@@ -28,12 +28,13 @@ export default function SettingsSection() {
             type: 'select',
             label: t('Language'),
             value: rmgRuntime.getLanguage(),
-            options: {
-                en: 'English',
-                'zh-Hans': '简体中文',
-                'zh-Hant': '繁體中文',
-                ko: '한국어',
-            },
+            options: SUPPORTED_LANGUAGES.reduce(
+                (acc, cur) => ({
+                    ...acc,
+                    [cur]: LANGUAGE_NAMES[cur][cur],
+                }),
+                {} as Record<SupportedLanguageCode, string>
+            ),
             onChange: value => {
                 const language = value as LanguageCode;
                 rmgRuntime.setLanguage(language);
