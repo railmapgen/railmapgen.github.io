@@ -8,6 +8,7 @@ import koTranslation from './translations/ko.json';
 
 const i18n = new rmgRuntime.I18nBuilder()
     .use(initReactI18next)
+    .withAppName('Rail Map Toolkit')
     .withLng(rmgRuntime.getLanguage())
     .withDefaultResource(defaultTranslation)
     .withResource('en', enTranslation)
