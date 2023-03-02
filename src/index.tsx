@@ -1,4 +1,5 @@
 import './index.css';
+import i18n from './i18n/config';
 import { ChakraProvider } from '@chakra-ui/react';
 import React, { lazy, StrictMode } from 'react';
 import { Provider } from 'react-redux';
@@ -9,9 +10,10 @@ import rmgRuntime from '@railmapgen/rmg-runtime';
 import { openApp, updateTabUrl } from './redux/app/app-slice';
 import { Events, FRAME_ID_PREFIX, getAvailableApps } from './util/constants';
 import initStore from './redux/init';
+import { I18nextProvider } from 'react-i18next';
 
 let root: Root;
-const AppRoot = lazy(() => import(/* webpackChunkName: "AppRoot" */ './components/app-root'));
+const AppRoot = lazy(() => import('./components/app-root'));
 
 const renderApp = () => {
     root = createRoot(document.getElementById('root') as HTMLDivElement);
@@ -19,9 +21,11 @@ const renderApp = () => {
         <StrictMode>
             <Provider store={store}>
                 <ChakraProvider theme={rmgChakraTheme}>
-                    <RmgErrorBoundary suspenseFallback={<RmgLoader isIndeterminate={true} />} allowReset>
-                        <AppRoot />
-                    </RmgErrorBoundary>
+                    <I18nextProvider i18n={i18n}>
+                        <RmgErrorBoundary suspenseFallback={<RmgLoader isIndeterminate={true} />} allowReset>
+                            <AppRoot />
+                        </RmgErrorBoundary>
+                    </I18nextProvider>
                 </ChakraProvider>
             </Provider>
         </StrictMode>

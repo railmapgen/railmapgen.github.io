@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import { RmgFields, RmgFieldsField } from '@railmapgen/rmg-components';
 import { LANGUAGE_NAMES, LanguageCode, SUPPORTED_LANGUAGES, SupportedLanguageCode } from '@railmapgen/rmg-translate';
 import rmgRuntime from '@railmapgen/rmg-runtime';
-import { handleLanguageChange } from '../../i18n/config';
 import { Events } from '../../util/constants';
 
 const style: SystemStyleObject = {
@@ -38,7 +37,7 @@ export default function SettingsSection() {
             onChange: value => {
                 const language = value as LanguageCode;
                 rmgRuntime.setLanguage(language);
-                handleLanguageChange(language);
+                rmgRuntime.getI18nInstance().changeLanguage(language);
                 rmgRuntime.event(Events.CHANGE_LANGUAGE, { language });
             },
         },
