@@ -28,7 +28,7 @@ export default function Welcome() {
                 <Image src={import.meta.env.BASE_URL + 'logo512.png'} />
                 <Image src={rmpLogo} backgroundColor="white" />
             </HStack>
-            <Heading>{t('Welcome to RMG and RMP')}</Heading>
+            <Heading>{t('Welcome to Rail Map Toolkit')}</Heading>
             <Text fontSize="lg" textAlign="center">
                 {t('Select an app to start your own rail map design!')}
             </Text>

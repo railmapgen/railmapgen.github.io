@@ -56,7 +56,7 @@ export default function NavMenu() {
                 {/* menu-header */}
                 <Flex>
                     <Heading as="h4" size="md">
-                        {t('RMG Home')}
+                        {t('Rail Map Toolkit')}
                     </Heading>
                     <RmgEnvBadge environment={rmgRuntime.getEnv()} version={rmgRuntime.getAppVersion()} />
                 </Flex>
