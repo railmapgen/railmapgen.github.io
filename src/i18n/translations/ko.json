@@ -15,9 +15,12 @@
 
     "About": "관한",
     "Allow cookies to help improve our website": "쿠키를 사용하여 이 웹 사이트를 개선할 수 있도록 허용",
+    "Appearance": "화면 스타일",
     "Contribution Wiki": "기여자 안내",
     "Contributors": "기여자",
     "Core contributors": "핵심 기여자",
+    "Dark": "다크 모드",
+    "Light": "라이트 모드",
     "Open in new Workspace": "새 Workspace에서 열기",
     "Privacy settings": "개인 정보 보호 설정",
     "Refreshing is required for changes to take effect.": "페이지를 새로 고친 후에만 변경 가능",
@@ -26,6 +29,7 @@
     "Save": "저장",
     "Select an app to start your own rail map design!": "응용 프로그램을 선택하여 노선도 설계를 시작하십시오.",
     "Switch to": "곳으로 전환",
+    "System": "시스템 모드",
     "Terms and conditions": "조항과 세칙",
     "Visit GitHub": "GitHub 방문하기",
     "Welcome to Rail Map Toolkit": "노선도 툴킷에 오신 것을 환영합니다"

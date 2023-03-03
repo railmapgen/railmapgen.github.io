@@ -15,9 +15,12 @@
 
     "About": "关于",
     "Allow cookies to help improve our website": "允许用 Cookies 帮助改进本网站",
+    "Appearance": "外观",
     "Contribution Wiki": "贡献者指南",
     "Contributors": "贡献者",
     "Core contributors": "核心贡献者",
+    "Dark": "深色",
+    "Light": "浅色",
     "Open in new Workspace": "在新 Workspace 中打开",
     "Privacy settings": "隐私设置",
     "Refreshing is required for changes to take effect.": "刷新页面后变更才会生效",
@@ -26,6 +29,7 @@
     "Save": "保存",
     "Select an app to start your own rail map design!": "选择一个应用程序来开始你的线路图设计！",
     "Switch to": "切换至",
+    "System": "跟随系统",
     "Terms and conditions": "条款与细则",
     "Visit GitHub": "访问 GitHub",
     "Welcome to Rail Map Toolkit": "欢迎使用线路图工具包"
