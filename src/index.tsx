@@ -1,11 +1,10 @@
 import './index.css';
 import i18n from './i18n/config';
-import { ChakraProvider } from '@chakra-ui/react';
 import React, { lazy, StrictMode } from 'react';
 import { Provider } from 'react-redux';
 import store from './redux';
 import { createRoot, Root } from 'react-dom/client';
-import { rmgChakraTheme, RmgErrorBoundary, RmgLoader } from '@railmapgen/rmg-components';
+import { RmgErrorBoundary, RmgLoader, RmgThemeProvider } from '@railmapgen/rmg-components';
 import rmgRuntime from '@railmapgen/rmg-runtime';
 import { openApp, updateTabUrl } from './redux/app/app-slice';
 import { Events, FRAME_ID_PREFIX, getAvailableApps } from './util/constants';
@@ -20,13 +19,13 @@ const renderApp = () => {
     root.render(
         <StrictMode>
             <Provider store={store}>
-                <ChakraProvider theme={rmgChakraTheme}>
-                    <I18nextProvider i18n={i18n}>
+                <I18nextProvider i18n={i18n}>
+                    <RmgThemeProvider>
                         <RmgErrorBoundary suspenseFallback={<RmgLoader isIndeterminate={true} />} allowReset>
                             <AppRoot />
                         </RmgErrorBoundary>
-                    </I18nextProvider>
-                </ChakraProvider>
+                    </RmgThemeProvider>
+                </I18nextProvider>
             </Provider>
         </StrictMode>
     );
