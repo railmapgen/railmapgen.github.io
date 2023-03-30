@@ -1,6 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AppId, WorkspaceTab } from '../../util/constants';
-import { nanoid } from 'nanoid';
 
 export interface AppState {
     isShowMenu: boolean;
@@ -49,14 +48,14 @@ const appSlice = createSlice({
                 state.activeTab = openedApp.id;
             } else {
                 // open app in new tab
-                const tabId = nanoid();
+                const tabId = crypto.randomUUID();
                 state.openedTabs.push({ id: tabId, app: appId });
                 state.activeTab = tabId;
             }
         },
 
         openAppInNew: (state, action: PayloadAction<AppId>) => {
-            const tabId = nanoid();
+            const tabId = crypto.randomUUID();
             state.openedTabs.push({ id: tabId, app: action.payload });
             state.activeTab = tabId;
         },

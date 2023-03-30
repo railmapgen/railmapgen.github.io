@@ -1,7 +1,7 @@
-import { AppId, LocalStorageKey } from '../util/constants';
-import { setActiveTab, setOpenedTabs } from './app/app-slice';
+import { AppId, getAvailableApps, LocalStorageKey } from '../util/constants';
+import { openApp, setActiveTab, setOpenedTabs } from './app/app-slice';
 import { RootStore, startRootListening } from './index';
-import { nanoid } from 'nanoid';
+import rmgRuntime from '@railmapgen/rmg-runtime';
 
 export const initOpenedTabs = (store: RootStore) => {
     try {
@@ -19,7 +19,7 @@ export const initOpenedTabs = (store: RootStore) => {
         } else if (openedAppsString) {
             const openedApps = JSON.parse(openedAppsString);
             if (Array.isArray(openedApps) && typeof openedApps[0] === 'string') {
-                const nextOpenedApps = (openedApps as AppId[]).map(app => ({ id: nanoid(), app }));
+                const nextOpenedApps = (openedApps as AppId[]).map(app => ({ id: crypto.randomUUID(), app }));
                 store.dispatch(setOpenedTabs(nextOpenedApps));
             } else {
                 console.warn('initOpenedTabs():: cannot parse invalid opened apps state from local storage');
@@ -37,6 +37,18 @@ export const initActiveTab = (store: RootStore) => {
         store.dispatch(setActiveTab(activeTab));
     } else {
         store.dispatch(setActiveTab(openedTabs[0]?.id));
+    }
+};
+
+export const openSearchedApp = (store: RootStore) => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const appSearched: any = searchParams.get('app');
+    console.log(`openSearchedApp():: searchParams app=${appSearched}`);
+
+    if (getAvailableApps(rmgRuntime.getEnv()).includes(appSearched)) {
+        store.dispatch(openApp(appSearched));
+    } else {
+        console.warn(`openSearchedApp():: app ${appSearched} not found`);
     }
 };
 
@@ -65,4 +77,6 @@ export default function initStore(store: RootStore) {
             activeApp !== undefined && window.localStorage.setItem(LocalStorageKey.ACTIVE_TAB, activeApp);
         },
     });
+
+    openSearchedApp(store);
 }
