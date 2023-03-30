@@ -6,11 +6,13 @@ export type AppId =
     | 'rmg-palette'
     | 'rmg-components'
     | 'rmg-templates'
+    | 'rmg-templates-upload'
     | 'seed-project'
     | 'rmg-translate';
 
 interface AppDetail {
     name: string;
+    url: string;
     allowedEnvs: RmgEnv[];
     allowMultiInstances?: boolean;
 }
@@ -18,31 +20,43 @@ interface AppDetail {
 export const appEnablement: Record<AppId, AppDetail> = {
     rmg: {
         name: 'Rail Map Generator',
+        url: '/rmg/',
         allowedEnvs: [RmgEnv.DEV, RmgEnv.UAT, RmgEnv.PRD],
         allowMultiInstances: true,
     },
     rmp: {
         name: 'Rail Map Painter',
+        url: '/rmp/',
         allowedEnvs: [RmgEnv.DEV, RmgEnv.UAT, RmgEnv.PRD],
     },
     'rmg-palette': {
         name: 'Palette',
+        url: '/rmg-palette/',
         allowedEnvs: [RmgEnv.DEV, RmgEnv.UAT, RmgEnv.PRD],
     },
     'rmg-components': {
         name: 'Components',
+        url: '/rmg-components/',
         allowedEnvs: [RmgEnv.DEV, RmgEnv.UAT],
     },
     'rmg-templates': {
         name: 'RMG Templates',
+        url: '/rmg-templates/',
+        allowedEnvs: [RmgEnv.DEV, RmgEnv.UAT, RmgEnv.PRD],
+    },
+    'rmg-templates-upload': {
+        name: 'RMG Templates - Upload',
+        url: '/rmg-templates/new',
         allowedEnvs: [RmgEnv.DEV, RmgEnv.UAT, RmgEnv.PRD],
     },
     'seed-project': {
         name: 'Seed Project',
+        url: '/seed-project/',
         allowedEnvs: [RmgEnv.DEV, RmgEnv.UAT],
     },
     'rmg-translate': {
         name: 'Translate',
+        url: '/rmg-translate/',
         allowedEnvs: [RmgEnv.DEV, RmgEnv.UAT],
     },
 };

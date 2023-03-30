@@ -38,6 +38,8 @@ export default function AppItemButton(props: AppItemProps) {
 
     const smMediaQuery = useMediaQuery(`(min-width: ${theme.breakpoints.sm})`);
 
+    const displayName = appEnablement[appId].name.split(' - ').map(t).join(' - ');
+
     const handleOpenApp = (isOpenInNew: boolean) => {
         if (isOpenInNew) {
             dispatch(openAppInNew(appId));
@@ -54,8 +56,8 @@ export default function AppItemButton(props: AppItemProps) {
 
     return (
         <ButtonGroup variant="ghost" size="md" isAttached>
-            <Button onClick={() => handleOpenApp(false)} title={t(appEnablement[appId].name)} sx={style}>
-                {t(appEnablement[appId].name)}
+            <Button onClick={() => handleOpenApp(false)} title={displayName} sx={style}>
+                {displayName}
             </Button>
             <Menu>
                 <MenuButton as={IconButton} icon={<MdMoreHoriz />} aria-label={t('More')} title={t('More')} />
@@ -66,7 +68,7 @@ export default function AppItemButton(props: AppItemProps) {
                         </MenuItem>
                     )}
                     <MenuItem icon={<MdInfoOutline />} onClick={onAboutOpen}>
-                        {t('About') + ' ' + t(appEnablement[appId].name)}
+                        {t('About') + ' ' + displayName}
                     </MenuItem>
                 </MenuList>
             </Menu>

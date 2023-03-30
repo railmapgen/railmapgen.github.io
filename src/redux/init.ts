@@ -1,4 +1,4 @@
-import { AppId, getAvailableApps, LocalStorageKey } from '../util/constants';
+import { appEnablement, AppId, getAvailableApps, LocalStorageKey, WorkspaceTab } from '../util/constants';
 import { openApp, setActiveTab, setOpenedTabs } from './app/app-slice';
 import { RootStore, startRootListening } from './index';
 import rmgRuntime from '@railmapgen/rmg-runtime';
@@ -12,7 +12,8 @@ export const initOpenedTabs = (store: RootStore) => {
         if (openedTabsString) {
             const openedTabs = JSON.parse(openedTabsString);
             if (Array.isArray(openedTabs)) {
-                store.dispatch(setOpenedTabs(openedTabs));
+                const nextOpenTabs = (openedTabs as WorkspaceTab[]).filter(tab => tab.app in appEnablement);
+                store.dispatch(setOpenedTabs(nextOpenTabs));
             } else {
                 console.warn('initOpenedTabs():: Cannot parse invalid opened tabs state from local storage');
             }

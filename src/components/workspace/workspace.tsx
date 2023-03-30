@@ -70,7 +70,7 @@ export default function Workspace() {
             <TabList>
                 {openedTabs.map(({ id, app }) => (
                     <Tab key={id} as={Box} onClick={() => dispatch(setActiveTab(id))} cursor="pointer">
-                        {t(appEnablement[app].name)}
+                        {appEnablement[app].name.split(' - ').map(t).join(' - ')}
                         <CloseButton size="sm" onClick={e => handleCloseTab(e, id, app)} title={t('Close')} />
                     </Tab>
                 ))}

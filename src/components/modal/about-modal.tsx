@@ -24,21 +24,22 @@ export default function AboutModal(props: AboutModalProps) {
     const { t } = useTranslation();
 
     const [version, setVersion] = useState('Unknown');
+    const component = appId ? appEnablement[appId]?.url?.split('/')?.[1] : undefined;
 
     useEffect(() => {
-        if (appId) {
-            getVersion(appId).then(data => setVersion(data));
+        if (component) {
+            getVersion(component).then(data => setVersion(data));
         } else {
             setVersion('Unknown');
         }
-    }, [appId]);
+    }, [component]);
 
     return (
         <Modal isOpen={!!appId} onClose={onClose} size="xl" scrollBehavior="inside">
             <ModalOverlay />
             <ModalContent>
                 <ModalHeader>
-                    {t('About') + ' ' + (appId ? t(appEnablement[appId].name) : '')}
+                    {t('About') + ' ' + (appId ? appEnablement[appId].name.split(' - ').map(t).join(' - ') : '')}
                     <Badge ml={1}>{version}</Badge>
                 </ModalHeader>
                 <ModalCloseButton />
@@ -48,7 +49,7 @@ export default function AboutModal(props: AboutModalProps) {
                 <ModalFooter>
                     <Button
                         colorScheme="primary"
-                        onClick={() => window.open('https://github.com/railmapgen/' + appId, '_blank')}
+                        onClick={() => window.open('https://github.com/railmapgen/' + component, '_blank')}
                     >
                         {t('Visit GitHub')}
                     </Button>
