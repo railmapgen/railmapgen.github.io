@@ -19,7 +19,7 @@ const style: SystemStyleObject = {
     zIndex: 100,
 
     '.show-menu &': {
-        maxW: { base: '100%', sm: 320 },
+        maxW: { base: '100%', sm: 360 },
         w: { base: '100%', sm: 'unset' },
         visibility: 'initial',
     },
@@ -27,7 +27,7 @@ const style: SystemStyleObject = {
     '& > div': {
         flexDirection: 'column',
         h: '100%',
-        w: { base: '100vw', sm: 320 },
+        w: { base: '100vw', sm: 360 },
 
         '& > div:nth-of-type(1)': {
             // header

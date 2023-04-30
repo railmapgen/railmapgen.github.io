@@ -76,9 +76,26 @@ const appSlice = createSlice({
                 state.openedTabs = nextOpenedApps;
             }
         },
+
+        closeApp: (state, action: PayloadAction<AppId>) => {
+            const id = action.payload;
+            const nextOpenedApps = state.openedTabs.filter(tab => tab.app !== id);
+
+            if (nextOpenedApps.length === 0) {
+                state.openedTabs = [];
+                state.activeTab = undefined;
+                state.isShowMenu = true;
+            } else if (state.activeTab === id) {
+                const prevIndex = state.openedTabs.findIndex(tab => tab.id === id);
+                state.openedTabs = nextOpenedApps;
+                state.activeTab = nextOpenedApps[Math.min(prevIndex, nextOpenedApps.length - 1)].id;
+            } else {
+                state.openedTabs = nextOpenedApps;
+            }
+        },
     },
 });
 
-export const { toggleMenu, setOpenedTabs, updateTabUrl, setActiveTab, openApp, openAppInNew, closeTab } =
+export const { toggleMenu, setOpenedTabs, updateTabUrl, setActiveTab, openApp, openAppInNew, closeTab, closeApp } =
     appSlice.actions;
 export default appSlice.reducer;

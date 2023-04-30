@@ -1,7 +1,8 @@
-import React from 'react';
-import { openApp, openAppInNew, toggleMenu } from '../../redux/app/app-slice';
+import { closeApp, closeTab, openApp, openAppInNew, setActiveTab, toggleMenu } from '../../redux/app/app-slice';
 import { appEnablement, AppId, Events } from '../../util/constants';
 import {
+    Badge,
+    Box,
     Button,
     ButtonGroup,
     IconButton,
@@ -13,17 +14,38 @@ import {
     theme,
     useMediaQuery,
 } from '@chakra-ui/react';
-import { useRootDispatch } from '../../redux';
+import { useRootDispatch, useRootSelector } from '../../redux';
 import { useTranslation } from 'react-i18next';
 import rmgRuntime from '@railmapgen/rmg-runtime';
-import { MdInfoOutline, MdMoreHoriz, MdOpenInNew } from 'react-icons/md';
+import { MdAdd, MdClose, MdInfoOutline, MdModeStandby, MdMoreHoriz } from 'react-icons/md';
 
 const style: SystemStyleObject = {
-    w: '100%',
-    overflow: 'hidden',
-    justifyContent: 'flex-start',
-    textOverflow: 'ellipsis',
-    textAlign: 'start',
+    '& button:first-of-type': {
+        w: '100%',
+        overflow: 'hidden',
+        justifyContent: 'flex-start',
+        textOverflow: 'ellipsis',
+        textAlign: 'start',
+
+        '& span.chakra-button__icon': {
+            ml: -1,
+            color: 'orange.300',
+
+            '[data-theme="dark"] &': {
+                color: 'orange.200',
+            },
+        },
+    },
+
+    '&[aria-current="true"] > button': {
+        bg: 'primary.50',
+        _hover: { bg: 'primary.100' },
+
+        '[data-theme="dark"] &': {
+            bg: 'primary.700',
+            _hover: { bg: 'primary.600' },
+        },
+    },
 };
 
 interface AppItemProps {
@@ -38,7 +60,13 @@ export default function AppItemButton(props: AppItemProps) {
 
     const smMediaQuery = useMediaQuery(`(min-width: ${theme.breakpoints.sm})`);
 
-    const displayName = appEnablement[appId].name.split(' - ').map(t).join(' - ');
+    const { activeTab, openedTabs } = useRootSelector(state => state.app);
+
+    const appDetail = appEnablement[appId];
+    const displayName = appDetail.name.split(' - ').map(t).join(' - ');
+
+    const isAppRunning = openedTabs.some(tab => tab.app === appId);
+    const isAppActive = !appDetail.allowMultiInstances && openedTabs.find(tab => tab.id === activeTab)?.app === appId;
 
     const handleOpenApp = (isOpenInNew: boolean) => {
         if (isOpenInNew) {
@@ -54,24 +82,79 @@ export default function AppItemButton(props: AppItemProps) {
         rmgRuntime.event(Events.OPEN_APP, { appId, isOpenInNew });
     };
 
+    const handleCloseTab = (tabId: string) => {
+        dispatch(closeTab(tabId));
+        rmgRuntime.event(Events.CLOSE_APP, { app: appId });
+    };
+
+    const handleCloseApp = (appId: AppId) => {
+        dispatch(closeApp(appId));
+        rmgRuntime.event(Events.CLOSE_APP, { app: appId });
+    };
+
     return (
-        <ButtonGroup variant="ghost" size="md" isAttached>
-            <Button onClick={() => handleOpenApp(false)} title={displayName} sx={style}>
-                {displayName}
-            </Button>
-            <Menu>
-                <MenuButton as={IconButton} icon={<MdMoreHoriz />} aria-label={t('More')} title={t('More')} />
-                <MenuList>
-                    {appEnablement[appId].allowMultiInstances && (
-                        <MenuItem icon={<MdOpenInNew />} onClick={() => handleOpenApp(true)}>
-                            {t('Open in new Workspace')}
+        <>
+            <ButtonGroup
+                variant={isAppActive ? 'solid' : 'ghost'}
+                size="md"
+                isAttached
+                aria-current={isAppActive}
+                sx={style}
+            >
+                <Button
+                    onClick={() => handleOpenApp(false)}
+                    title={displayName + (isAppRunning ? ' - ' + t('Running') : '')}
+                    leftIcon={isAppRunning ? <MdModeStandby /> : <Box w={4} />}
+                >
+                    {displayName}
+                </Button>
+                {appDetail.allowMultiInstances && (
+                    <IconButton aria-label={t('New tab')} icon={<MdAdd />} onClick={() => handleOpenApp(true)} />
+                )}
+                <Menu>
+                    <MenuButton as={IconButton} icon={<MdMoreHoriz />} aria-label={t('More')} title={t('More')} />
+                    <MenuList>
+                        {isAppRunning && (
+                            <MenuItem icon={<MdClose />} onClick={() => handleCloseApp(appId)}>
+                                {appDetail.allowMultiInstances ? t('Close all tabs') : t('Close app')}
+                            </MenuItem>
+                        )}
+                        <MenuItem icon={<MdInfoOutline />} onClick={onAboutOpen}>
+                            {t('About')}
                         </MenuItem>
-                    )}
-                    <MenuItem icon={<MdInfoOutline />} onClick={onAboutOpen}>
-                        {t('About') + ' ' + displayName}
-                    </MenuItem>
-                </MenuList>
-            </Menu>
-        </ButtonGroup>
+                    </MenuList>
+                </Menu>
+            </ButtonGroup>
+
+            {appDetail.allowMultiInstances &&
+                openedTabs
+                    .filter(tab => tab.app === appId)
+                    .map((tab, i) => {
+                        const isTabActive = tab.id === activeTab;
+                        return (
+                            <ButtonGroup
+                                variant={isTabActive ? 'solid' : 'ghost'}
+                                key={tab.id}
+                                size="sm"
+                                ml={8}
+                                mr={1}
+                                isAttached
+                                aria-current={isTabActive}
+                                sx={style}
+                            >
+                                <Button onClick={() => dispatch(setActiveTab(tab.id))}>
+                                    <Badge mr={2}>{i + 1}</Badge>
+                                    {t('Tab') + ' ' + (i + 1).toString() + ' - ' + displayName}
+                                </Button>
+                                <IconButton
+                                    aria-label={t('Close tab')}
+                                    title={t('Close tab')}
+                                    icon={<MdClose />}
+                                    onClick={() => handleCloseTab(tab.id)}
+                                />
+                            </ButtonGroup>
+                        );
+                    })}
+        </>
     );
 }
