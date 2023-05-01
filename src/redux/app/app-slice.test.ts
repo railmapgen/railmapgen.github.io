@@ -1,10 +1,10 @@
 import store from '../index';
-import appReducer, { AppState, closeTab, openApp, openAppInNew, toggleMenu } from './app-slice';
+import appReducer, { AppState, closeApp, closeTab, openApp, openAppInNew } from './app-slice';
 
 const realStore = store.getState();
 
 describe('AppSlice', () => {
-    describe('AppSlice - open and close app', () => {
+    describe('AppSlice - open app', () => {
         let state: AppState = { ...realStore.app, openedTabs: [{ id: '01', app: 'rmg' }], activeTab: '01' };
 
         it('Can open and update active app', () => {
@@ -40,28 +40,39 @@ describe('AppSlice', () => {
             expect(state.openedTabs).toHaveLength(3);
             expect(state.activeTab).toBe(state.openedTabs[1].id);
         });
+    });
 
-        it('Can close app and make the other app active', () => {
-            state = appReducer(state, closeTab(state.openedTabs[1].id));
+    describe('AppSlice - close app', () => {
+        it('Can close current tab and set next active tab correctly', () => {
+            const state: AppState = {
+                ...realStore.app,
+                openedTabs: [
+                    { id: '01', app: 'rmg' },
+                    { id: '02', app: 'rmg-palette' },
+                    { id: '03', app: 'rmg' },
+                ],
+                activeTab: '01',
+            };
+            const nextState = appReducer(state, closeTab('01'));
 
-            expect(state.openedTabs).toHaveLength(2);
-            expect(state.openedTabs[0]).toHaveProperty('app', 'rmg');
-            expect(state.openedTabs[1]).toHaveProperty('app', 'rmg');
-
-            expect(state.activeTab).toBe(state.openedTabs[1].id);
+            expect(nextState.openedTabs).toHaveLength(2);
+            expect(nextState.activeTab).toBe('03');
         });
 
-        it('Can close all apps and show app menu', () => {
-            // hide menu
-            state = appReducer(state, toggleMenu());
-            expect(state.isShowMenu).toBeFalsy();
+        it('Can close current app and set next active tab correctly', () => {
+            const state: AppState = {
+                ...realStore.app,
+                openedTabs: [
+                    { id: '01', app: 'rmg' },
+                    { id: '02', app: 'rmg-palette' },
+                    { id: '03', app: 'rmg' },
+                ],
+                activeTab: '02',
+            };
+            const nextState = appReducer(state, closeApp('rmg-palette'));
 
-            while (state.openedTabs.length) {
-                state = appReducer(state, closeTab(state.openedTabs[0].id));
-            }
-            expect(state.isShowMenu).toBeTruthy();
-            expect(state.openedTabs).toHaveLength(0);
-            expect(state.activeTab).toBeUndefined();
+            expect(nextState.openedTabs).toHaveLength(2);
+            expect(nextState.activeTab).toBe('01');
         });
     });
 });

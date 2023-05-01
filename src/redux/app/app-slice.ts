@@ -62,23 +62,37 @@ const appSlice = createSlice({
 
         closeTab: (state, action: PayloadAction<string>) => {
             const id = action.payload;
-            const nextOpenedApps = state.openedTabs.filter(tab => tab.id !== id);
 
-            if (nextOpenedApps.length === 0) {
-                state.openedTabs = [];
-                state.activeTab = undefined;
-                state.isShowMenu = true;
-            } else if (state.activeTab === id) {
-                const prevIndex = state.openedTabs.findIndex(tab => tab.id === id);
-                state.openedTabs = nextOpenedApps;
-                state.activeTab = nextOpenedApps[Math.min(prevIndex, nextOpenedApps.length - 1)].id;
-            } else {
-                state.openedTabs = nextOpenedApps;
+            const sortedTabs = state.openedTabs.slice().sort((a, b) => {
+                const keySet = Object.keys(appEnablement);
+                return keySet.indexOf(a.app) - keySet.indexOf(b.app);
+            });
+            state.openedTabs = state.openedTabs.filter(tab => tab.id !== id);
+
+            if (state.activeTab === id) {
+                const prevIndex = sortedTabs.findIndex(tab => tab.id === id);
+                state.activeTab = sortedTabs.filter(tab => tab.id !== id)[Math.max(0, prevIndex - 1)]?.id;
+            }
+        },
+
+        closeApp: (state, action: PayloadAction<AppId>) => {
+            const id = action.payload;
+
+            const openedApps = Object.keys(appEnablement).filter(appId =>
+                state.openedTabs.some(tab => tab.app === appId)
+            );
+            const activeApp = state.openedTabs.find(tab => tab.id === state.activeTab)?.app;
+            const nextOpenedTabs = state.openedTabs.filter(tab => tab.app !== id);
+            state.openedTabs = nextOpenedTabs;
+
+            if (activeApp === id) {
+                const prevIndex = openedApps.findIndex(app => app === id);
+                state.activeTab = nextOpenedTabs.find(tab => tab.app === openedApps[Math.max(0, prevIndex - 1)])?.id;
             }
         },
     },
 });
 
-export const { toggleMenu, setOpenedTabs, updateTabUrl, setActiveTab, openApp, openAppInNew, closeTab } =
+export const { toggleMenu, setOpenedTabs, updateTabUrl, setActiveTab, openApp, openAppInNew, closeTab, closeApp } =
     appSlice.actions;
 export default appSlice.reducer;

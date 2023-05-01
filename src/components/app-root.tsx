@@ -26,6 +26,7 @@ export default function AppRoot() {
     }, []);
 
     const handleToggle = () => {
+        rmgRuntime.toggleNavMenu(!isShowMenu);
         dispatch(toggleMenu());
         rmgRuntime.event(Events.TOGGLE_NAV_MENU, {});
     };
@@ -34,13 +35,15 @@ export default function AppRoot() {
         <BrowserRouter basename={import.meta.env.BASE_URL}>
             <RmgWindow className={isShowMenu ? 'show-menu' : ''}>
                 <IconButton
-                    variant="ghost"
+                    variant={isShowMenu ? 'ghost' : 'solid'}
+                    colorScheme={isShowMenu ? undefined : 'primary'}
                     size="md"
                     aria-label={t('Toggle menu')}
                     title={t('Toggle menu')}
                     icon={<MdMenu />}
                     position="absolute"
                     zIndex={110}
+                    borderRadius={0}
                     onClick={handleToggle}
                 />
                 <RmgPage sx={{ flexDirection: 'row' }}>
