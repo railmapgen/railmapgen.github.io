@@ -69,6 +69,11 @@ export default function AppItemButton(props: AppItemProps) {
     const isAppActive = !appDetail.allowMultiInstances && openedTabs.find(tab => tab.id === activeTab)?.app === appId;
 
     const handleOpenApp = (isOpenInNew: boolean) => {
+        if (!isAppRunning) {
+            // send event only when app was not previously opened
+            rmgRuntime.event(Events.OPEN_APP, { appId, isOpenInNew });
+        }
+
         if (isOpenInNew) {
             dispatch(openAppInNew(appId));
         } else {
@@ -77,9 +82,16 @@ export default function AppItemButton(props: AppItemProps) {
 
         if (!smMediaQuery[0]) {
             dispatch(toggleMenu());
+            rmgRuntime.toggleNavMenu(false);
         }
+    };
 
-        rmgRuntime.event(Events.OPEN_APP, { appId, isOpenInNew });
+    const handleSelectTab = (tabId: string) => {
+        dispatch(setActiveTab(tabId));
+        if (!smMediaQuery[0]) {
+            dispatch(toggleMenu());
+            rmgRuntime.toggleNavMenu(false);
+        }
     };
 
     const handleCloseTab = (tabId: string) => {
@@ -142,7 +154,7 @@ export default function AppItemButton(props: AppItemProps) {
                                 aria-current={isTabActive}
                                 sx={style}
                             >
-                                <Button onClick={() => dispatch(setActiveTab(tab.id))}>
+                                <Button onClick={() => handleSelectTab(tab.id)}>
                                     <Badge mr={2}>{i + 1}</Badge>
                                     {t('Tab') + ' ' + (i + 1).toString() + ' - ' + displayName}
                                 </Button>
