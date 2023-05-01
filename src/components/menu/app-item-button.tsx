@@ -115,13 +115,17 @@ export default function AppItemButton(props: AppItemProps) {
             >
                 <Button
                     onClick={() => handleOpenApp(false)}
-                    title={displayName + (isAppRunning ? ' - ' + t('Running') : '')}
-                    leftIcon={isAppRunning ? <MdModeStandby /> : <Box w={4} />}
+                    leftIcon={isAppRunning ? <MdModeStandby title={t('Running')} /> : <Box w={4} />}
                 >
                     {displayName}
                 </Button>
                 {appDetail.allowMultiInstances && (
-                    <IconButton aria-label={t('New tab')} icon={<MdAdd />} onClick={() => handleOpenApp(true)} />
+                    <IconButton
+                        aria-label={t('New tab')}
+                        title={t('New tab')}
+                        icon={<MdAdd />}
+                        onClick={() => handleOpenApp(true)}
+                    />
                 )}
                 <Menu>
                     <MenuButton as={IconButton} icon={<MdMoreHoriz />} aria-label={t('More')} title={t('More')} />
