@@ -1,19 +1,18 @@
-import { Divider, Flex, HStack, Icon, IconButton, Link, Text, useColorModeValue } from '@chakra-ui/react';
+import { Button, Divider, Flex, Grid, GridItem, Icon, Link, Text, useColorModeValue } from '@chakra-ui/react';
 import rmgRuntime, { RmgInstance } from '@railmapgen/rmg-runtime';
 import { useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { MdHelp, MdOpenInNew, MdPeople, MdPrivacyTip } from 'react-icons/md';
+import { MdOpenInNew, MdPeople, MdPrivacyTip } from 'react-icons/md';
 import { Events, getMirrorUrl, mirrorName } from '../../util/constants';
-import HelpModal from '../modal/help-modal';
 import ContributorModal from '../modal/contributor-modal';
 import PrivacyModal from '../modal/privacy-modal';
+import { IoLogoSlack } from 'react-icons/io5';
 
 export default function NavMenuFooter() {
     const { t } = useTranslation();
     const linkColour = useColorModeValue('primary.500', 'primary.300');
 
     const [isContributorModalOpen, setIsContributorModalOpen] = useState(false);
-    const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
     const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
 
     const instance = rmgRuntime.getInstance();
@@ -41,37 +40,47 @@ export default function NavMenuFooter() {
 
             <Divider />
 
-            <HStack justifyContent="center">
-                <IconButton
-                    variant="ghost"
-                    size="sm"
-                    aria-label={t('Contributor')}
-                    title={t('Contributor')}
-                    icon={<MdPeople />}
-                    onClick={() => setIsContributorModalOpen(true)}
-                />
+            <Grid templateColumns="repeat(3, auto)">
+                <GridItem>
+                    <Button
+                        as={Link}
+                        variant="ghost"
+                        size="sm"
+                        w="100%"
+                        leftIcon={<IoLogoSlack />}
+                        target="_blank"
+                        href="https://join.slack.com/t/railmapgenerator/shared_invite/zt-1odhhta3n-DdZF~fnVwo_q0S0RJmgV8A"
+                    >
+                        Slack
+                    </Button>
+                </GridItem>
 
-                <IconButton
-                    variant="ghost"
-                    size="sm"
-                    aria-label={t('Terms and conditions')}
-                    title={t('Terms and conditions')}
-                    icon={<MdHelp />}
-                    onClick={() => setIsHelpModalOpen(true)}
-                />
+                <GridItem>
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        w="100%"
+                        leftIcon={<MdPeople />}
+                        onClick={() => setIsContributorModalOpen(true)}
+                    >
+                        {t('Contributors')}
+                    </Button>
+                </GridItem>
 
-                <IconButton
-                    variant="ghost"
-                    size="sm"
-                    aria-label={t('Privacy settings')}
-                    title={t('Privacy settings')}
-                    icon={<MdPrivacyTip />}
-                    onClick={() => setIsPrivacyModalOpen(true)}
-                />
-            </HStack>
+                <GridItem>
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        w="100%"
+                        leftIcon={<MdPrivacyTip />}
+                        onClick={() => setIsPrivacyModalOpen(true)}
+                    >
+                        {t('Privacy')}
+                    </Button>
+                </GridItem>
+            </Grid>
 
             <ContributorModal isOpen={isContributorModalOpen} onClose={() => setIsContributorModalOpen(false)} />
-            <HelpModal isOpen={isHelpModalOpen} onClose={() => setIsHelpModalOpen(false)} />
             <PrivacyModal isOpen={isPrivacyModalOpen} onClose={() => setIsPrivacyModalOpen(false)} />
         </Flex>
     );
