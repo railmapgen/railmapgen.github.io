@@ -9,8 +9,8 @@ import AboutModal from '../modal/about-modal';
 const style: SystemStyleObject = {
     flexDirection: 'column',
 
-    '& h5': {
-        mx: 1,
+    '& h4': {
+        mx: 3,
         my: 2,
     },
 
@@ -28,7 +28,7 @@ export default function AppsSection() {
 
     return (
         <Flex sx={style}>
-            <Heading as="h5" size="sm">
+            <Heading as="h4" size="md">
                 {t('Apps')}
             </Heading>
             <Flex>

@@ -42,7 +42,11 @@ const style: SystemStyleObject = {
             // body
             flexDirection: 'column',
             flex: 1,
-            overflowY: 'auto',
+
+            '& > div:first-of-type': {
+                flex: 1,
+                overflowY: 'auto',
+            },
         },
     },
 };

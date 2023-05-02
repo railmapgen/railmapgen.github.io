@@ -1,16 +1,17 @@
 import React from 'react';
-import { Box, Flex, Heading, SystemStyleObject } from '@chakra-ui/react';
+import { Box, Button, Flex, Heading, SystemStyleObject } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 import { RmgFields, RmgFieldsField, useRmgColourMode } from '@railmapgen/rmg-components';
 import { LANGUAGE_NAMES, LanguageCode, SUPPORTED_LANGUAGES, SupportedLanguageCode } from '@railmapgen/rmg-translate';
-import rmgRuntime from '@railmapgen/rmg-runtime';
-import { Events } from '../../util/constants';
+import rmgRuntime, { RmgInstance } from '@railmapgen/rmg-runtime';
+import { Events, getMirrorUrl, mirrorName } from '../../util/constants';
 
 const style: SystemStyleObject = {
     flexDirection: 'column',
+    py: 1,
 
-    '& h5': {
-        mx: 1,
+    '& h4': {
+        mx: 3,
         my: 2,
     },
 
@@ -27,6 +28,15 @@ export default function SettingsSection() {
         light: t('Light'),
         dark: t('Dark'),
         system: t('System'),
+    };
+
+    const instance = rmgRuntime.getInstance();
+    const switchInstance = instance === RmgInstance.GITHUB ? RmgInstance.GITLAB : RmgInstance.GITHUB;
+
+    const handleSwitchMirror = () => {
+        const mirrorUrl = getMirrorUrl(switchInstance, rmgRuntime.getEnv());
+        window.open(mirrorUrl, '_blank');
+        rmgRuntime.event(Events.SWITCH_MIRROR, { mirrorUrl });
     };
 
     const fields: RmgFieldsField[] = [
@@ -55,11 +65,22 @@ export default function SettingsSection() {
             options: appearanceOptions,
             onChange: value => setColourMode(value as keyof typeof appearanceOptions),
         },
+        {
+            type: 'custom',
+            label: t('Switch to') + ' ' + mirrorName[switchInstance],
+            component: (
+                <Button size="xs" onClick={handleSwitchMirror}>
+                    {t('Switch')}
+                </Button>
+            ),
+            minW: 'full',
+            oneLine: true,
+        },
     ];
 
     return (
         <Flex sx={style}>
-            <Heading as="h5" size="sm">
+            <Heading as="h4" size="md">
                 {t('Settings')}
             </Heading>
 

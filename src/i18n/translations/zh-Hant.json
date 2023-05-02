@@ -1,8 +1,4 @@
 {
-    "NavMenuFooter": {
-        "currentMirror": "你正在瀏覽 <1>{{mirror}}</1> 鏡像"
-    },
-
     "CookiesModal": {
         "header": "本網站的 Cookies",
         "text1": "在 RMG，我們使用 Cookies 以確保本網站及服務可以正常運作。這些 Cookies 是必需的，因此已預設啟用。",
@@ -34,6 +30,7 @@
     "Running": "運行中",
     "Save": "儲存",
     "Select an app to start your own rail map design!": "選擇一個應用程式以開始你的路綫圖設計！",
+    "Switch": "切換",
     "Switch to": "切換至",
     "System": "跟隨系統",
     "Tab": "分頁",
