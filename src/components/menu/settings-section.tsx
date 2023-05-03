@@ -52,7 +52,7 @@ export default function SettingsSection() {
                 {} as Record<SupportedLanguageCode, string>
             ),
             onChange: value => {
-                const language = value as LanguageCode;
+                const language = value as SupportedLanguageCode;
                 rmgRuntime.setLanguage(language);
                 rmgRuntime.getI18nInstance().changeLanguage(language);
                 rmgRuntime.event(Events.CHANGE_LANGUAGE, { language });
