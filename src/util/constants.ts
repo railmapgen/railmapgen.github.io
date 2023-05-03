@@ -8,6 +8,7 @@ export type AppId =
     | 'rmg-components'
     | 'rmg-templates'
     | 'rmg-templates-upload'
+    | 'rmp-gallery'
     | 'seed-project'
     | 'rmg-translate';
 
@@ -53,6 +54,11 @@ export const appEnablement: Record<AppId, AppDetail> = {
     'rmg-templates-upload': {
         name: 'RMG Templates - Upload',
         url: '/rmg-templates/new',
+        allowedEnvs: [RmgEnv.DEV, RmgEnv.UAT, RmgEnv.PRD],
+    },
+    'rmp-gallery': {
+        name: 'RMP Gallery',
+        url: '/rmp-gallery/',
         allowedEnvs: [RmgEnv.DEV, RmgEnv.UAT, RmgEnv.PRD],
     },
     'seed-project': {
