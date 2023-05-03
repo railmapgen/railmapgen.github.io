@@ -34,8 +34,8 @@ const appSlice = createSlice({
             state.activeTab = action.payload;
         },
 
-        openApp: (state, action: PayloadAction<AppId>) => {
-            const appId = action.payload;
+        openApp: (state, action: PayloadAction<{ appId: AppId; url?: string }>) => {
+            const { appId, url } = action.payload;
 
             const activeApp = state.openedTabs.find(({ id }) => id === state.activeTab);
             const openedApp = state.openedTabs.find(({ app }) => app === appId);
@@ -49,7 +49,7 @@ const appSlice = createSlice({
             } else {
                 // open app in new tab
                 const tabId = crypto.randomUUID();
-                state.openedTabs.push({ id: tabId, app: appId, url: appEnablement[appId].url });
+                state.openedTabs.push({ id: tabId, app: appId, url: url ?? appEnablement[appId].url });
                 state.activeTab = tabId;
             }
         },

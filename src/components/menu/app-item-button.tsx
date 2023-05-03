@@ -77,7 +77,7 @@ export default function AppItemButton(props: AppItemProps) {
         if (isOpenInNew) {
             dispatch(openAppInNew(appId));
         } else {
-            dispatch(openApp(appId));
+            dispatch(openApp({ appId }));
         }
 
         if (!smMediaQuery[0]) {

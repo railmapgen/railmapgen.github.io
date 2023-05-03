@@ -7,7 +7,7 @@ import { createRoot, Root } from 'react-dom/client';
 import { RmgErrorBoundary, RmgLoader, RmgThemeProvider } from '@railmapgen/rmg-components';
 import rmgRuntime from '@railmapgen/rmg-runtime';
 import { openApp, updateTabUrl } from './redux/app/app-slice';
-import { Events, FRAME_ID_PREFIX, getAvailableApps } from './util/constants';
+import { AppId, Events, FRAME_ID_PREFIX, getAvailableApps } from './util/constants';
 import initStore from './redux/init';
 import { I18nextProvider } from 'react-i18next';
 
@@ -36,8 +36,15 @@ rmgRuntime.ready().then(() => {
     renderApp();
 
     rmgRuntime.onAppOpen(app => {
-        if (getAvailableApps(rmgRuntime.getEnv()).includes(app)) {
-            store.dispatch(openApp(app));
+        const availableApps = getAvailableApps(rmgRuntime.getEnv());
+        if (typeof app === 'object') {
+            if (app.appId in availableApps) {
+                store.dispatch(openApp({ appId: app.appId as AppId, url: app.url }));
+            }
+        } else {
+            if (availableApps.includes(app as any)) {
+                store.dispatch(openApp({ appId: app as AppId }));
+            }
         }
     });
     rmgRuntime.onUrlUpdate((url, frameId) => {

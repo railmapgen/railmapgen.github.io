@@ -47,7 +47,7 @@ export const openSearchedApp = (store: RootStore) => {
     console.log(`openSearchedApp():: searchParams app=${appSearched}`);
 
     if (getAvailableApps(rmgRuntime.getEnv()).includes(appSearched)) {
-        store.dispatch(openApp(appSearched));
+        store.dispatch(openApp({ appId: appSearched }));
     } else {
         console.warn(`openSearchedApp():: app ${appSearched} not found`);
     }

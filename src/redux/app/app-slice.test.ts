@@ -8,7 +8,7 @@ describe('AppSlice', () => {
         let state: AppState = { ...realStore.app, openedTabs: [{ id: '01', app: 'rmg' }], activeTab: '01' };
 
         it('Can open and update active app', () => {
-            state = appReducer(state, openApp('rmg-palette'));
+            state = appReducer(state, openApp({ appId: 'rmg-palette' }));
 
             expect(state.openedTabs).toHaveLength(2);
             expect(state.openedTabs[0]).toHaveProperty('app', 'rmg');
@@ -28,14 +28,14 @@ describe('AppSlice', () => {
         });
 
         it('Do not switch active app if it is active', () => {
-            state = appReducer(state, openApp('rmg'));
+            state = appReducer(state, openApp({ appId: 'rmg' }));
 
             expect(state.openedTabs).toHaveLength(3);
             expect(state.activeTab).toBe(state.openedTabs[2].id);
         });
 
         it('Can switch active app', () => {
-            state = appReducer(state, openApp('rmg-palette'));
+            state = appReducer(state, openApp({ appId: 'rmg-palette' }));
 
             expect(state.openedTabs).toHaveLength(3);
             expect(state.activeTab).toBe(state.openedTabs[1].id);
