@@ -4,6 +4,7 @@ export type AppId =
     | 'rmg'
     | 'rmp'
     | 'rmg-palette'
+    | 'rmg-palette-upload'
     | 'rmg-components'
     | 'rmg-templates'
     | 'rmg-templates-upload'
@@ -32,6 +33,11 @@ export const appEnablement: Record<AppId, AppDetail> = {
     'rmg-palette': {
         name: 'Palette',
         url: '/rmg-palette/',
+        allowedEnvs: [RmgEnv.DEV, RmgEnv.UAT, RmgEnv.PRD],
+    },
+    'rmg-palette-upload': {
+        name: 'Palette - Upload',
+        url: '/rmg-palette/new',
         allowedEnvs: [RmgEnv.DEV, RmgEnv.UAT, RmgEnv.PRD],
     },
     'rmg-components': {
