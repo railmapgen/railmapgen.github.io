@@ -74,5 +74,21 @@ describe('AppSlice', () => {
             expect(nextState.openedTabs).toHaveLength(2);
             expect(nextState.activeTab).toBe('01');
         });
+
+        it('Can close other app and keep current active tab', () => {
+            const state: AppState = {
+                ...realStore.app,
+                openedTabs: [
+                    { id: '01', app: 'rmg' },
+                    { id: '02', app: 'rmg-palette' },
+                    { id: '03', app: 'rmg' },
+                ],
+                activeTab: '01',
+            };
+            const nextState = appReducer(state, closeApp('rmg-palette'));
+
+            expect(nextState.openedTabs).toHaveLength(2);
+            expect(nextState.activeTab).toBe('01');
+        });
     });
 });

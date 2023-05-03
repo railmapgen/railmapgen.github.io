@@ -6,7 +6,7 @@ import store from './redux';
 import { createRoot, Root } from 'react-dom/client';
 import { RmgErrorBoundary, RmgLoader, RmgThemeProvider } from '@railmapgen/rmg-components';
 import rmgRuntime from '@railmapgen/rmg-runtime';
-import { openApp, updateTabUrl } from './redux/app/app-slice';
+import { closeApp, openApp, updateTabUrl } from './redux/app/app-slice';
 import { AppId, Events, FRAME_ID_PREFIX, getAvailableApps } from './util/constants';
 import initStore from './redux/init';
 import { I18nextProvider } from 'react-i18next';
@@ -38,7 +38,7 @@ rmgRuntime.ready().then(() => {
     rmgRuntime.onAppOpen(app => {
         const availableApps = getAvailableApps(rmgRuntime.getEnv());
         if (typeof app === 'object') {
-            if (app.appId in availableApps) {
+            if (availableApps.includes(app.appId as any)) {
                 store.dispatch(openApp({ appId: app.appId as AppId, url: app.url }));
             }
         } else {
@@ -47,6 +47,15 @@ rmgRuntime.ready().then(() => {
             }
         }
     });
+
+    rmgRuntime.onAppClose(app => {
+        console.log('here');
+        const availableApps = getAvailableApps(rmgRuntime.getEnv());
+        if (availableApps.includes(app as any)) {
+            store.dispatch(closeApp(app as AppId));
+        }
+    });
+
     rmgRuntime.onUrlUpdate((url, frameId) => {
         if (frameId) {
             const id = frameId.slice(FRAME_ID_PREFIX.length);
@@ -54,5 +63,6 @@ rmgRuntime.ready().then(() => {
             store.dispatch(updateTabUrl({ id, url }));
         }
     });
+
     rmgRuntime.event(Events.APP_LOAD, { openedApps: store.getState().app.openedTabs.map(tab => tab.app) });
 });

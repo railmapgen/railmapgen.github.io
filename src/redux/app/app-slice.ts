@@ -77,6 +77,10 @@ const appSlice = createSlice({
 
         closeApp: (state, action: PayloadAction<AppId>) => {
             const id = action.payload;
+            if (!state.openedTabs.some(tab => tab.app === id)) {
+                // input app is not opened
+                return;
+            }
 
             const openedApps = Object.keys(appEnablement).filter(appId =>
                 state.openedTabs.some(tab => tab.app === appId)
