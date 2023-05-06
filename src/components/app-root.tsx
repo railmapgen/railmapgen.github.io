@@ -11,12 +11,13 @@ import rmgRuntime from '@railmapgen/rmg-runtime';
 import { Events } from '../util/constants';
 import CookiesModal from './modal/cookies-modal';
 import { BrowserRouter } from 'react-router-dom';
+import MultiInstanceModal from './modal/multi-instance-modal';
 
 export default function AppRoot() {
     const { t } = useTranslation();
     const dispatch = useRootDispatch();
 
-    const isShowMenu = useRootSelector(state => state.app.isShowMenu);
+    const { isPrimary, isShowMenu } = useRootSelector(state => state.app);
     const [isCookiesModalOpen, setIsCookiesModalOpen] = useState(false);
 
     useEffect(() => {
@@ -31,7 +32,11 @@ export default function AppRoot() {
         rmgRuntime.event(Events.TOGGLE_NAV_MENU, {});
     };
 
-    return (
+    return isPrimary === false ? (
+        <RmgWindow>
+            <MultiInstanceModal />
+        </RmgWindow>
+    ) : (
         <BrowserRouter basename={import.meta.env.BASE_URL}>
             <RmgWindow className={isShowMenu ? 'show-menu' : ''}>
                 <IconButton

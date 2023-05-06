@@ -14,6 +14,7 @@
     "Appearance": "外观",
     "Close all tabs": "关闭所有标签页",
     "Close app": "关闭应用程式",
+    "Close current tab": "关闭当前标签页",
     "Close tab": "关闭标签页",
     "Contribution Wiki": "贡献者指南",
     "Contributors": "贡献者",
@@ -24,6 +25,7 @@
     "New tab": "新标签页",
     "Privacy": "隐私",
     "Privacy settings": "隐私设置",
+    "Rail Map Toolkit is opened in another window": "线路图工具包已在另一窗口中打开",
     "Refreshing is required for changes to take effect.": "刷新页面后变更才会生效",
     "Resource contributors": "资源贡献者",
     "Resource Administrator": "资源管理员",
@@ -36,5 +38,6 @@
     "Tab": "标签页",
     "Terms and conditions": "条款与细则",
     "Visit GitHub": "访问 GitHub",
-    "Welcome to Rail Map Toolkit": "欢迎使用线路图工具包"
+    "Welcome to Rail Map Toolkit": "欢迎使用线路图工具包",
+    "You cannot open multiple Rail Map Toolkit at the same time. Please close this window.": "您不能同时打开多个线路图工具包。请关闭当前窗口。"
 }

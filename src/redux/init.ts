@@ -1,7 +1,9 @@
 import { appEnablement, AppId, getAvailableApps, LocalStorageKey, WorkspaceTab } from '../util/constants';
-import { openApp, setActiveTab, setOpenedTabs } from './app/app-slice';
+import { openApp, setActiveTab, setIsPrimary, setOpenedTabs } from './app/app-slice';
 import { RootStore, startRootListening } from './index';
 import rmgRuntime from '@railmapgen/rmg-runtime';
+import { checkInstance } from './instance-checker';
+import { clearAllListeners } from '@reduxjs/toolkit';
 
 export const initOpenedTabs = (store: RootStore) => {
     try {
@@ -80,4 +82,11 @@ export default function initStore(store: RootStore) {
     });
 
     openSearchedApp(store);
+
+    checkInstance().then(isPrimary => {
+        store.dispatch(setIsPrimary(isPrimary));
+        if (!isPrimary) {
+            store.dispatch(clearAllListeners());
+        }
+    });
 }

@@ -18,6 +18,10 @@ class BroadcastChannel {
     onmessage() {
         // mocked
     }
+
+    addEventListener() {
+        // mocked
+    }
 }
 
 global.BroadcastChannel = BroadcastChannel as any;
