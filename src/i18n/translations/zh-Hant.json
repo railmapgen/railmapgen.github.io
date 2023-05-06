@@ -14,6 +14,7 @@
     "Appearance": "外觀",
     "Close all tabs": "關閉所有分頁",
     "Close app": "關閉應用程式",
+    "Close current tab": "關閉當前分頁",
     "Close tab": "關閉分頁",
     "Contribution Wiki": "貢獻者指南",
     "Contributors": "貢獻者",
@@ -24,6 +25,7 @@
     "New tab": "新分頁",
     "Privacy": "私隱",
     "Privacy settings": "私隱設定",
+    "Rail Map Toolkit is opened in another tab": "路綫圖工具組已於另一分頁中開啟",
     "Refreshing is required for changes to take effect.": "重新整理頁面後變更才會生效",
     "Resource contributors": "資源貢獻者",
     "Resource Administrator": "資源管理員",
@@ -36,5 +38,6 @@
     "Tab": "分頁",
     "Terms and conditions": "條款及細則",
     "Visit GitHub": "造訪 GitHub",
-    "Welcome to Rail Map Toolkit": "歡迎使用路綫圖工具組"
+    "Welcome to Rail Map Toolkit": "歡迎使用路綫圖工具組",
+    "You cannot open multiple Rail Map Toolkit at the same time.": "你不能同時開啟多個路綫圖工具組。"
 }

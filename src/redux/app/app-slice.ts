@@ -2,12 +2,14 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { appEnablement, AppId, WorkspaceTab } from '../../util/constants';
 
 export interface AppState {
+    isPrimary?: boolean;
     isShowMenu: boolean;
     openedTabs: WorkspaceTab[];
     activeTab?: string;
 }
 
 const initialState: AppState = {
+    isPrimary: undefined,
     isShowMenu: true,
     openedTabs: [],
     activeTab: undefined,
@@ -17,6 +19,10 @@ const appSlice = createSlice({
     name: 'app',
     initialState,
     reducers: {
+        setIsPrimary: (state, action: PayloadAction<boolean>) => {
+            state.isPrimary = action.payload;
+        },
+
         toggleMenu: state => {
             state.isShowMenu = !state.isShowMenu;
         },
@@ -97,6 +103,15 @@ const appSlice = createSlice({
     },
 });
 
-export const { toggleMenu, setOpenedTabs, updateTabUrl, setActiveTab, openApp, openAppInNew, closeTab, closeApp } =
-    appSlice.actions;
+export const {
+    setIsPrimary,
+    toggleMenu,
+    setOpenedTabs,
+    updateTabUrl,
+    setActiveTab,
+    openApp,
+    openAppInNew,
+    closeTab,
+    closeApp,
+} = appSlice.actions;
 export default appSlice.reducer;
