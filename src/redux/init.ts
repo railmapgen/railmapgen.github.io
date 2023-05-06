@@ -3,6 +3,7 @@ import { openApp, setActiveTab, setIsPrimary, setOpenedTabs } from './app/app-sl
 import { RootStore, startRootListening } from './index';
 import rmgRuntime from '@railmapgen/rmg-runtime';
 import { checkInstance } from './instance-checker';
+import { clearAllListeners } from '@reduxjs/toolkit';
 
 export const initOpenedTabs = (store: RootStore) => {
     try {
@@ -82,5 +83,10 @@ export default function initStore(store: RootStore) {
 
     openSearchedApp(store);
 
-    checkInstance().then(isPrimary => store.dispatch(setIsPrimary(isPrimary)));
+    checkInstance().then(isPrimary => {
+        store.dispatch(setIsPrimary(isPrimary));
+        if (!isPrimary) {
+            store.dispatch(clearAllListeners());
+        }
+    });
 }
