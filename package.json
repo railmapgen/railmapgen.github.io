@@ -10,8 +10,8 @@
         "@chakra-ui/react": "^2.6.1",
         "@emotion/react": "^11.11.0",
         "@emotion/styled": "^11.11.0",
-        "@railmapgen/rmg-components": "^7.1.2",
-        "@railmapgen/rmg-runtime": "^6.0.1",
+        "@railmapgen/rmg-components": "^7.1.4",
+        "@railmapgen/rmg-runtime": "^6.0.2",
         "@railmapgen/rmg-translate": "^2.0.3",
         "@reduxjs/toolkit": "^1.9.5",
         "framer-motion": "^10.12.8",
@@ -46,7 +46,7 @@
         "vitest": "^0.31.0"
     },
     "scripts": {
-        "dev": "vite",
+        "dev": "vite --host",
         "build": "tsc && vite build",
         "test": "vitest",
         "lint": "eslint ./src",

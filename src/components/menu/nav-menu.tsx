@@ -42,6 +42,7 @@ const style: SystemStyleObject = {
             // body
             flexDirection: 'column',
             flex: 1,
+            overflow: 'hidden',
 
             '& > div:first-of-type': {
                 flex: 1,
