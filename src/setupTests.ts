@@ -5,26 +5,13 @@ import infoJson from '../info.json';
 import { TextEncoder } from 'util';
 import { vi } from 'vitest';
 import crypto from 'node:crypto';
+import { MockBroadcastChannel } from './mock-broadcast-channel';
 
 // FIXME: any -> AnyAction?
 type DispatchExts = ThunkDispatch<RootState, void, any>;
 export const createMockRootStore = createMockStore<RootState, DispatchExts>(getDefaultMiddleware());
 
-class BroadcastChannel {
-    postMessage() {
-        // mocked
-    }
-
-    onmessage() {
-        // mocked
-    }
-
-    addEventListener() {
-        // mocked
-    }
-}
-
-global.BroadcastChannel = BroadcastChannel as any;
+vi.stubGlobal('BroadcastChannel', MockBroadcastChannel);
 
 const originalFetch = global.fetch;
 global.fetch = (...args) => {

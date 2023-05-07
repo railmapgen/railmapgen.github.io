@@ -13,9 +13,14 @@ const mockCallbacks = {
     onAboutOpen: vi.fn(),
 };
 
+let testMessagesReceived: any[] = [];
+const testChannel = new BroadcastChannel('rmg-runtime-channel');
+testChannel.onmessage = ev => testMessagesReceived.push(ev.data);
+
 describe('AppItemButton', () => {
     afterEach(() => {
         mockStore.clearActions();
+        testMessagesReceived = [];
     });
 
     it('Can toggle off nav menu in small screen when open app', () => {
@@ -33,6 +38,9 @@ describe('AppItemButton', () => {
         const actions = mockStore.getActions();
         expect(actions).toHaveLength(2);
         expect(actions).toContainEqual({ type: 'app/toggleMenu' });
+
+        expect(testMessagesReceived).toHaveLength(1);
+        expect(testMessagesReceived).toContainEqual(expect.objectContaining({ event: 'TOGGLE_NAV_MENU', data: false }));
     });
 
     it('Can keep nav menu open in large screen when open app', () => {
@@ -50,5 +58,7 @@ describe('AppItemButton', () => {
         const actions = mockStore.getActions();
         expect(actions).toHaveLength(1);
         expect(actions).not.toContainEqual({ type: 'app/toggleMenu' });
+
+        expect(testMessagesReceived).toHaveLength(0);
     });
 });

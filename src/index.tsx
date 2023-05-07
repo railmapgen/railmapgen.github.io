@@ -50,7 +50,6 @@ rmgRuntime.ready().then(() => {
     });
 
     rmgRuntime.onAppClose(app => {
-        console.log('here');
         const availableApps = getAvailableApps(rmgRuntime.getEnv());
         if (availableApps.includes(app as any)) {
             store.dispatch(closeApp(app as AppId));
