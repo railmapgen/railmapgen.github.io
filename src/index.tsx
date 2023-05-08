@@ -10,7 +10,6 @@ import { closeApp, openApp, updateTabUrl } from './redux/app/app-slice';
 import { AppId, Events, FRAME_ID_PREFIX, getAvailableApps } from './util/constants';
 import initStore from './redux/init';
 import { I18nextProvider } from 'react-i18next';
-import { checkInstance } from "./redux/instance-checker";
 
 let root: Root;
 const AppRoot = lazy(() => import('./components/app-root'));

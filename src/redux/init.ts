@@ -2,7 +2,7 @@ import { appEnablement, AppId, getAvailableApps, LocalStorageKey, WorkspaceTab }
 import { openApp, setActiveTab, setIsPrimary, setOpenedTabs } from './app/app-slice';
 import { RootStore, startRootListening } from './index';
 import rmgRuntime from '@railmapgen/rmg-runtime';
-import { checkInstance } from './instance-checker';
+import { checkInstance } from '../util/instance-checker';
 import { clearAllListeners } from '@reduxjs/toolkit';
 
 export const initOpenedTabs = (store: RootStore) => {

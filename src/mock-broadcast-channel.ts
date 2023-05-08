@@ -1,5 +1,5 @@
 type MessageEventHandler = (event: MessageEvent) => void;
-const channels: MockBroadcastChannel[] = [];
+let channels: MockBroadcastChannel[] = [];
 
 export class MockBroadcastChannel {
     name: string;
@@ -22,7 +22,7 @@ export class MockBroadcastChannel {
         this.eventHandlers = [handler];
     }
 
-    addEventHandler(type: string, handler: MessageEventHandler) {
+    addEventListener(type: string, handler: MessageEventHandler) {
         if (type === 'message') {
             this.eventHandlers.push(handler);
         }
@@ -35,3 +35,7 @@ export class MockBroadcastChannel {
         }
     }
 }
+
+export const closeAllChannels = () => {
+    channels = [];
+};
