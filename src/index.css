@@ -19,7 +19,7 @@ body {
     height: 100%;
     width: 100%;
     width: -webkit-fill-available;
-    padding-bottom: env(safe-area-inset-bottom, 20px);
+    padding: env(safe-area-inset-top, 20px) env(safe-area-inset-right, 20px) env(safe-area-inset-bottom, 20px) env(safe-area-inset-left, 20px);
 }
 
 div#root {
