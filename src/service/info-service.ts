@@ -27,3 +27,10 @@ export const getStatus = (): Promise<InfoStatus[]> => {
         })
     );
 };
+
+export const getLegacyContributors = async (repo: string): Promise<string[]> => {
+    const url = `/${repo}/legacy-contributor-list.txt`;
+    const res = await fetch(url);
+    const data = await res.text();
+    return data.split('\n');
+};

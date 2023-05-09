@@ -17,6 +17,8 @@ interface AppDetail {
     url: string;
     allowedEnvs: RmgEnv[];
     allowMultiInstances?: boolean;
+    showContributors?: boolean;
+    legacyContributors?: string;
 }
 
 export const appEnablement: Record<AppId, AppDetail> = {
@@ -35,6 +37,8 @@ export const appEnablement: Record<AppId, AppDetail> = {
         name: 'Palette',
         url: '/rmg-palette/',
         allowedEnvs: [RmgEnv.DEV, RmgEnv.UAT, RmgEnv.PRD],
+        showContributors: true,
+        legacyContributors: 'legacy-contributor-list.txt',
     },
     'rmg-palette-upload': {
         name: 'Palette - Upload',
@@ -50,6 +54,8 @@ export const appEnablement: Record<AppId, AppDetail> = {
         name: 'RMG Templates',
         url: '/rmg-templates/',
         allowedEnvs: [RmgEnv.DEV, RmgEnv.UAT, RmgEnv.PRD],
+        showContributors: true,
+        legacyContributors: 'legacy-contributor-list.txt',
     },
     'rmg-templates-upload': {
         name: 'RMG Templates - Upload',
@@ -60,6 +66,7 @@ export const appEnablement: Record<AppId, AppDetail> = {
         name: 'RMP Gallery',
         url: '/rmp-gallery/',
         allowedEnvs: [RmgEnv.DEV, RmgEnv.UAT, RmgEnv.PRD],
+        showContributors: true,
     },
     'seed-project': {
         name: 'Seed Project',
