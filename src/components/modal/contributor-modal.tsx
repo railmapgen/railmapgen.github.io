@@ -103,7 +103,6 @@ export default function ContributorModal(props: ContributorModalProps) {
                             <Avatar src="https://github.com/wongchito.png" size="lg" />
                             <TagLabel>
                                 <Text>Chito Wong</Text>
-                                <Text>Project initiator</Text>
                                 <Text>Author of Rail Map Toolkit platform</Text>
                                 <Text>Author of Rail Map Generator</Text>
                             </TagLabel>
@@ -114,7 +113,6 @@ export default function ContributorModal(props: ContributorModalProps) {
                                 <Text>thekingofcity</Text>
                                 <Text>Author of Rail Map Painter</Text>
                                 <Text>Author of RMG (Shanghai Metro style)</Text>
-                                <Text>Desktop version (Electron) maintainer</Text>
                             </TagLabel>
                         </Tag>
                     </VStack>
