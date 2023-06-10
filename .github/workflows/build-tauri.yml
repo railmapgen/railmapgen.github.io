@@ -19,6 +19,10 @@ jobs:
           node-version: 16
       - name: Install Rust stable
         uses: dtolnay/rust-toolchain@stable
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: './tauri -> target'
       - name: Install dependencies (ubuntu only)
         if: matrix.platform == 'ubuntu-20.04'
         run: |
@@ -34,14 +38,17 @@ jobs:
           git clone -b gh-pages --depth 1 https://github.com/railmapgen/rmp.git
           git clone -b gh-pages --depth 1 https://github.com/railmapgen/rmp-gallery.git
       - name: Get date
-        run: python s.py
+        run: python -c "from datetime import date;import os;f=open(os.getenv('GITHUB_ENV'), 'a');f.write('date='+date.today().strftime("%Y%m%d"));f.close()"
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           projectPath: tauri
-          tagName: v${{ env.date }}
+          tagName: tauri-${{ env.date }}
           releaseName: 'railmapgen.local'
-          releaseBody: 'They are automatically built and published.\n\n\As always, Rail Map Painter is able to run offline with these packages, but we do RECOMMEND using the online [GitHub Pages](https://railmapgen.github.io/rmp/) as it provides the latest features of Rail Map Painter. The packages below are only suitable for extreme situations where users are behind the notorious firewall or simply offline. All CDN resources are cached and bundled.'
-          releaseDraft: true
+          releaseBody: |
+            They are automatically built and published.
+
+            As always, Rail Map Painter is able to run offline with these packages, but we do RECOMMEND using the online [GitHub Pages](https://railmapgen.github.io/rmp/) as it provides the latest features of Rail Map Painter. The packages below are only suitable for extreme situations where users are behind the notorious firewall or simply offline. All CDN resources are cached and bundled.'
+          releaseDraft: false
           prerelease: false
