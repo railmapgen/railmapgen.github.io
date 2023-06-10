@@ -41,7 +41,7 @@ jobs:
         run: python -c "from datetime import date;import os;f=open(os.getenv('GITHUB_ENV'), 'a');f.write('date='+date.today().strftime('%Y%m%d'));f.close()"
       - name: Get version
         run: |
-          python3 -c "import urllib.request;import json;
+          python3 -c "import urllib.request;import json;import os;
           railmapgen=json.loads(urllib.request.urlopen('https://railmapgen.github.io/info.json').read())['version'];
           rmg=json.loads(urllib.request.urlopen('https://railmapgen.github.io/rmg/info.json').read())['version'];
           rmg_palette=json.loads(urllib.request.urlopen('https://railmapgen.github.io/rmg-palette/info.json').read())['version'];
