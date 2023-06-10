@@ -42,12 +42,12 @@ jobs:
       - name: Get version
         run: |
           python3 -c "import urllib.request;import json;
-          railmapgen=json.loads(urllib.request.urlopen("https://railmapgen.github.io/info.json").read())['version'];
-          rmg=json.loads(urllib.request.urlopen("https://railmapgen.github.io/rmg/info.json").read())['version'];
-          rmg_palette=json.loads(urllib.request.urlopen("https://railmapgen.github.io/rmg-palette/info.json").read())['version'];
-          rmg_templates=json.loads(urllib.request.urlopen("https://railmapgen.github.io/rmg-templates/info.json").read())['version'];
-          rmp=json.loads(urllib.request.urlopen("https://railmapgen.github.io/rmp/info.json").read())['version'];
-          rmp_gallery=json.loads(urllib.request.urlopen("https://railmapgen.github.io/rmp-gallery/info.json").read())['version'];
+          railmapgen=json.loads(urllib.request.urlopen('https://railmapgen.github.io/info.json').read())['version'];
+          rmg=json.loads(urllib.request.urlopen('https://railmapgen.github.io/rmg/info.json').read())['version'];
+          rmg_palette=json.loads(urllib.request.urlopen('https://railmapgen.github.io/rmg-palette/info.json').read())['version'];
+          rmg_templates=json.loads(urllib.request.urlopen('https://railmapgen.github.io/rmg-templates/info.json').read())['version'];
+          rmp=json.loads(urllib.request.urlopen('https://railmapgen.github.io/rmp/info.json').read())['version'];
+          rmp_gallery=json.loads(urllib.request.urlopen('https://railmapgen.github.io/rmp-gallery/info.json').read())['version'];
           f=open(os.getenv('GITHUB_ENV'), 'a');
           f.write('railmapgen='+railmapgen);
           f.write('rmg='+rmg);
