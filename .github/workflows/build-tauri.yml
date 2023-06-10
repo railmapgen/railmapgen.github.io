@@ -1,0 +1,44 @@
+name: Publish railmapgen.local
+on: [pull_request]
+
+jobs:
+  publish-tauri:
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [macos-latest, ubuntu-20.04, windows-latest]
+
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+      - name: install dependencies (ubuntu only)
+        if: matrix.platform == 'ubuntu-20.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf
+      - name: Pull gh-pages from github
+        run: |
+          git clone -b gh-pages --depth 1 https://github.com/railmapgen/railmapgen.github.io.git ui
+          cd ui
+          git clone -b gh-pages --depth 1 https://github.com/railmapgen/rmg.git
+          git clone -b gh-pages --depth 1 https://github.com/railmapgen/rmg-palette.git
+          git clone -b gh-pages --depth 1 https://github.com/railmapgen/rmg-templates.git
+          git clone -b gh-pages --depth 1 https://github.com/railmapgen/rmp.git
+          git clone -b gh-pages --depth 1 https://github.com/railmapgen/rmp-gallery.git
+      - uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          projectPath: tauri
+          releaseName: 'railmapgen.local'
+          releaseBody: 'These automatically built and published.\n\n\As always, Rail Map Painter is able to run offline with these packages, but we do RECOMMEND using the online [GitHub Pages](https://railmapgen.github.io/rmp/) as it provides the latest features of Rail Map Painter. The packages below are only suitable for extreme situations where users are behind the notorious firewall or simply offline. All CDN resources are cached and bundled.'
+          releaseDraft: true
+          prerelease: false
