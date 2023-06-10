@@ -34,10 +34,7 @@ jobs:
           git clone -b gh-pages --depth 1 https://github.com/railmapgen/rmp.git
           git clone -b gh-pages --depth 1 https://github.com/railmapgen/rmp-gallery.git
       - name: Get date
-        shell: pwsh
-        run: $Env:GITHUB_ENV = "date=" + $(Get-Date -Format "yyyyMMdd")
-      - name: Get date
-        run: echo $env
+        run: python -c "from datetime import date;import os;f=os.open(os.getenv('GITHUB_ENV'), 'a');f.write(f'date={date.today()};f.close()"
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
