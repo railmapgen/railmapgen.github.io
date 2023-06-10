@@ -39,16 +39,41 @@ jobs:
           git clone -b gh-pages --depth 1 https://github.com/railmapgen/rmp-gallery.git
       - name: Get date
         run: python -c "from datetime import date;import os;f=open(os.getenv('GITHUB_ENV'), 'a');f.write('date='+date.today().strftime('%Y%m%d'));f.close()"
+      - name: Get version
+        run: |
+          python3 -c "import urllib.request;import json;
+          railmapgen=json.loads(urllib.request.urlopen("https://railmapgen.github.io/info.json").read())['version'];
+          rmg=json.loads(urllib.request.urlopen("https://railmapgen.github.io/rmg/info.json").read())['version'];
+          rmg_palette=json.loads(urllib.request.urlopen("https://railmapgen.github.io/rmg-palette/info.json").read())['version'];
+          rmg_templates=json.loads(urllib.request.urlopen("https://railmapgen.github.io/rmg-templates/info.json").read())['version'];
+          rmp=json.loads(urllib.request.urlopen("https://railmapgen.github.io/rmp/info.json").read())['version'];
+          rmp_gallery=json.loads(urllib.request.urlopen("https://railmapgen.github.io/rmp-gallery/info.json").read())['version'];
+          f=open(os.getenv('GITHUB_ENV'), 'a');
+          f.write('railmapgen='+railmapgen);
+          f.write('rmg='+rmg);
+          f.write('rmg_palette='+rmg_palette);
+          f.write('rmg_templates='+rmg_templates);
+          f.write('rmp='+rmp);
+          f.write('rmp_gallery='+rmp_gallery);
+          f.close()"
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           projectPath: tauri
           tagName: tauri-${{ env.date }}
-          releaseName: 'railmapgen.local'
+          releaseName: railmapgen.local.${{ env.date }}
           releaseBody: |
-            They are automatically built and published.
+            These are automatically built and published offline Rail Map Toolkit packages.
 
-            As always, Rail Map Painter is able to run offline with these packages, but we do RECOMMEND using the online [GitHub Pages](https://railmapgen.github.io/rmp/) as it provides the latest features of Rail Map Painter. The packages below are only suitable for extreme situations where users are behind the notorious firewall or simply offline. All CDN resources are cached and bundled.'
+            Versions of each components:
+            - railmapgen.github.io ${{ env.railmapgen }}
+            - rmg ${{ env.rmg }}
+            - rmg-palette ${{ env.rmg_palette }}
+            - rmg-templates ${{ env.rmg_templates }}
+            - rmp ${{ env.rmp }}
+            - rmp-gallery ${{ env.rmp_gallery }}
+
+            Rail Map Toolkit is able to run offline with these packages, but we do RECOMMEND using the online [GitHub Pages](https://railmapgen.github.io/) as it provides the latest features of Rail Map Toolkit. The packages below are only suitable for extreme situations where users are behind the notorious firewall or simply offline. All resources are cached and bundled.
           releaseDraft: false
           prerelease: false
