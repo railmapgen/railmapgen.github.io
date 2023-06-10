@@ -6,7 +6,7 @@
     "distDir": "../ui"
   },
   "package": {
-    "productName": "railmapgen.local",
+    "productName": "railmapgen",
     "version": "0.1.0"
   },
   "tauri": {
