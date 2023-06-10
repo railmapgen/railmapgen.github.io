@@ -36,12 +36,14 @@ jobs:
       - name: Get date
         shell: pwsh
         run: $Env:GITHUB_ENV = "date=" + $(Get-Date -Format "yyyyMMdd")
+      - name: Get date
+        run: echo $env
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           projectPath: tauri
-          tagName: ${{ env.date }}
+          tagName: v${{ env.date }}
           releaseName: 'railmapgen.local'
           releaseBody: 'They are automatically built and published.\n\n\As always, Rail Map Painter is able to run offline with these packages, but we do RECOMMEND using the online [GitHub Pages](https://railmapgen.github.io/rmp/) as it provides the latest features of Rail Map Painter. The packages below are only suitable for extreme situations where users are behind the notorious firewall or simply offline. All CDN resources are cached and bundled.'
           releaseDraft: true
