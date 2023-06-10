@@ -49,12 +49,12 @@ jobs:
           rmp=json.loads(urllib.request.urlopen('https://railmapgen.github.io/rmp/info.json').read())['version'];
           rmp_gallery=json.loads(urllib.request.urlopen('https://railmapgen.github.io/rmp-gallery/info.json').read())['version'];
           f=open(os.getenv('GITHUB_ENV'), 'a');
-          f.write('railmapgen='+railmapgen);
-          f.write('rmg='+rmg);
-          f.write('rmg_palette='+rmg_palette);
-          f.write('rmg_templates='+rmg_templates);
-          f.write('rmp='+rmp);
-          f.write('rmp_gallery='+rmp_gallery);
+          f.write(f'railmapgen={railmapgen}\n');
+          f.write(f'rmg={rmg}\n');
+          f.write(f'rmg_palette={rmg_palette}\n');
+          f.write(f'rmg_templates={rmg_templates}\n');
+          f.write(f'rmp={rmp}\n');
+          f.write(f'rmp_gallery={rmp_gallery}\n');
           f.close()"
       - uses: tauri-apps/tauri-action@v0
         env:
