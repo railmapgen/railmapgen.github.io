@@ -1,9 +1,5 @@
 name: Publish railmapgen.local
-on:
-  workflow_dispatch:
-  schedule:
-    # Runs "at 00:00 on day-of-month 1" (see https://crontab.guru)
-    - cron: '0 0 1 * *'
+on: [pull_request]
 
 jobs:
   publish-tauri:
@@ -47,9 +43,9 @@ jobs:
           python-version: '3.10'
       - name: Get date
         run: python -c "from datetime import date;import os;f=open(os.getenv('GITHUB_ENV'), 'a');f.write('date='+date.today().strftime('%Y%m%d'));f.close()"
-      - name: Write date in package version
+      - name: Use date as version in tauri's package
         run: |
-          python -c "from datetime import date;import json;import os;
+          python -c "from datetime import date;import json;
           f=open('tauri/tauri.conf.json', 'r+');
           conf=json.load(f);
           d=date.today()
@@ -58,6 +54,15 @@ jobs:
           json.dump(conf,f,indent=2);
           f.truncate();
           f.close()"
+      - name: Update instance in info.json
+        run: |
+          python -c "import json;
+          f=open('ui/info.json', 'r+');info=json.load(f);info['instance']='Tauri';f.seek(0);json.dump(conf,f,indent=2);f.truncate();f.close()
+          f=open('ui/rmg/info.json', 'r+');info=json.load(f);info['instance']='Tauri';f.seek(0);json.dump(conf,f,indent=2);f.truncate();f.close()
+          f=open('ui/rmg-palette/info.json', 'r+');info=json.load(f);info['instance']='Tauri';f.seek(0);json.dump(conf,f,indent=2);f.truncate();f.close()
+          f=open('ui/rmg-templates/info.json', 'r+');info=json.load(f);info['instance']='Tauri';f.seek(0);json.dump(conf,f,indent=2);f.truncate();f.close()
+          f=open('ui/rmp/info.json', 'r+');info=json.load(f);info['instance']='Tauri';f.seek(0);json.dump(conf,f,indent=2);f.truncate();f.close()
+          f=open('ui/rmp-gallery/info.json', 'r+');info=json.load(f);info['instance']='Tauri';f.seek(0);json.dump(conf,f,indent=2);f.truncate();f.close()"
       - name: Get versions of each project
         run: |
           python3 -c "import urllib.request;import json;import os;
