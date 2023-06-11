@@ -39,7 +39,17 @@ jobs:
           git clone -b gh-pages --depth 1 https://github.com/railmapgen/rmp-gallery.git
       - name: Get date
         run: python -c "from datetime import date;import os;f=open(os.getenv('GITHUB_ENV'), 'a');f.write('date='+date.today().strftime('%Y%m%d'));f.close()"
-      - name: Get version
+      - name: Write date in package version
+        run: |
+          python -c "from datetime import date;import os;
+          f=open('tauri/tauri.conf.json', 'r+');
+          conf=json.load(f);
+          conf['package']['version']=date.today().strftime('%Y.%m.%d');
+          f.seek(0);
+          json.dump(conf,f,indent=2);
+          f.truncate();
+          f.close()"
+      - name: Get versions of each project
         run: |
           python3 -c "import urllib.request;import json;import os;
           railmapgen=json.loads(urllib.request.urlopen('https://railmapgen.github.io/info.json').read())['version'];
@@ -64,7 +74,7 @@ jobs:
           tagName: tauri-${{ env.date }}
           releaseName: railmapgen.local.${{ env.date }}
           releaseBody: |
-            These are automatically built and published offline Rail Map Toolkit packages.
+            Offline Rail Map Toolkit packages that are automatically built and published.
 
             Versions of each components:
             - railmapgen.github.io ${{ env.railmapgen }}
