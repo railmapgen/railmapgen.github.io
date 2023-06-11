@@ -37,6 +37,10 @@ jobs:
           git clone -b gh-pages --depth 1 https://github.com/railmapgen/rmg-templates.git
           git clone -b gh-pages --depth 1 https://github.com/railmapgen/rmp.git
           git clone -b gh-pages --depth 1 https://github.com/railmapgen/rmp-gallery.git
+      - name: Setup python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
       - name: Get date
         run: python -c "from datetime import date;import os;f=open(os.getenv('GITHUB_ENV'), 'a');f.write('date='+date.today().strftime('%Y%m%d'));f.close()"
       - name: Write date in package version
