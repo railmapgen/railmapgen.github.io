@@ -57,12 +57,12 @@ jobs:
       - name: Update instance in info.json
         run: |
           python -c "import json;
-          f=open('ui/info.json', 'r+');info=json.load(f);info['instance']='Tauri';f.seek(0);json.dump(conf,f,indent=2);f.truncate();f.close()
-          f=open('ui/rmg/info.json', 'r+');info=json.load(f);info['instance']='Tauri';f.seek(0);json.dump(conf,f,indent=2);f.truncate();f.close()
-          f=open('ui/rmg-palette/info.json', 'r+');info=json.load(f);info['instance']='Tauri';f.seek(0);json.dump(conf,f,indent=2);f.truncate();f.close()
-          f=open('ui/rmg-templates/info.json', 'r+');info=json.load(f);info['instance']='Tauri';f.seek(0);json.dump(conf,f,indent=2);f.truncate();f.close()
-          f=open('ui/rmp/info.json', 'r+');info=json.load(f);info['instance']='Tauri';f.seek(0);json.dump(conf,f,indent=2);f.truncate();f.close()
-          f=open('ui/rmp-gallery/info.json', 'r+');info=json.load(f);info['instance']='Tauri';f.seek(0);json.dump(conf,f,indent=2);f.truncate();f.close()"
+          f=open('ui/info.json', 'r+');info=json.load(f);info['instance']='Tauri';f.seek(0);json.dump(info,f,indent=2);f.truncate();f.close()
+          f=open('ui/rmg/info.json', 'r+');info=json.load(f);info['instance']='Tauri';f.seek(0);json.dump(info,f,indent=2);f.truncate();f.close()
+          f=open('ui/rmg-palette/info.json', 'r+');info=json.load(f);info['instance']='Tauri';f.seek(0);json.dump(info,f,indent=2);f.truncate();f.close()
+          f=open('ui/rmg-templates/info.json', 'r+');info=json.load(f);info['instance']='Tauri';f.seek(0);json.dump(info,f,indent=2);f.truncate();f.close()
+          f=open('ui/rmp/info.json', 'r+');info=json.load(f);info['instance']='Tauri';f.seek(0);json.dump(info,f,indent=2);f.truncate();f.close()
+          f=open('ui/rmp-gallery/info.json', 'r+');info=json.load(f);info['instance']='Tauri';f.seek(0);json.dump(info,f,indent=2);f.truncate();f.close()"
       - name: Get versions of each project
         run: |
           python3 -c "import urllib.request;import json;import os;
