@@ -41,7 +41,7 @@ jobs:
         run: python -c "from datetime import date;import os;f=open(os.getenv('GITHUB_ENV'), 'a');f.write('date='+date.today().strftime('%Y%m%d'));f.close()"
       - name: Write date in package version
         run: |
-          python -c "from datetime import date;import os;
+          python -c "from datetime import date;import json;import os;
           f=open('tauri/tauri.conf.json', 'r+');
           conf=json.load(f);
           conf['package']['version']=date.today().strftime('%Y.%m.%d');
@@ -77,12 +77,15 @@ jobs:
             Offline Rail Map Toolkit packages that are automatically built and published.
 
             Versions of each components:
-            - railmapgen.github.io ${{ env.railmapgen }}
-            - rmg ${{ env.rmg }}
-            - rmg-palette ${{ env.rmg_palette }}
-            - rmg-templates ${{ env.rmg_templates }}
-            - rmp ${{ env.rmp }}
-            - rmp-gallery ${{ env.rmp_gallery }}
+            
+            | Component          | Version                  |
+            |--------------------|--------------------------|
+            |railmapgen.github.io|`${{ env.railmapgen }}`   |
+            |rmg                 |`${{ env.rmg }}`          |
+            |rmg-palette         |`${{ env.rmg_palette }}`  |
+            |rmg-templates       |`${{ env.rmg_templates }}`|
+            |rmp                 |`${{ env.rmp }}`          |
+            |rmp-gallery         |`${{ env.rmp_gallery }}`  |
 
             Rail Map Toolkit is able to run offline with these packages, but we do RECOMMEND using the online [GitHub Pages](https://railmapgen.github.io/) as it provides the latest features of Rail Map Toolkit. The packages below are only suitable for extreme situations where users are behind the notorious firewall or simply offline. All resources are cached and bundled.
           releaseDraft: false
