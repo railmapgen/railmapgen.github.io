@@ -1,0 +1,104 @@
+name: Publish railmapgen.local
+on: [pull_request]
+
+jobs:
+  publish-tauri:
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [macos-latest, ubuntu-20.04, windows-latest]
+
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: './tauri -> target'
+      - name: Install dependencies (ubuntu only)
+        if: matrix.platform == 'ubuntu-20.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf
+      - name: Pull gh-pages from github
+        run: |
+          git clone -b gh-pages --depth 1 https://github.com/railmapgen/railmapgen.github.io.git ui
+          cd ui
+          git clone -b gh-pages --depth 1 https://github.com/railmapgen/rmg.git
+          git clone -b gh-pages --depth 1 https://github.com/railmapgen/rmg-palette.git
+          git clone -b gh-pages --depth 1 https://github.com/railmapgen/rmg-templates.git
+          git clone -b gh-pages --depth 1 https://github.com/railmapgen/rmp.git
+          git clone -b gh-pages --depth 1 https://github.com/railmapgen/rmp-gallery.git
+      - name: Setup python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - name: Get date
+        run: python -c "from datetime import date;import os;f=open(os.getenv('GITHUB_ENV'), 'a');f.write('date='+date.today().strftime('%Y%m%d'));f.close()"
+      - name: Use date as version in tauri's package
+        run: |
+          python -c "from datetime import date;import json;
+          f=open('tauri/tauri.conf.json', 'r+');
+          conf=json.load(f);
+          d=date.today()
+          conf['package']['version']=f'{d.year-2000}.{d.month}.{d.day}';
+          f.seek(0);
+          json.dump(conf,f,indent=2);
+          f.truncate();
+          f.close()"
+      - name: Update instance in info.json
+        run: |
+          python -c "import json;
+          f=open('ui/info.json', 'r+');info=json.load(f);info['instance']='Tauri';f.seek(0);json.dump(info,f,indent=2);f.truncate();f.close()
+          f=open('ui/rmg/info.json', 'r+');info=json.load(f);info['instance']='Tauri';f.seek(0);json.dump(info,f,indent=2);f.truncate();f.close()
+          f=open('ui/rmg-palette/info.json', 'r+');info=json.load(f);info['instance']='Tauri';f.seek(0);json.dump(info,f,indent=2);f.truncate();f.close()
+          f=open('ui/rmg-templates/info.json', 'r+');info=json.load(f);info['instance']='Tauri';f.seek(0);json.dump(info,f,indent=2);f.truncate();f.close()
+          f=open('ui/rmp/info.json', 'r+');info=json.load(f);info['instance']='Tauri';f.seek(0);json.dump(info,f,indent=2);f.truncate();f.close()
+          f=open('ui/rmp-gallery/info.json', 'r+');info=json.load(f);info['instance']='Tauri';f.seek(0);json.dump(info,f,indent=2);f.truncate();f.close()"
+      - name: Get versions of each project
+        run: |
+          python3 -c "import urllib.request;import json;import os;
+          railmapgen=json.loads(urllib.request.urlopen('https://railmapgen.github.io/info.json').read())['version'];
+          rmg=json.loads(urllib.request.urlopen('https://railmapgen.github.io/rmg/info.json').read())['version'];
+          rmg_palette=json.loads(urllib.request.urlopen('https://railmapgen.github.io/rmg-palette/info.json').read())['version'];
+          rmg_templates=json.loads(urllib.request.urlopen('https://railmapgen.github.io/rmg-templates/info.json').read())['version'];
+          rmp=json.loads(urllib.request.urlopen('https://railmapgen.github.io/rmp/info.json').read())['version'];
+          rmp_gallery=json.loads(urllib.request.urlopen('https://railmapgen.github.io/rmp-gallery/info.json').read())['version'];
+          f=open(os.getenv('GITHUB_ENV'), 'a');
+          f.write(f'railmapgen={railmapgen}\n');
+          f.write(f'rmg={rmg}\n');
+          f.write(f'rmg_palette={rmg_palette}\n');
+          f.write(f'rmg_templates={rmg_templates}\n');
+          f.write(f'rmp={rmp}\n');
+          f.write(f'rmp_gallery={rmp_gallery}\n');
+          f.close()"
+      - uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          projectPath: tauri
+          tagName: tauri-${{ env.date }}
+          releaseName: railmapgen.local.${{ env.date }}
+          releaseBody: |
+            Offline Rail Map Toolkit packages that are automatically built and published.
+
+            | Component          | Version                  |
+            |--------------------|--------------------------|
+            |railmapgen.github.io|`${{ env.railmapgen }}`   |
+            |rmg                 |`${{ env.rmg }}`          |
+            |rmg-palette         |`${{ env.rmg_palette }}`  |
+            |rmg-templates       |`${{ env.rmg_templates }}`|
+            |rmp                 |`${{ env.rmp }}`          |
+            |rmp-gallery         |`${{ env.rmp_gallery }}`  |
+
+            Rail Map Toolkit is able to run offline with these packages, but we do RECOMMEND using the online [GitHub Pages](https://railmapgen.github.io/) as it provides the latest features of Rail Map Toolkit. The packages below are only suitable for extreme situations where users are behind the notorious firewall or simply offline. All resources are cached and bundled.
+          releaseDraft: false
+          prerelease: false
