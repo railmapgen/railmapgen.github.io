@@ -1,5 +1,9 @@
 name: Publish railmapgen.local
-on: [pull_request]
+on:
+  workflow_dispatch:
+  schedule:
+    # Runs "at 00:00 on day-of-month 1" (see https://crontab.guru)
+    - cron: '0 0 1 * *'
 
 jobs:
   publish-tauri:
@@ -45,7 +49,6 @@ jobs:
         run: python -c "from datetime import date;import os;f=open(os.getenv('GITHUB_ENV'), 'a');f.write('date='+date.today().strftime('%Y%m%d'));f.close()"
       - name: Write date in package version
         run: |
-          python -V
           python -c "from datetime import date;import json;import os;
           f=open('tauri/tauri.conf.json', 'r+');
           conf=json.load(f);
