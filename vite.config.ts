@@ -5,13 +5,13 @@ import react from '@vitejs/plugin-react';
 import legacy from '@vitejs/plugin-legacy';
 
 const rmgProxies = [
-    '/rmg',
-    '/rmp',
-    '/rmg-palette',
-    '/rmg-components',
-    '/rmg-templates',
-    '/seed-project',
-    '/rmg-translate',
+    '/rmg/',
+    '/rmp/',
+    '/rmg-palette/',
+    '/rmg-components/',
+    '/rmg-templates/',
+    '/seed-project/',
+    '/rmg-translate/',
 ].reduce<Record<string, ProxyOptions>>(
     (acc, cur) => ({
         ...acc,

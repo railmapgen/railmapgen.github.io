@@ -42,7 +42,7 @@ export const appEnablement: Record<AppId, AppDetail> = {
     },
     'rmg-palette-upload': {
         name: 'Palette - Upload',
-        url: '/rmg-palette/new',
+        url: '/rmg-palette/#/new',
         allowedEnvs: [RmgEnv.DEV, RmgEnv.UAT, RmgEnv.PRD],
     },
     'rmg-components': {
@@ -59,7 +59,7 @@ export const appEnablement: Record<AppId, AppDetail> = {
     },
     'rmg-templates-upload': {
         name: 'RMG Templates - Upload',
-        url: '/rmg-templates/new',
+        url: '/rmg-templates/#/new',
         allowedEnvs: [RmgEnv.DEV, RmgEnv.UAT, RmgEnv.PRD],
     },
     'rmp-gallery': {
