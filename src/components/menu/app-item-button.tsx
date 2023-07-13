@@ -63,7 +63,10 @@ export default function AppItemButton(props: AppItemProps) {
     const { activeTab, openedTabs } = useRootSelector(state => state.app);
 
     const appDetail = appEnablement[appId];
-    const displayName = appDetail.name.split(' - ').map(t).join(' - ');
+    const displayName = appDetail.name
+        .split(' - ')
+        .map(n => t(n))
+        .join(' - ');
 
     const isAppRunning = openedTabs.some(tab => tab.app === appId);
     const isAppActive = !appDetail.allowMultiInstances && openedTabs.find(tab => tab.id === activeTab)?.app === appId;

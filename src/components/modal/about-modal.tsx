@@ -39,7 +39,14 @@ export default function AboutModal(props: AboutModalProps) {
             <ModalOverlay />
             <ModalContent>
                 <ModalHeader>
-                    {t('About') + ' ' + (appId ? appEnablement[appId].name.split(' - ').map(t).join(' - ') : '')}
+                    {t('About') +
+                        ' ' +
+                        (appId
+                            ? appEnablement[appId].name
+                                  .split(' - ')
+                                  .map(n => t(n))
+                                  .join(' - ')
+                            : '')}
                     <Badge ml={1}>{version}</Badge>
                 </ModalHeader>
                 <ModalCloseButton />
