@@ -2,7 +2,13 @@ import React from 'react';
 import { Box, Button, Flex, Heading, SystemStyleObject } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 import { RmgFields, RmgFieldsField, useRmgColourMode } from '@railmapgen/rmg-components';
-import { LANGUAGE_NAMES, LanguageCode, SUPPORTED_LANGUAGES, SupportedLanguageCode } from '@railmapgen/rmg-translate';
+import {
+    LANGUAGE_NAMES,
+    OPTIONAL_LANGUAGES,
+    OptionalLanguageCode,
+    SUPPORTED_LANGUAGES,
+    SupportedLanguageCode,
+} from '@railmapgen/rmg-translate';
 import rmgRuntime, { RmgInstance } from '@railmapgen/rmg-runtime';
 import { Events, getMirrorUrl, mirrorName } from '../../util/constants';
 
@@ -44,15 +50,24 @@ export default function SettingsSection() {
             type: 'select',
             label: t('Language'),
             value: rmgRuntime.getLanguage(),
-            options: SUPPORTED_LANGUAGES.reduce(
-                (acc, cur) => ({
-                    ...acc,
-                    [cur]: LANGUAGE_NAMES[cur][cur],
-                }),
-                {} as Record<SupportedLanguageCode, string>
-            ),
+            options: {
+                [t('Main languages')]: SUPPORTED_LANGUAGES.reduce(
+                    (acc, cur) => ({
+                        ...acc,
+                        [cur]: LANGUAGE_NAMES[cur][cur],
+                    }),
+                    {} as Record<SupportedLanguageCode, string>
+                ),
+                [t('Other languages')]: OPTIONAL_LANGUAGES.reduce(
+                    (acc, cur) => ({
+                        ...acc,
+                        [cur]: LANGUAGE_NAMES[cur][cur],
+                    }),
+                    {} as Record<OptionalLanguageCode, string>
+                ),
+            },
             onChange: value => {
-                const language = value as SupportedLanguageCode;
+                const language = value as SupportedLanguageCode | OptionalLanguageCode;
                 rmgRuntime.setLanguage(language);
                 rmgRuntime.getI18nInstance().changeLanguage(language);
                 rmgRuntime.event(Events.CHANGE_LANGUAGE, { language });
