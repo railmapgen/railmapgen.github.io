@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import {
     Avatar,
     Button,
@@ -136,12 +136,12 @@ export default function ContributorModal(props: ContributorModalProps) {
                     {Object.entries(appEnablement)
                         .filter(([_, detail]) => detail.showContributors)
                         .map(([appId, detail]) => (
-                            <>
+                            <Fragment key={appId}>
                                 <Heading as="h6" size="xs" mt={5} mb={2}>
                                     {t(detail.name)}
                                 </Heading>
                                 <ContributorAvatarWall key={appId} appId={appId as AppId} />
-                            </>
+                            </Fragment>
                         ))}
 
                     <Text as="i">{t('Notes: Contributors are sorted by number of commits and commit time.')}</Text>
