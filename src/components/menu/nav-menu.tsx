@@ -1,11 +1,12 @@
 import React from 'react';
-import { Flex, Heading, SystemStyleObject } from '@chakra-ui/react';
+import { Alert, AlertDescription, AlertIcon, Flex, Heading, Link, SystemStyleObject } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
-import rmgRuntime from '@railmapgen/rmg-runtime';
+import rmgRuntime, { RmgInstance } from '@railmapgen/rmg-runtime';
 import { RmgEnvBadge } from '@railmapgen/rmg-components';
 import AppsSection from './apps-section';
 import SettingsSection from './settings-section';
 import NavMenuFooter from './nav-menu-footer';
+import { useSearchParams } from 'react-router-dom';
 
 const style: SystemStyleObject = {
     flexShrink: 0,
@@ -29,7 +30,7 @@ const style: SystemStyleObject = {
         h: '100%',
         w: { base: '100vw', sm: 360 },
 
-        '& > div:nth-of-type(1)': {
+        '& .nav-menu__header': {
             // header
             flex: 0,
             flexDirection: 'row',
@@ -38,7 +39,7 @@ const style: SystemStyleObject = {
             pl: 12,
         },
 
-        '& > div:nth-of-type(2)': {
+        '& .nav-menu__body': {
             // body
             flexDirection: 'column',
             flex: 1,
@@ -50,24 +51,60 @@ const style: SystemStyleObject = {
             },
         },
     },
+
+    '& .chakra-alert': {
+        flexGrow: 0,
+        pl: 3,
+        pr: 2,
+        py: 2,
+
+        '& a': {
+            fontWeight: 'bold',
+            textDecoration: 'underline',
+
+            '&:hover, &:focus': {
+                textDecoration: 'none',
+            },
+        },
+    },
 };
 
 export default function NavMenu() {
     const { t } = useTranslation();
 
+    const [searchParams] = useSearchParams();
+    const prdUrl =
+        (rmgRuntime.getInstance() === RmgInstance.GITLAB
+            ? 'https://railmapgen.gitlab.io/'
+            : 'https://railmapgen.github.io/') +
+        '?' +
+        searchParams.toString();
+
     return (
         <Flex as="section" sx={style}>
             <Flex>
                 {/* menu-header */}
-                <Flex>
+                <Flex className="nav-menu__header">
                     <Heading as="h4" size="md">
                         {t('Rail Map Toolkit')}
                     </Heading>
                     <RmgEnvBadge environment={rmgRuntime.getEnv()} version={rmgRuntime.getAppVersion()} />
                 </Flex>
 
+                {rmgRuntime.getEnv() !== 'PRD' && (
+                    <Alert status="warning">
+                        <AlertIcon />
+                        <AlertDescription>
+                            {t("You're currently viewing a testing environment.")}{' '}
+                            <Link href={prdUrl} isExternal>
+                                {t('Back to production environment')}
+                            </Link>
+                        </AlertDescription>
+                    </Alert>
+                )}
+
                 {/* menu-body */}
-                <Flex>
+                <Flex className="nav-menu__body">
                     <AppsSection />
                     <SettingsSection />
                 </Flex>

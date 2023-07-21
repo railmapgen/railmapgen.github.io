@@ -12,6 +12,7 @@
     "About": "关于",
     "Allow cookies to help improve our website": "允许用 Cookies 帮助改进本网站",
     "Appearance": "外观",
+    "Back to production environment": "返回生产环境",
     "Close all tabs": "关闭所有标签页",
     "Close app": "关闭应用程式",
     "Close current tab": "关闭当前标签页",
@@ -43,5 +44,6 @@
     "Unable to load contributors": "无法加载贡献者名单",
     "Visit GitHub": "访问 GitHub",
     "Welcome to Rail Map Toolkit": "欢迎使用线路图工具包",
-    "You cannot open multiple Rail Map Toolkit at the same time. Please close this window.": "您不能同时打开多个线路图工具包。请关闭当前窗口。"
+    "You cannot open multiple Rail Map Toolkit at the same time. Please close this window.": "您不能同时打开多个线路图工具包。请关闭当前窗口。",
+    "You're currently viewing a testing environment.": "您正在浏览测试环境。"
 }
