@@ -8,6 +8,8 @@ import SettingsSection from './settings-section';
 import NavMenuFooter from './nav-menu-footer';
 import { useSearchParams } from 'react-router-dom';
 
+const NAV_MENU_WIDTH = 420;
+
 const style: SystemStyleObject = {
     flexShrink: 0,
     flexDirection: 'column',
@@ -20,15 +22,15 @@ const style: SystemStyleObject = {
     zIndex: 100,
 
     '.show-menu &': {
-        maxW: { base: '100%', sm: 360 },
-        w: { base: '100%', sm: 'unset' },
+        maxW: { base: '100%', md: NAV_MENU_WIDTH },
+        w: { base: '100%', md: 'unset' },
         visibility: 'initial',
     },
 
     '& > div': {
         flexDirection: 'column',
         h: '100%',
-        w: { base: '100vw', sm: 360 },
+        w: { base: '100vw', md: NAV_MENU_WIDTH },
 
         '& .nav-menu__header': {
             // header
