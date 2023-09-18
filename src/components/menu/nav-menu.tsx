@@ -1,7 +1,7 @@
 import React from 'react';
 import { Alert, AlertDescription, AlertIcon, Flex, Heading, Link, SystemStyleObject } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
-import rmgRuntime, { RmgInstance } from '@railmapgen/rmg-runtime';
+import rmgRuntime from '@railmapgen/rmg-runtime';
 import { RmgEnvBadge } from '@railmapgen/rmg-components';
 import AppsSection from './apps-section';
 import SettingsSection from './settings-section';
@@ -76,9 +76,7 @@ export default function NavMenu() {
 
     const [searchParams] = useSearchParams();
     const prdUrl =
-        (rmgRuntime.getInstance() === RmgInstance.GITLAB
-            ? 'https://railmapgen.gitlab.io/'
-            : 'https://railmapgen.github.io/') +
+        (rmgRuntime.getInstance() === 'GitLab' ? 'https://railmapgen.gitlab.io/' : 'https://railmapgen.github.io/') +
         '?' +
         searchParams.toString();
 

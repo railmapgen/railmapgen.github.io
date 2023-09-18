@@ -16,7 +16,7 @@ const rmgProxies = [
     (acc, cur) => ({
         ...acc,
         [cur]: {
-            target: 'https://uat-railmapgen.github.io',
+            target: 'https://railmapgen.github.io',
             changeOrigin: true,
             secure: false,
         },

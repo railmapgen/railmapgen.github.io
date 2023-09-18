@@ -37,7 +37,7 @@ export default function SettingsSection() {
     };
 
     const instance = rmgRuntime.getInstance();
-    const switchInstance = instance === RmgInstance.GITHUB ? RmgInstance.GITLAB : RmgInstance.GITHUB;
+    const switchInstance: RmgInstance = instance === 'GitHub' ? 'GitLab' : 'GitHub';
 
     const handleSwitchMirror = () => {
         const mirrorUrl = getMirrorUrl(switchInstance, rmgRuntime.getEnv());

@@ -102,14 +102,13 @@ export const mirrorName: Record<RmgInstance, string> = {
     GitHub: 'GitHub Pages',
     GitLab: 'GitLab Pages',
     Bitbucket: 'Bitbucket Cloud',
+    Tauri: 'Tauri Offline',
     localhost: 'localhost',
     unknown: 'unknown',
 };
 
 export const getMirrorUrl = (instance: RmgInstance, env: RmgEnv) => {
-    return `https://${env === RmgEnv.PRD ? '' : 'uat-'}railmapgen.${
-        instance === RmgInstance.GITLAB ? 'gitlab' : 'github'
-    }.io`;
+    return `https://${env === RmgEnv.PRD ? '' : 'uat-'}railmapgen.${instance === 'GitLab' ? 'gitlab' : 'github'}.io`;
 };
 
 export enum Events {
