@@ -28,6 +28,15 @@ export class MockBroadcastChannel {
         }
     }
 
+    removeEventListener(type: string, handler: MessageEventHandler) {
+        if (type === 'message') {
+            const index = this.eventHandlers.findIndex(h => h === handler);
+            if (index >= 0) {
+                this.eventHandlers.splice(index, 1);
+            }
+        }
+    }
+
     close() {
         const channelIndex = channels.findIndex(channel => channel === this);
         if (channelIndex >= 0) {

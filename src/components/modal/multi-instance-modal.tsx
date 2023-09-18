@@ -1,5 +1,7 @@
-import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from '@chakra-ui/react';
+import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
+import { restartRMT } from '../../util/instance-checker';
+import { useState } from 'react';
 
 const emptyCallback = () => {
     // do nothing
@@ -7,6 +9,16 @@ const emptyCallback = () => {
 
 export default function MultiInstanceModal() {
     const { t } = useTranslation();
+
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleRestart = () => {
+        setIsLoading(true);
+        restartRMT();
+        setTimeout(() => {
+            window.location.reload();
+        }, 1000);
+    };
 
     return (
         <Modal isOpen={true} onClose={emptyCallback}>
@@ -17,7 +29,9 @@ export default function MultiInstanceModal() {
                 </ModalBody>
 
                 <ModalFooter>
-                    {/*<Button onClick={() => window.close()}>{t('Close current tab')}</Button>*/}
+                    <Button colorScheme="primary" onClick={handleRestart} isLoading={isLoading}>
+                        {t('Restart RMT in this window')}
+                    </Button>
                 </ModalFooter>
             </ModalContent>
         </Modal>

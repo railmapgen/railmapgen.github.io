@@ -47,4 +47,24 @@ describe('InstanceChecker', () => {
         expect(messagesReceived).toHaveLength(1);
         expect(messagesReceived).toContain('ping');
     });
+
+    it('Can terminate current session when received RESTART', async () => {
+        const { default: store } = await import('./../redux');
+        const { checkInstance } = await import('./instance-checker');
+
+        // assert isPrimary
+        const isPrimary = await checkInstance();
+        expect(isPrimary).toBeTruthy();
+
+        // start test channel
+        const messagesReceived: any[] = [];
+        const testChannel = new BroadcastChannel('rmt-instance-checker');
+        testChannel.onmessage = ev => messagesReceived.push(ev.data);
+
+        // test channel is not primary
+        testChannel.postMessage('restart');
+
+        // session is terminated
+        expect(store.getState().app.isTerminated).toBeTruthy();
+    });
 });

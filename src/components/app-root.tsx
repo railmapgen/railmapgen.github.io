@@ -12,12 +12,13 @@ import { Events } from '../util/constants';
 import CookiesModal from './modal/cookies-modal';
 import { BrowserRouter } from 'react-router-dom';
 import MultiInstanceModal from './modal/multi-instance-modal';
+import TerminationModal from './modal/termination-modal';
 
 export default function AppRoot() {
     const { t } = useTranslation();
     const dispatch = useRootDispatch();
 
-    const { isPrimary, isShowMenu } = useRootSelector(state => state.app);
+    const { isPrimary, isTerminated, isShowMenu } = useRootSelector(state => state.app);
     const [isCookiesModalOpen, setIsCookiesModalOpen] = useState(false);
 
     useEffect(() => {
@@ -32,7 +33,11 @@ export default function AppRoot() {
         rmgRuntime.event(Events.TOGGLE_NAV_MENU, {});
     };
 
-    return isPrimary === false ? (
+    return isTerminated ? (
+        <RmgWindow>
+            <TerminationModal />
+        </RmgWindow>
+    ) : isPrimary === false ? (
         <RmgWindow>
             <MultiInstanceModal />
         </RmgWindow>

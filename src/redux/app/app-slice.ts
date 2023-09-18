@@ -3,13 +3,13 @@ import { appEnablement, AppId, WorkspaceTab } from '../../util/constants';
 
 export interface AppState {
     isPrimary?: boolean;
+    isTerminated?: boolean;
     isShowMenu: boolean;
     openedTabs: WorkspaceTab[];
     activeTab?: string;
 }
 
 const initialState: AppState = {
-    isPrimary: undefined,
     isShowMenu: true,
     openedTabs: [],
     activeTab: undefined,
@@ -21,6 +21,10 @@ const appSlice = createSlice({
     reducers: {
         setIsPrimary: (state, action: PayloadAction<boolean>) => {
             state.isPrimary = action.payload;
+        },
+
+        terminateSession: state => {
+            state.isTerminated = true;
         },
 
         toggleMenu: state => {
@@ -105,6 +109,7 @@ const appSlice = createSlice({
 
 export const {
     setIsPrimary,
+    terminateSession,
     toggleMenu,
     setOpenedTabs,
     updateTabUrl,
