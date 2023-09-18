@@ -115,6 +115,13 @@ export default function ContributorModal(props: ContributorModalProps) {
                                 <Text>Author of RMG (Shanghai Metro style)</Text>
                             </TagLabel>
                         </Tag>
+                        <Tag size="lg" onClick={() => window.open('https://github.com/langonginc', '_blank')}>
+                            <Avatar src="https://github.com/langonginc.png" size="lg" />
+                            <TagLabel>
+                                <Text>5+1</Text>
+                                <Text>Author of RMP2RMG conversion</Text>
+                            </TagLabel>
+                        </Tag>
                     </VStack>
 
                     <Heading as="h5" size="sm">
