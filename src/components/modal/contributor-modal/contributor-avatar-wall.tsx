@@ -1,9 +1,9 @@
-import { AppId } from '../../util/constants';
+import { AppId } from '../../../util/constants';
 import { Alert, AlertIcon, Flex, SystemStyleObject, Wrap, WrapItem } from '@chakra-ui/react';
 import { RmgLoader } from '@railmapgen/rmg-components';
 import GithubAvatar from './github-avatar';
 import { useTranslation } from 'react-i18next';
-import useContributors from '../hook/use-contributors';
+import useContributors from '../../hook/use-contributors';
 
 const styles: SystemStyleObject = {
     position: 'relative',
