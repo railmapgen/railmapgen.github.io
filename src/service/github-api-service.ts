@@ -1,3 +1,4 @@
+const BASE_URL = 'https://api.github.com/repos/railmapgen';
 const RESPONSE_CACHE: Record<string, any> = {};
 
 export const cachedFetch = async (url: string, init?: RequestInit): Promise<any> => {
@@ -12,8 +13,20 @@ export const cachedFetch = async (url: string, init?: RequestInit): Promise<any>
 };
 
 export const getContributorsByPage = async (repo: string, page: number, signal?: AbortSignal): Promise<string[]> => {
-    const url = `https://api.github.com/repos/railmapgen/${repo}/contributors`;
+    const url = `${BASE_URL}/${repo}/contributors`;
     const searchParams = new URLSearchParams({ per_page: '100', page: page.toString() });
     const data = await cachedFetch(url + '?' + searchParams.toString(), { signal });
     return data.map((d: Record<string, any>) => d.login);
+};
+
+export const getDonatorsByPage = async (repo: string, page: number, signal?: AbortSignal): Promise<string[]> => {
+    const url = `${BASE_URL}/${repo}/issues`;
+    const searchParams = new URLSearchParams({
+        state: 'closed',
+        labels: 'donation',
+        per_page: '100',
+        page: page.toString(),
+    });
+    const data = await cachedFetch(url + '?' + searchParams.toString(), { signal });
+    return data.map((d: Record<string, any>) => d.user?.login);
 };
