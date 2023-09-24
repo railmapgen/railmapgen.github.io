@@ -1,6 +1,7 @@
 import store from '../redux';
 import { terminateSession } from '../redux/app/app-slice';
 import { clearAllListeners } from '@reduxjs/toolkit';
+import { wait } from './utils';
 
 const CHANNEL_NAME = 'rmt-instance-checker';
 const PING = 'ping';
@@ -42,7 +43,7 @@ export const checkInstance = async (): Promise<boolean> => {
 
     let retry = 5;
     while (retry--) {
-        await waitFor(500);
+        await wait(500);
         if (!isPrimary) {
             return false;
         }
@@ -50,10 +51,4 @@ export const checkInstance = async (): Promise<boolean> => {
 
     console.log('[rmt] This instance is primary.');
     return true;
-};
-
-const waitFor = (ms: number) => {
-    return new Promise(resolve => {
-        setTimeout(resolve, ms, `Timeout after ${ms / 1000} seconds`);
-    });
 };
