@@ -14,6 +14,7 @@ import { useTranslation } from 'react-i18next';
 import DevTeamSection from './dev-team-section';
 import ResourceAdminSection from './resource-admin-section';
 import ResourceContributorSection from './resource-contributor-section';
+import DonatorSection from './donator-section';
 
 const styles: SystemStyleObject = {
     bg: 'inherit',
@@ -42,6 +43,7 @@ export default function ContributorModal(props: ContributorModalProps) {
 
                 <ModalBody sx={styles}>
                     <DevTeamSection />
+                    <DonatorSection />
                     <ResourceAdminSection />
                     <ResourceContributorSection />
                 </ModalBody>

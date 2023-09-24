@@ -19,6 +19,7 @@ interface AppDetail {
     allowMultiInstances?: boolean;
     showContributors?: boolean;
     legacyContributors?: string;
+    showDonators?: boolean;
 }
 
 export const appEnablement: Record<AppId, AppDetail> = {
@@ -67,6 +68,7 @@ export const appEnablement: Record<AppId, AppDetail> = {
         url: '/rmp-gallery/',
         allowedEnvs: [RmgEnv.DEV, RmgEnv.UAT, RmgEnv.PRD],
         showContributors: true,
+        showDonators: true,
     },
     'seed-project': {
         name: 'Seed Project',
