@@ -28,9 +28,9 @@ export const getStatus = (): Promise<InfoStatus[]> => {
     );
 };
 
-export const getLegacyContributors = async (repo: string): Promise<string[]> => {
+export const getLegacyContributors = async (repo: string, signal?: AbortSignal): Promise<string[]> => {
     const url = `/${repo}/legacy-contributor-list.txt`;
-    const res = await fetch(url);
+    const res = await fetch(url, { signal });
     const data = await res.text();
     return data.split('\n');
 };

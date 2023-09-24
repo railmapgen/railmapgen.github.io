@@ -1,10 +1,9 @@
 import { AppId } from '../../util/constants';
 import { Alert, AlertIcon, Flex, SystemStyleObject, Wrap, WrapItem } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
 import { RmgLoader } from '@railmapgen/rmg-components';
-import { getAllContributors } from '../../util/avatar-utils';
 import GithubAvatar from './github-avatar';
 import { useTranslation } from 'react-i18next';
+import useContributors from '../hook/use-contributors';
 
 const styles: SystemStyleObject = {
     position: 'relative',
@@ -29,34 +28,27 @@ export default function ContributorAvatarWall(props: ContributorAvatarWallProps)
     const { appId } = props;
     const { t } = useTranslation();
 
-    const [contributors, setContributors] = useState<string[]>();
-    const [isLoading, setIsLoading] = useState(true);
-
-    useEffect(() => {
-        getAllContributors(appId)
-            .then(setContributors)
-            .finally(() => {
-                setIsLoading(false);
-            });
-    }, []);
+    const { contributors, isLoading, isError } = useContributors(appId);
 
     return (
         <Flex sx={styles}>
-            {isLoading ? (
-                <RmgLoader isIndeterminate />
-            ) : contributors ? (
+            {isLoading && <RmgLoader isIndeterminate />}
+
+            {isError && (
+                <Alert status="warning">
+                    <AlertIcon />
+                    {t('Unable to load contributors')}
+                </Alert>
+            )}
+
+            {!isError && contributors && (
                 <Wrap spacing={1.5}>
-                    {contributors.map(contributor => (
+                    {contributors?.map(contributor => (
                         <WrapItem key={contributor}>
                             <GithubAvatar login={contributor} urlRepo={appId} size="sm" />
                         </WrapItem>
                     ))}
                 </Wrap>
-            ) : (
-                <Alert status="warning">
-                    <AlertIcon />
-                    {t('Unable to load contributors')}
-                </Alert>
             )}
         </Flex>
     );
