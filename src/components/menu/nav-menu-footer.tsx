@@ -2,7 +2,7 @@ import { Button, Divider, Flex, Grid, GridItem, Link } from '@chakra-ui/react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MdPeople, MdPrivacyTip, MdSchool } from 'react-icons/md';
-import ContributorModal from '../modal/contributor-modal';
+import ContributorModal from '../modal/contributor-modal/contributor-modal';
 import PrivacyModal from '../modal/privacy-modal';
 import { IoLogoSlack } from 'react-icons/io5';
 
