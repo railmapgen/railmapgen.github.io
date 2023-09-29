@@ -28,5 +28,7 @@ export const getDonatorsByPage = async (repo: string, page: number, signal?: Abo
         page: page.toString(),
     });
     const data = await cachedFetch(url + '?' + searchParams.toString(), { signal });
-    return data.map((d: Record<string, any>) => d.user?.login);
+    return data
+        .filter((d: Record<string, any>) => d.state_reason === 'completed')
+        .map((d: Record<string, any>) => d.user?.login);
 };

@@ -1,6 +1,6 @@
-import { appEnablement } from '../../util/constants';
 import { useEffect, useRef, useState } from 'react';
 import { getDonatorsByPage } from '../../service/github-api-service';
+import { appEnablement } from '../../util/constants';
 import useAppendingSet from './use-appending-set';
 
 export default function useDonators() {
