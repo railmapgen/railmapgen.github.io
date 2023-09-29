@@ -1,10 +1,10 @@
-import { RmgSection, RmgSectionHeader } from '@railmapgen/rmg-components';
 import { Heading, Wrap, WrapItem } from '@chakra-ui/react';
-import GithubAvatar from './github-avatar';
+import { RmgSection, RmgSectionHeader } from '@railmapgen/rmg-components';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import GithubAvatar from './github-avatar';
 
-const RESOURCE_ADMIN = ['52PD', 'linchen1965'];
+const RESOURCE_ADMIN = ['52PD', 'linchen1965', '28yfang'];
 
 export default function ResourceAdminSection() {
     const { t } = useTranslation();
