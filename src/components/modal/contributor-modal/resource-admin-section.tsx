@@ -4,7 +4,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import GithubAvatar from './github-avatar';
 
-const RESOURCE_ADMIN = ['52PD', 'linchen1965', '28yfang'];
+const RESOURCE_ADMIN = ['52PD', 'linchen1965', '28yfang', 'Windows-Taskmgr'];
 
 export default function ResourceAdminSection() {
     const { t } = useTranslation();
