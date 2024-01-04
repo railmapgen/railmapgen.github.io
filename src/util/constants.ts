@@ -122,6 +122,7 @@ export enum Events {
     CHANGE_LANGUAGE = 'CHANGE_LANGUAGE',
 
     SWITCH_MIRROR = 'SWITCH_MIRROR',
+    DOWNLOAD_APP = 'DOWNLOAD_APP',
 }
 
 export const FRAME_ID_PREFIX = 'rmg-home:frame-';
