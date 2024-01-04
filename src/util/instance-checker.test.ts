@@ -1,35 +1,37 @@
-import { closeAllChannels } from '../mock-broadcast-channel';
-import { vi } from 'vitest';
+import { waitFor } from '@testing-library/react';
+
+const testChannel = new BroadcastChannel('rmt-instance-checker');
+testChannel.onmessage = ev => messagesReceived.push(ev.data);
+let messagesReceived: any[] = [];
 
 describe('InstanceChecker', () => {
     beforeEach(() => {
         vi.resetModules();
-        closeAllChannels();
+        testChannel.onmessage = ev => messagesReceived.push(ev.data);
+    });
+
+    afterEach(() => {
+        messagesReceived = [];
     });
 
     it('Can emit PONG event if instance is primary', async () => {
-        const { checkInstance } = await import('./instance-checker');
+        const { checkInstance, closeChannel } = await import('./instance-checker');
 
         // assert isPrimary
         const isPrimary = await checkInstance();
         expect(isPrimary).toBeTruthy();
 
-        // start test channel
-        const messagesReceived: any[] = [];
-        const testChannel = new BroadcastChannel('rmt-instance-checker');
-        testChannel.onmessage = ev => messagesReceived.push(ev.data);
-
         // test channel is not primary
         testChannel.postMessage('ping');
         await Promise.resolve();
-        expect(messagesReceived).toHaveLength(1);
+        await waitFor(() => expect(messagesReceived).toHaveLength(1));
         expect(messagesReceived).toContain('pong');
+
+        closeChannel();
     });
 
     it('Can check current instance is secondary when received PONG', async () => {
         // start test channel
-        const messagesReceived: any[] = [];
-        const testChannel = new BroadcastChannel('rmt-instance-checker');
         testChannel.onmessage = ev => {
             messagesReceived.push(ev.data);
 
@@ -39,32 +41,31 @@ describe('InstanceChecker', () => {
         };
 
         // assert not isPrimary
-        const { checkInstance } = await import('./instance-checker');
+        const { checkInstance, closeChannel } = await import('./instance-checker');
         const isPrimary = await checkInstance();
         expect(isPrimary).toBeFalsy();
 
         // test channel received ping
-        expect(messagesReceived).toHaveLength(1);
+        await waitFor(() => expect(messagesReceived).toHaveLength(1));
         expect(messagesReceived).toContain('ping');
+
+        closeChannel();
     });
 
     it('Can terminate current session when received RESTART', async () => {
         const { default: store } = await import('./../redux');
-        const { checkInstance } = await import('./instance-checker');
+        const { checkInstance, closeChannel } = await import('./instance-checker');
 
         // assert isPrimary
         const isPrimary = await checkInstance();
         expect(isPrimary).toBeTruthy();
 
-        // start test channel
-        const messagesReceived: any[] = [];
-        const testChannel = new BroadcastChannel('rmt-instance-checker');
-        testChannel.onmessage = ev => messagesReceived.push(ev.data);
-
         // test channel is not primary
         testChannel.postMessage('restart');
 
         // session is terminated
-        expect(store.getState().app.isTerminated).toBeTruthy();
+        await waitFor(() => expect(store.getState().app.isTerminated).toBeTruthy());
+
+        closeChannel();
     });
 });

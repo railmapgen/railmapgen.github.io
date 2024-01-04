@@ -52,3 +52,7 @@ export const checkInstance = async (): Promise<boolean> => {
     console.log('[rmt] This instance is primary.');
     return true;
 };
+
+export const closeChannel = () => {
+    channel.close();
+};

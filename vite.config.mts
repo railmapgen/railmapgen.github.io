@@ -4,26 +4,6 @@ import { defineConfig, ProxyOptions } from 'vite';
 import react from '@vitejs/plugin-react';
 import legacy from '@vitejs/plugin-legacy';
 
-const rmgProxies = [
-    '/rmg/',
-    '/rmp/',
-    '/rmg-palette/',
-    '/rmg-components/',
-    '/rmg-templates/',
-    '/seed-project/',
-    '/rmg-translate/',
-].reduce<Record<string, ProxyOptions>>(
-    (acc, cur) => ({
-        ...acc,
-        [cur]: {
-            target: 'https://railmapgen.github.io',
-            changeOrigin: true,
-            secure: false,
-        },
-    }),
-    {}
-);
-
 // https://vitejs.dev/config
 export default defineConfig({
     base: '/',
@@ -38,7 +18,7 @@ export default defineConfig({
         rollupOptions: {
             output: {
                 manualChunks: {
-                    react: ['react', 'react-dom', 'react-router-dom', '@reduxjs/toolkit', 'react-i18next'],
+                    react: ['react', 'react-dom', 'react-router-dom', '@reduxjs/toolkit', 'react-redux', 'react-i18next'],
                     chakra: ['@chakra-ui/react', '@emotion/react', '@emotion/styled', 'framer-motion', 'react-icons'],
                 },
             },
@@ -46,7 +26,11 @@ export default defineConfig({
     },
     server: {
         proxy: {
-            ...rmgProxies,
+            '^(/rmg/|/rmp/|/rmg-palette/|/rmg-template/|/rmg-templates/|/rmp-gallery/|/rmg-components/|/rmg-translate/|/seed-project/)': {
+                target: 'https://railmapgen.github.io',
+                changeOrigin: true,
+                secure: false,
+            },
         },
     },
     test: {

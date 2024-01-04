@@ -1,5 +1,5 @@
-import rootReducer from './index';
-import { createMockRootStore } from '../setupTests';
+import rootReducer, { RootStore } from './index';
+import { createTestStore } from '../test-utils';
 import { LocalStorageKey, WorkspaceTab } from '../util/constants';
 import { initActiveTab, initOpenedTabs } from './init';
 
@@ -12,39 +12,37 @@ const mockOpenedTabs: WorkspaceTab[] = [
 
 describe('ReduxInit', () => {
     describe('ReduxInit - initOpenedTabs', () => {
-        const mockStore = createMockRootStore({ ...realStore });
+        let mockStore: RootStore;
+
+        beforeEach(() => {
+            mockStore = createTestStore();
+        });
 
         afterEach(() => {
             window.localStorage.clear();
-            mockStore.clearActions();
         });
 
         it('Can parse openedTabs from localStorage as expected', () => {
             window.localStorage.setItem(LocalStorageKey.OPENED_TABS, JSON.stringify(mockOpenedTabs));
             initOpenedTabs(mockStore);
 
-            const actions = mockStore.getActions();
-            expect(actions).toHaveLength(1);
-            expect(actions).toContainEqual(expect.objectContaining({ type: 'app/setOpenedTabs' }));
-            expect(actions[0].payload).toHaveLength(2);
-        });
-
-        it('Can parse legacy openedApps from localStorage as expected', () => {
-            window.localStorage.setItem('rmg-home__openedApps', JSON.stringify(['rmg', 'rmg-palette']));
-            initOpenedTabs(mockStore);
-
-            const actions = mockStore.getActions();
-            expect(actions).toHaveLength(1);
-            expect(actions).toContainEqual(expect.objectContaining({ type: 'app/setOpenedTabs' }));
-            expect(actions[0].payload).toHaveLength(2);
+            expect(mockStore.getState().app.openedTabs).toHaveLength(2);
         });
     });
 
     describe('ReduxInit - initActiveTab', () => {
-        const mockStore = createMockRootStore({ ...realStore, app: { ...realStore.app, openedTabs: mockOpenedTabs } });
+        let mockStore: RootStore;
+
+        beforeEach(() => {
+            mockStore = createTestStore({
+                app: {
+                    ...realStore.app,
+                    openedTabs: mockOpenedTabs,
+                },
+            });
+        });
 
         afterEach(() => {
-            mockStore.clearActions();
             window.localStorage.clear();
         });
 
@@ -52,17 +50,13 @@ describe('ReduxInit', () => {
             window.localStorage.setItem(LocalStorageKey.ACTIVE_TAB, '02');
             initActiveTab(mockStore);
 
-            const actions = mockStore.getActions();
-            expect(actions).toHaveLength(1);
-            expect(actions).toContainEqual({ type: 'app/setActiveTab', payload: '02' });
+            expect(mockStore.getState().app.activeTab).toBe('02');
         });
 
         it('Can set first tab if no activeTab defined in localStorage', () => {
             initActiveTab(mockStore);
 
-            const actions = mockStore.getActions();
-            expect(actions).toHaveLength(1);
-            expect(actions).toContainEqual({ type: 'app/setActiveTab', payload: '01' });
+            expect(mockStore.getState().app.activeTab).toBe('01');
         });
     });
 });

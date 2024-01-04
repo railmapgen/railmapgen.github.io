@@ -1,12 +1,10 @@
-import { render } from '../../test-utils';
+import { createTestStore, render } from '../../test-utils';
 import AppItemButton from './app-item-button';
-import rootReducer from '../../redux';
-import { createMockRootStore } from '../../setupTests';
+import { RootStore } from '../../redux';
 import { fireEvent, screen } from '@testing-library/react';
-import { vi } from 'vitest';
+import { userEvent } from '@testing-library/user-event';
 
-const realStore = rootReducer.getState();
-const mockStore = createMockRootStore({ ...realStore });
+let mockStore: RootStore;
 
 const mockMatchMedia = vi.fn();
 const mockCallbacks = {
@@ -18,12 +16,15 @@ const testChannel = new BroadcastChannel('rmg-runtime-channel');
 testChannel.onmessage = ev => testMessagesReceived.push(ev.data);
 
 describe('AppItemButton', () => {
+    beforeEach(async () => {
+        mockStore = createTestStore();
+    });
+
     afterEach(() => {
-        mockStore.clearActions();
         testMessagesReceived = [];
     });
 
-    it('Can toggle off nav menu in small screen when open app', () => {
+    it('Can toggle off nav menu in small screen when open app', async () => {
         window.matchMedia = mockMatchMedia.mockImplementation(media => ({
             media,
             matches: false,
@@ -31,13 +32,13 @@ describe('AppItemButton', () => {
             addEventListener: () => {},
             removeEventListener: () => {},
         }));
+
+        const user = userEvent.setup();
         render(<AppItemButton appId={'rmg'} {...mockCallbacks} />, { store: mockStore });
 
-        fireEvent.click(screen.getByRole('button', { name: 'Rail Map Generator' }));
+        await user.click(screen.getByRole('button', { name: 'Rail Map Generator' }));
 
-        const actions = mockStore.getActions();
-        expect(actions).toHaveLength(2);
-        expect(actions).toContainEqual({ type: 'app/toggleMenu' });
+        expect(mockStore.getState().app.isShowMenu).toBeFalsy();
 
         expect(testMessagesReceived).toHaveLength(1);
         expect(testMessagesReceived).toContainEqual(expect.objectContaining({ event: 'TOGGLE_NAV_MENU', data: false }));
@@ -55,9 +56,7 @@ describe('AppItemButton', () => {
 
         fireEvent.click(screen.getByRole('button', { name: 'Rail Map Generator' }));
 
-        const actions = mockStore.getActions();
-        expect(actions).toHaveLength(1);
-        expect(actions).not.toContainEqual({ type: 'app/toggleMenu' });
+        expect(mockStore.getState().app.isShowMenu).toBeTruthy();
 
         expect(testMessagesReceived).toHaveLength(0);
     });

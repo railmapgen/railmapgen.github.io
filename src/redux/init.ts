@@ -1,4 +1,4 @@
-import { appEnablement, AppId, getAvailableApps, LocalStorageKey, WorkspaceTab } from '../util/constants';
+import { appEnablement, getAvailableApps, LocalStorageKey, WorkspaceTab } from '../util/constants';
 import { openApp, setActiveTab, setIsPrimary, setOpenedTabs } from './app/app-slice';
 import { RootStore, startRootListening } from './index';
 import rmgRuntime from '@railmapgen/rmg-runtime';
@@ -9,7 +9,6 @@ export const initOpenedTabs = (store: RootStore) => {
     try {
         // opened tabs
         const openedTabsString = window.localStorage.getItem(LocalStorageKey.OPENED_TABS);
-        const openedAppsString = window.localStorage.getItem('rmg-home__openedApps');
 
         if (openedTabsString) {
             const openedTabs = JSON.parse(openedTabsString);
@@ -18,14 +17,6 @@ export const initOpenedTabs = (store: RootStore) => {
                 store.dispatch(setOpenedTabs(nextOpenTabs));
             } else {
                 console.warn('initOpenedTabs():: Cannot parse invalid opened tabs state from local storage');
-            }
-        } else if (openedAppsString) {
-            const openedApps = JSON.parse(openedAppsString);
-            if (Array.isArray(openedApps) && typeof openedApps[0] === 'string') {
-                const nextOpenedApps = (openedApps as AppId[]).map(app => ({ id: crypto.randomUUID(), app }));
-                store.dispatch(setOpenedTabs(nextOpenedApps));
-            } else {
-                console.warn('initOpenedTabs():: cannot parse invalid opened apps state from local storage');
             }
         }
     } catch (e) {
