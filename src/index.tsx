@@ -1,4 +1,5 @@
 import './index.css';
+import './inject-seo';
 import i18n from './i18n/config';
 import React, { lazy, StrictMode } from 'react';
 import { Provider } from 'react-redux';
