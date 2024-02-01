@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Heading, HStack, SystemStyleObject } from '@chakra-ui/react';
+import { Box, Flex, Heading, SystemStyleObject } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 import { RmgFields, RmgFieldsField, useRmgColourMode } from '@railmapgen/rmg-components';
 import {
@@ -8,9 +8,8 @@ import {
     SUPPORTED_LANGUAGES,
     SupportedLanguageCode,
 } from '@railmapgen/rmg-translate';
-import rmgRuntime, { RmgInstance } from '@railmapgen/rmg-runtime';
-import { Events, getMirrorUrl, mirrorName } from '../../util/constants';
-import { MdOpenInNew } from 'react-icons/md';
+import rmgRuntime from '@railmapgen/rmg-runtime';
+import { Events } from '../../util/constants';
 
 const style: SystemStyleObject = {
     flexDirection: 'column',
@@ -24,10 +23,6 @@ const style: SystemStyleObject = {
     '& > div': {
         px: 2,
     },
-
-    '& .chakra-stack > button': {
-        flex: 1,
-    },
 };
 
 export default function SettingsSection() {
@@ -38,30 +33,6 @@ export default function SettingsSection() {
         light: t('Light'),
         dark: t('Dark'),
         system: t('System'),
-    };
-
-    const instance = rmgRuntime.getInstance();
-    const switchInstance: RmgInstance = instance === 'GitHub' ? 'GitLab' : 'GitHub';
-
-    const handleSwitchMirror = () => {
-        const mirrorUrl = getMirrorUrl(switchInstance, rmgRuntime.getEnv());
-        window.open(mirrorUrl, '_blank');
-        rmgRuntime.event(Events.SWITCH_MIRROR, { mirrorUrl });
-    };
-
-    const handleDownloadApp = () => {
-        const d = new Date();
-        const tag = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}01`;
-        const ver = `${String(d.getFullYear()).slice(-2)}.${d.getMonth() + 1}.1`;
-        const platform = navigator.platform;
-        const suffix = platform.includes('Linux')
-            ? 'amd64.deb'
-            : platform.includes('Mac')
-              ? 'x64.dmg'
-              : 'x64-setup.exe';
-        const url = `https://mirror.ghproxy.com/https://github.com/railmapgen/railmapgen.github.io/releases/download/tauri-${tag}/railmapgen_${ver}_${suffix}`;
-        window.open(url, '_blank');
-        rmgRuntime.event(Events.DOWNLOAD_APP, {});
     };
 
     const fields: RmgFieldsField[] = [
@@ -109,15 +80,6 @@ export default function SettingsSection() {
 
             <Box>
                 <RmgFields fields={fields} />
-                <HStack>
-                    <Button variant="outline" size="xs" rightIcon={<MdOpenInNew />} onClick={handleSwitchMirror}>
-                        {t('Switch to') + ' ' + mirrorName[switchInstance]}
-                    </Button>
-
-                    <Button variant="outline" size="xs" rightIcon={<MdOpenInNew />} onClick={handleDownloadApp}>
-                        {t('Download offline app')}
-                    </Button>
-                </HStack>
             </Box>
         </Flex>
     );

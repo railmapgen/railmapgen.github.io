@@ -7,6 +7,7 @@ import AppsSection from './apps-section';
 import SettingsSection from './settings-section';
 import NavMenuFooter from './nav-menu-footer';
 import { useSearchParams } from 'react-router-dom';
+import MirrorsSection from './mirrors-section';
 
 const NAV_MENU_WIDTH = 420;
 
@@ -107,6 +108,7 @@ export default function NavMenu() {
                 <Flex className="nav-menu__body">
                     <AppsSection />
                     <SettingsSection />
+                    <MirrorsSection />
                 </Flex>
 
                 {/* menu-footer */}

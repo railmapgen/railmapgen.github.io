@@ -100,17 +100,17 @@ export enum LocalStorageKey {
     ACTIVE_TAB = 'rmg-home__activeTab',
 }
 
-export const mirrorName: Record<RmgInstance, string> = {
-    GitHub: 'GitHub Pages',
-    GitLab: 'GitLab Pages',
-    Gitee: 'Gitee Pages',
-    Tauri: 'Tauri Offline',
-    localhost: 'localhost',
-    unknown: 'unknown',
-};
-
-export const getMirrorUrl = (instance: RmgInstance, env: RmgEnv) => {
-    return `https://${env === RmgEnv.PRD ? '' : 'uat-'}railmapgen.${instance === 'GitLab' ? 'gitlab' : 'github'}.io`;
+export const MIRRORS: RmgInstance[] = [
+    'GitHub',
+    'GitLab',
+    // 'Gitee',
+    'Tauri',
+];
+export const MIRROR_URLS: Partial<Record<RmgInstance, string>> = {
+    GitHub: 'https://railmapgen.github.io',
+    GitLab: 'https://railmapgen.gitlab.io',
+    Gitee: 'https://railmapgen.gitee.io',
+    Tauri: 'https://mirror.ghproxy.com/https://github.com/railmapgen/railmapgen.github.io/releases/download',
 };
 
 export enum Events {
