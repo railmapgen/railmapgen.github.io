@@ -54,7 +54,7 @@ export default function MirrorsSection() {
                 {t('Other mirrors')}
             </Heading>
 
-            <Grid templateColumns={`repeat(${MIRRORS.length}, auto)`} gap={2}>
+            <Grid templateColumns={`repeat(${availableMirrors.length}, auto)`} gap={2}>
                 {availableMirrors.map(mirror => (
                     <GridItem key={mirror}>
                         <Button
