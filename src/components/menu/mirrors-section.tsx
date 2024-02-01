@@ -51,7 +51,7 @@ export default function MirrorsSection() {
     return (
         <Flex sx={styles}>
             <Heading as="h4" size="md">
-                {t('Other mirrors')}
+                {t('More mirrors')}
             </Heading>
 
             <Grid templateColumns={`repeat(${availableMirrors.length}, auto)`} gap={2}>
