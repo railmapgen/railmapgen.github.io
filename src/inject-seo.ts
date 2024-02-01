@@ -1,8 +1,6 @@
-const injectCanonicalLink = () => {
-    const link = document.createElement('link');
-    link.rel = 'canonical';
-    link.href = window.location.origin;
-    document.head.appendChild(link);
+const overrideCanonicalLink = () => {
+    const link = document.querySelector<HTMLLinkElement>('link[rel="canonical"]')!;
+    link.setAttribute('href', window.location.origin);
 };
 
-injectCanonicalLink();
+overrideCanonicalLink();
