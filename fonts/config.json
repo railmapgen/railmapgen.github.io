@@ -1,88 +1,98 @@
 {
-    "GenYoMin TW": [
-        {
-            "source": "local(GenYoMinTW-SB)"
-        },
-        [
+    "GenYoMin TW": {
+        "displayName": "源樣明體",
+        "url": "https://github.com/ButTaiwan/genyo-font",
+        "configs": [
             {
-                "source": "url('/fonts/GenYoMin-TW-SB.4E.woff2')",
-                "descriptors": {
-                    "unicodeRange": "U+4E00-4FFF"
-                }
+                "source": "local(GenYoMinTW-SB)"
             },
-            {
-                "source": "url('/fonts/GenYoMin-TW-SB.50.woff2')",
-                "descriptors": {
-                    "unicodeRange": "U+5000-57FF"
+            [
+                {
+                    "source": "url('/fonts/GenYoMin-TW-SB.4E.woff2')",
+                    "descriptors": {
+                        "unicodeRange": "U+4E00-4FFF"
+                    }
+                },
+                {
+                    "source": "url('/fonts/GenYoMin-TW-SB.50.woff2')",
+                    "descriptors": {
+                        "unicodeRange": "U+5000-57FF"
+                    }
+                },
+                {
+                    "source": "url('/fonts/GenYoMin-TW-SB.58.woff2')",
+                    "descriptors": {
+                        "unicodeRange": "U+5800-5FFF"
+                    }
+                },
+                {
+                    "source": "url('/fonts/GenYoMin-TW-SB.60.woff2')",
+                    "descriptors": {
+                        "unicodeRange": "U+6000-67FF"
+                    }
+                },
+                {
+                    "source": "url('/fonts/GenYoMin-TW-SB.68.woff2')",
+                    "descriptors": {
+                        "unicodeRange": "U+6800-6FFF"
+                    }
+                },
+                {
+                    "source": "url('/fonts/GenYoMin-TW-SB.70.woff2')",
+                    "descriptors": {
+                        "unicodeRange": "U+7000-77FF"
+                    }
+                },
+                {
+                    "source": "url('/fonts/GenYoMin-TW-SB.78.woff2')",
+                    "descriptors": {
+                        "unicodeRange": "U+7800-7FFF"
+                    }
+                },
+                {
+                    "source": "url('/fonts/GenYoMin-TW-SB.80.woff2')",
+                    "descriptors": {
+                        "unicodeRange": "U+8000-87FF"
+                    }
+                },
+                {
+                    "source": "url('/fonts/GenYoMin-TW-SB.88.woff2')",
+                    "descriptors": {
+                        "unicodeRange": "U+8800-8FFF"
+                    }
+                },
+                {
+                    "source": "url('/fonts/GenYoMin-TW-SB.90.woff2')",
+                    "descriptors": {
+                        "unicodeRange": "U+9000-97FF"
+                    }
+                },
+                {
+                    "source": "url('/fonts/GenYoMin-TW-SB.98.woff2')",
+                    "descriptors": {
+                        "unicodeRange": "U+9800-9FFF"
+                    }
                 }
-            },
+            ]
+        ]
+    },
+    "Myriad Pro": {
+        "url": "https://fonts.adobe.com/fonts/myriad",
+        "configs": [
             {
-                "source": "url('/fonts/GenYoMin-TW-SB.58.woff2')",
-                "descriptors": {
-                    "unicodeRange": "U+5800-5FFF"
-                }
-            },
-            {
-                "source": "url('/fonts/GenYoMin-TW-SB.60.woff2')",
-                "descriptors": {
-                    "unicodeRange": "U+6000-67FF"
-                }
-            },
-            {
-                "source": "url('/fonts/GenYoMin-TW-SB.68.woff2')",
-                "descriptors": {
-                    "unicodeRange": "U+6800-6FFF"
-                }
-            },
-            {
-                "source": "url('/fonts/GenYoMin-TW-SB.70.woff2')",
-                "descriptors": {
-                    "unicodeRange": "U+7000-77FF"
-                }
-            },
-            {
-                "source": "url('/fonts/GenYoMin-TW-SB.78.woff2')",
-                "descriptors": {
-                    "unicodeRange": "U+7800-7FFF"
-                }
-            },
-            {
-                "source": "url('/fonts/GenYoMin-TW-SB.80.woff2')",
-                "descriptors": {
-                    "unicodeRange": "U+8000-87FF"
-                }
-            },
-            {
-                "source": "url('/fonts/GenYoMin-TW-SB.88.woff2')",
-                "descriptors": {
-                    "unicodeRange": "U+8800-8FFF"
-                }
-            },
-            {
-                "source": "url('/fonts/GenYoMin-TW-SB.90.woff2')",
-                "descriptors": {
-                    "unicodeRange": "U+9000-97FF"
-                }
-            },
-            {
-                "source": "url('/fonts/GenYoMin-TW-SB.98.woff2')",
-                "descriptors": {
-                    "unicodeRange": "U+9800-9FFF"
-                }
+                "source": "local(MyriadPro-Regular)"
             }
         ]
-    ],
-    "Myriad Pro": [
-        {
-            "source": "local(MyriadPro-Regular)"
-        }
-    ],
-    "Vegur": [
-        {
-            "source": "local(Vegur-Regular)"
-        },
-        {
-            "source": "url('/fonts/Vegur-Regular.otf')"
-        }
-    ]
+    },
+    "Vegur": {
+        "url": "https://tipotype.com/underground/vegur/",
+        "configs": [
+            {
+                "source": "local(Vegur-Regular)"
+            },
+            {
+                "source": "url('/fonts/Vegur-Regular.otf')"
+            }
+        ]
+    }
 }
