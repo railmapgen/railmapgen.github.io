@@ -94,5 +94,16 @@
                 "source": "url('/fonts/Vegur-Bold.ttf')"
             }
         ]
+    },
+    "Vegur-Regular": {
+        "url": "https://tipotype.com/underground/vegur/",
+        "configs": [
+            {
+                "source": "local(Vegur-Regular)"
+            },
+            {
+                "source": "url('/fonts/Vegur-Regular.ttf')"
+            }
+        ]
     }
 }
