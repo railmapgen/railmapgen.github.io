@@ -1,13 +1,13 @@
-import React from 'react';
 import { Alert, AlertDescription, AlertIcon, Flex, Heading, Link, SystemStyleObject } from '@chakra-ui/react';
-import { useTranslation } from 'react-i18next';
-import rmgRuntime from '@railmapgen/rmg-runtime';
 import { RmgEnvBadge } from '@railmapgen/rmg-components';
-import AppsSection from './apps-section';
-import SettingsSection from './settings-section';
-import NavMenuFooter from './nav-menu-footer';
+import rmgRuntime from '@railmapgen/rmg-runtime';
+import { useTranslation } from 'react-i18next';
+import { GiFireworkRocket } from "react-icons/gi";
 import { useSearchParams } from 'react-router-dom';
+import AppsSection from './apps-section';
 import MirrorsSection from './mirrors-section';
+import NavMenuFooter from './nav-menu-footer';
+import SettingsSection from './settings-section';
 
 const NAV_MENU_WIDTH = 420;
 
@@ -103,6 +103,15 @@ export default function NavMenu() {
                         </AlertDescription>
                     </Alert>
                 )}
+
+                <Alert status="error">
+                    <AlertDescription>
+                        🎇{' '}
+                        <Link href={'https://en.wikipedia.org/wiki/Chinese_New_Year'} isExternal>
+                            {t('Happy Chinese New Year!')}
+                        </Link>
+                    </AlertDescription>
+                </Alert>
 
                 {/* menu-body */}
                 <Flex className="nav-menu__body">
