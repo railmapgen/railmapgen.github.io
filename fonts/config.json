@@ -1,5 +1,5 @@
 {
-    "GenYoMin TW": {
+    "GenYoMinTW-SB": {
         "displayName": "源樣明體",
         "url": "https://github.com/ButTaiwan/genyo-font",
         "configs": [
@@ -76,22 +76,33 @@
             ]
         ]
     },
-    "Myriad Pro": {
+    "MyriadPro-Semibold": {
         "url": "https://fonts.adobe.com/fonts/myriad",
         "configs": [
             {
-                "source": "local(MyriadPro-Regular)"
+                "source": "local(MyriadPro-Semibold)"
             }
         ]
     },
-    "Vegur": {
+    "Vegur-Bold": {
+        "url": "https://tipotype.com/underground/vegur/",
+        "configs": [
+            {
+                "source": "local(Vegur-Bold)"
+            },
+            {
+                "source": "url('/fonts/Vegur-Bold.ttf')"
+            }
+        ]
+    },
+    "Vegur-Regular": {
         "url": "https://tipotype.com/underground/vegur/",
         "configs": [
             {
                 "source": "local(Vegur-Regular)"
             },
             {
-                "source": "url('/fonts/Vegur-Regular.otf')"
+                "source": "url('/fonts/Vegur-Regular.ttf')"
             }
         ]
     }
