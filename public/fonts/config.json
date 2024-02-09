@@ -80,7 +80,7 @@
         "url": "https://fonts.adobe.com/fonts/myriad",
         "configs": [
             {
-                "source": "local(MyriadPro-Regular)"
+                "source": "local(MyriadPro-SemiBold)"
             }
         ]
     },
