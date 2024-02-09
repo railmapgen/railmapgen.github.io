@@ -76,11 +76,14 @@
             ]
         ]
     },
-    "Myriad Pro": {
+    "Myriad Pro Light": {
         "url": "https://fonts.adobe.com/fonts/myriad",
         "configs": [
             {
-                "source": "local(MyriadPro-Semibold)"
+                "source": "local(MyriadPro-Semibold)",
+                "descriptors": {
+                    "weight": "bold"
+                }
             }
         ]
     },
@@ -88,10 +91,16 @@
         "url": "https://tipotype.com/underground/vegur/",
         "configs": [
             {
-                "source": "local(Vegur-Bold)"
+                "source": "local(Vegur-Bold)",
+                "descriptors": {
+                    "weight": "bold"
+                }
             },
             {
-                "source": "url('/fonts/Vegur-Bold.ttf')"
+                "source": "url('/fonts/Vegur-Bold.ttf')",
+                "descriptors": {
+                    "weight": "bold"
+                }
             }
         ]
     }
