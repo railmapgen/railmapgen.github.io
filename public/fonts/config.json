@@ -88,10 +88,10 @@
         "url": "https://tipotype.com/underground/vegur/",
         "configs": [
             {
-                "source": "local(Vegur-Regular)"
+                "source": "local(Vegur-Bold)"
             },
             {
-                "source": "url('/fonts/Vegur-Regular.otf')"
+                "source": "url('/fonts/Vegur-Bold.ttf')"
             }
         ]
     }
