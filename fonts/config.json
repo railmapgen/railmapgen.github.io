@@ -77,6 +77,7 @@
         ]
     },
     "MyriadPro-Semibold": {
+        "displayName": "Myriad Pro SemiBold",
         "url": "https://fonts.adobe.com/fonts/myriad",
         "configs": [
             {
@@ -85,6 +86,7 @@
         ]
     },
     "Vegur-Bold": {
+        "displayName": "Vegur Bold",
         "url": "https://tipotype.com/underground/vegur/",
         "configs": [
             {
@@ -96,6 +98,7 @@
         ]
     },
     "Vegur-Regular": {
+        "displayName": "Vegur Regular",
         "url": "https://tipotype.com/underground/vegur/",
         "configs": [
             {
