@@ -10,7 +10,8 @@ export type AppId =
     | 'rmg-templates-upload'
     | 'rmp-gallery'
     | 'seed-project'
-    | 'rmg-translate';
+    | 'rmg-translate'
+    | 'runtime-demo';
 
 interface AppDetail {
     name: string;
@@ -78,6 +79,11 @@ export const appEnablement: Record<AppId, AppDetail> = {
     'rmg-translate': {
         name: 'Translate',
         url: '/rmg-translate/',
+        allowedEnvs: [RmgEnv.DEV, RmgEnv.UAT],
+    },
+    'runtime-demo': {
+        name: 'Runtime Demo',
+        url: '/runtime-demo/',
         allowedEnvs: [RmgEnv.DEV, RmgEnv.UAT],
     },
 };

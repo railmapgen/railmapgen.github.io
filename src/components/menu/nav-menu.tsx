@@ -2,7 +2,7 @@ import { Alert, AlertDescription, AlertIcon, Flex, Heading, Link, SystemStyleObj
 import { RmgEnvBadge } from '@railmapgen/rmg-components';
 import rmgRuntime from '@railmapgen/rmg-runtime';
 import { useTranslation } from 'react-i18next';
-import { GiFireworkRocket } from "react-icons/gi";
+import { GiFireworkRocket } from 'react-icons/gi';
 import { useSearchParams } from 'react-router-dom';
 import AppsSection from './apps-section';
 import MirrorsSection from './mirrors-section';

@@ -23,7 +23,8 @@
         "types": ["vitest/globals"],
     },
     "include": [
-        "src"
+        "src",
+        "runtime-demo"
     ],
     "references": [
         {
