@@ -1,6 +1,6 @@
-import { Box, Flex, Heading, SystemStyleObject } from '@chakra-ui/react';
+import { Alert, AlertIcon, Box, Heading } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
-import { RmgFields, RmgFieldsField, useRmgColourMode } from '@railmapgen/rmg-components';
+import { RmgFields, RmgFieldsField, RmgSection, RmgSectionHeader, useRmgColourMode } from '@railmapgen/rmg-components';
 import {
     LANGUAGE_NAMES,
     OPTIONAL_LANGUAGES,
@@ -10,24 +10,26 @@ import {
 } from '@railmapgen/rmg-translate';
 import rmgRuntime from '@railmapgen/rmg-runtime';
 import { Events } from '../../util/constants';
+import { useState } from 'react';
+import { useRootDispatch, useRootSelector } from '../../redux';
+import { requireRefresh } from '../../redux/app/app-slice';
 
-const style: SystemStyleObject = {
-    flexDirection: 'column',
-    py: 1,
-
-    '& h4': {
-        mx: 3,
-        my: 2,
-    },
-
-    '& > div': {
-        px: 2,
-    },
-};
-
-export default function SettingsSection() {
+export default function SettingsView() {
     const { t } = useTranslation();
     const { setColourMode } = useRmgColourMode();
+
+    const dispatch = useRootDispatch();
+    const { refreshRequired } = useRootSelector(state => state.app);
+
+    const [allowCookies, setAllowCookies] = useState(rmgRuntime.isAllowAnalytics());
+
+    const handleChangeCookiesSetting = (isAllow: boolean) => {
+        setAllowCookies(isAllow);
+        const allowAnalyticsResponse = rmgRuntime.allowAnalytics(isAllow);
+        if (allowAnalyticsResponse.refreshRequired) {
+            dispatch(requireRefresh());
+        }
+    };
 
     const appearanceOptions = {
         light: t('Light'),
@@ -70,17 +72,34 @@ export default function SettingsSection() {
             options: appearanceOptions,
             onChange: value => setColourMode(value as keyof typeof appearanceOptions),
         },
+        {
+            type: 'switch',
+            label: t('Allow cookies to help improve our website'),
+            isChecked: allowCookies,
+            onChange: handleChangeCookiesSetting,
+            oneLine: true,
+            isDisabled: refreshRequired,
+        },
     ];
 
     return (
-        <Flex sx={style}>
-            <Heading as="h4" size="md">
-                {t('Settings')}
-            </Heading>
+        <RmgSection>
+            {refreshRequired && (
+                <Alert status="info" variant="solid" size="xs">
+                    <AlertIcon />
+                    {t('Refreshing is required for changes to take effect.')}
+                </Alert>
+            )}
 
-            <Box>
-                <RmgFields fields={fields} />
+            <RmgSectionHeader>
+                <Heading as="h4" size="md" my={1}>
+                    {t('Settings')}
+                </Heading>
+            </RmgSectionHeader>
+
+            <Box px={2}>
+                <RmgFields fields={fields} minW="full" />
             </Box>
-        </Flex>
+        </RmgSection>
     );
 }
