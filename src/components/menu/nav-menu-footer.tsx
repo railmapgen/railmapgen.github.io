@@ -1,7 +1,7 @@
 import { Button, Divider, Flex, Grid, GridItem, Link } from '@chakra-ui/react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { MdChevronLeft, MdPeople, MdSettings } from 'react-icons/md';
+import { MdChevronLeft, MdHelp, MdPeople, MdSettings } from 'react-icons/md';
 import ContributorModal from '../modal/contributor-modal/contributor-modal';
 import { IoLogoSlack } from 'react-icons/io5';
 import { useRootDispatch, useRootSelector } from '../../redux';
@@ -21,19 +21,19 @@ export default function NavMenuFooter() {
 
             {menuView === 'main' ? (
                 <Grid templateColumns="repeat(3, auto)">
-                    <GridItem>
-                        <Button
-                            as={Link}
-                            variant="ghost"
-                            size="sm"
-                            w="100%"
-                            leftIcon={<IoLogoSlack />}
-                            target="_blank"
-                            href="https://join.slack.com/t/railmapgenerator/shared_invite/zt-1odhhta3n-DdZF~fnVwo_q0S0RJmgV8A"
-                        >
-                            Slack
-                        </Button>
-                    </GridItem>
+                    {/*<GridItem>*/}
+                    {/*    <Button*/}
+                    {/*        as={Link}*/}
+                    {/*        variant="ghost"*/}
+                    {/*        size="sm"*/}
+                    {/*        w="100%"*/}
+                    {/*        leftIcon={<IoLogoSlack />}*/}
+                    {/*        target="_blank"*/}
+                    {/*        href="https://join.slack.com/t/railmapgenerator/shared_invite/zt-1odhhta3n-DdZF~fnVwo_q0S0RJmgV8A"*/}
+                    {/*    >*/}
+                    {/*        Slack*/}
+                    {/*    </Button>*/}
+                    {/*</GridItem>*/}
 
                     <GridItem>
                         <Button
@@ -44,6 +44,18 @@ export default function NavMenuFooter() {
                             onClick={() => setIsContributorModalOpen(true)}
                         >
                             {t('Contributors')}
+                        </Button>
+                    </GridItem>
+
+                    <GridItem>
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            w="100%"
+                            leftIcon={<MdHelp />}
+                            onClick={() => dispatch(setMenuView('support'))}
+                        >
+                            {t('Help and support')}
                         </Button>
                     </GridItem>
 

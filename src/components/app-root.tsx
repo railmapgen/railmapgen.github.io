@@ -30,7 +30,7 @@ export default function AppRoot() {
     const handleToggle = () => {
         rmgRuntime.toggleNavMenu(!isShowMenu);
         dispatch(toggleMenu());
-        rmgRuntime.event(Events.TOGGLE_NAV_MENU, {});
+        rmgRuntime.event(Events.TOGGLE_NAV_MENU);
     };
 
     return isTerminated ? (

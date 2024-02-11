@@ -9,6 +9,7 @@ import SettingsView from './settings-view';
 import LinksSection from './links-section';
 import { useRootSelector } from '../../redux';
 import { isShowDevtools } from '../../redux/app/app-slice';
+import SupportView from './support-view';
 
 const NAV_MENU_WIDTH = 420;
 
@@ -124,9 +125,9 @@ export default function NavMenu() {
                             <LinksSection />
                         </>
                     ) : menuView === 'settings' ? (
-                        <>
-                            <SettingsView />
-                        </>
+                        <SettingsView />
+                    ) : menuView === 'support' ? (
+                        <SupportView />
                     ) : (
                         <></>
                     )}

@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { WorkspaceTab } from '../../util/constants';
 import { assetEnablement } from '../../util/asset-enablements';
 
-type MenuView = 'main' | 'settings';
+type MenuView = 'main' | 'settings' | 'support';
 
 export interface AppState {
     isPrimary?: boolean;

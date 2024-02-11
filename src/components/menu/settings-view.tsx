@@ -56,7 +56,7 @@ export default function SettingsView() {
             onChange: checked => {
                 if (checked) {
                     dispatch(showDevtools());
-                    rmgRuntime.event(Events.SHOW_DEVTOOLS, {});
+                    rmgRuntime.event(Events.SHOW_DEVTOOLS);
                 } else {
                     dispatch(hideDevtools());
                 }

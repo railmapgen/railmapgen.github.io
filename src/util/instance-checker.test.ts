@@ -1,16 +1,17 @@
 import { waitFor } from '@testing-library/react';
 
-const testChannel = new BroadcastChannel('rmt-instance-checker');
-testChannel.onmessage = ev => messagesReceived.push(ev.data);
+let testChannel: BroadcastChannel;
 let messagesReceived: any[] = [];
 
 describe('InstanceChecker', () => {
     beforeEach(() => {
         vi.resetModules();
+        testChannel = new BroadcastChannel('rmt-instance-checker');
         testChannel.onmessage = ev => messagesReceived.push(ev.data);
     });
 
     afterEach(() => {
+        testChannel.close();
         messagesReceived = [];
     });
 

@@ -20,6 +20,9 @@ export enum Events {
     TOGGLE_NAV_MENU = 'TOGGLE_NAV_MENU',
     CHANGE_LANGUAGE = 'CHANGE_LANGUAGE',
     SHOW_DEVTOOLS = 'SHOW_DEVTOOLS',
+
+    RAISE_ISSUE = 'RAISE_ISSUE',
+    JOIN_SLACK = 'JOIN_SLACK',
 }
 
 export const FRAME_ID_PREFIX = 'rmg-home:frame-';
