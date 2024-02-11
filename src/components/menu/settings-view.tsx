@@ -12,14 +12,14 @@ import rmgRuntime from '@railmapgen/rmg-runtime';
 import { Events } from '../../util/constants';
 import { useState } from 'react';
 import { useRootDispatch, useRootSelector } from '../../redux';
-import { requireRefresh } from '../../redux/app/app-slice';
+import { hideDevtools, isShowDevtools, requireRefresh, showDevtools } from '../../redux/app/app-slice';
 
 export default function SettingsView() {
     const { t } = useTranslation();
     const { setColourMode } = useRmgColourMode();
 
     const dispatch = useRootDispatch();
-    const { refreshRequired } = useRootSelector(state => state.app);
+    const { lastShowDevtools, refreshRequired } = useRootSelector(state => state.app);
 
     const [allowCookies, setAllowCookies] = useState(rmgRuntime.isAllowAnalytics());
 
@@ -79,6 +79,20 @@ export default function SettingsView() {
             onChange: handleChangeCookiesSetting,
             oneLine: true,
             isDisabled: refreshRequired,
+        },
+        {
+            type: 'switch',
+            label: t('Show dev tools for 1 day'),
+            isChecked: isShowDevtools(lastShowDevtools),
+            onChange: checked => {
+                if (checked) {
+                    dispatch(showDevtools());
+                    rmgRuntime.event(Events.SHOW_DEVTOOLS, {});
+                } else {
+                    dispatch(hideDevtools());
+                }
+            },
+            oneLine: true,
         },
     ];
 

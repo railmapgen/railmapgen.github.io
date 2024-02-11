@@ -8,6 +8,7 @@ import NavMenuFooter from './nav-menu-footer';
 import SettingsView from './settings-view';
 import LinksSection from './links-section';
 import { useRootSelector } from '../../redux';
+import { isShowDevtools } from '../../redux/app/app-slice';
 
 const NAV_MENU_WIDTH = 420;
 
@@ -74,7 +75,7 @@ const style: SystemStyleObject = {
 export default function NavMenu() {
     const { t } = useTranslation();
 
-    const { menuView } = useRootSelector(state => state.app);
+    const { menuView, lastShowDevtools } = useRootSelector(state => state.app);
 
     const [searchParams] = useSearchParams();
     const prdUrl =
@@ -118,7 +119,8 @@ export default function NavMenu() {
                 <Flex className="nav-menu__body">
                     {menuView === 'main' ? (
                         <>
-                            <AppsSection />
+                            <AppsSection assetType="app" />
+                            {isShowDevtools(lastShowDevtools) && <AppsSection assetType="devtool" />}
                             <LinksSection />
                         </>
                     ) : menuView === 'settings' ? (

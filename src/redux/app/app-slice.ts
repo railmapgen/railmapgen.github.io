@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { appEnablement, WorkspaceTab } from '../../util/constants';
+import { WorkspaceTab } from '../../util/constants';
+import { assetEnablement } from '../../util/asset-enablements';
 
 type MenuView = 'main' | 'settings';
 
@@ -9,6 +10,7 @@ export interface AppState {
     isShowMenu: boolean;
     menuView: MenuView;
     refreshRequired: boolean;
+    lastShowDevtools: number;
     openedTabs: WorkspaceTab[];
     activeTab?: string;
 }
@@ -17,6 +19,7 @@ const initialState: AppState = {
     isShowMenu: true,
     menuView: 'main',
     refreshRequired: false,
+    lastShowDevtools: 0,
     openedTabs: [],
     activeTab: undefined,
 };
@@ -43,6 +46,19 @@ const appSlice = createSlice({
 
         requireRefresh: state => {
             state.refreshRequired = true;
+        },
+
+        showDevtools: (state, action: PayloadAction<number | undefined>) => {
+            const now = Date.now();
+            if (!action.payload) {
+                state.lastShowDevtools = now;
+            } else if (action.payload < now) {
+                state.lastShowDevtools = action.payload;
+            }
+        },
+
+        hideDevtools: state => {
+            state.lastShowDevtools = 0;
         },
 
         setOpenedTabs: (state, action: PayloadAction<WorkspaceTab[]>) => {
@@ -73,7 +89,7 @@ const appSlice = createSlice({
             } else {
                 // open app in new tab
                 const tabId = crypto.randomUUID();
-                state.openedTabs.push({ id: tabId, app: appId, url: url ?? appEnablement[appId].url });
+                state.openedTabs.push({ id: tabId, app: appId, url: url ?? assetEnablement[appId].url });
                 state.activeTab = tabId;
             }
         },
@@ -88,7 +104,7 @@ const appSlice = createSlice({
             const id = action.payload;
 
             const sortedTabs = state.openedTabs.slice().sort((a, b) => {
-                const keySet = Object.keys(appEnablement);
+                const keySet = Object.keys(assetEnablement);
                 return keySet.indexOf(a.app) - keySet.indexOf(b.app);
             });
             state.openedTabs = state.openedTabs.filter(tab => tab.id !== id);
@@ -106,7 +122,7 @@ const appSlice = createSlice({
                 return;
             }
 
-            const openedApps = Object.keys(appEnablement).filter(appId =>
+            const openedApps = Object.keys(assetEnablement).filter(appId =>
                 state.openedTabs.some(tab => tab.app === appId)
             );
             const activeApp = state.openedTabs.find(tab => tab.id === state.activeTab)?.app;
@@ -121,12 +137,19 @@ const appSlice = createSlice({
     },
 });
 
+export const isShowDevtools = (lastShowDevtools: number) => {
+    const now = Date.now();
+    return lastShowDevtools + 86_400_000 >= now;
+};
+
 export const {
     setIsPrimary,
     terminateSession,
     toggleMenu,
     setMenuView,
     requireRefresh,
+    showDevtools,
+    hideDevtools,
     setOpenedTabs,
     updateTabUrl,
     setActiveTab,

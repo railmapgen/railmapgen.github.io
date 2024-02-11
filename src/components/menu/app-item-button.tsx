@@ -1,5 +1,5 @@
 import { closeApp, closeTab, openApp, openAppInNew, setActiveTab, toggleMenu } from '../../redux/app/app-slice';
-import { appEnablement, Events } from '../../util/constants';
+import { Events } from '../../util/constants';
 import {
     Badge,
     Box,
@@ -18,6 +18,7 @@ import { useRootDispatch, useRootSelector } from '../../redux';
 import { useTranslation } from 'react-i18next';
 import rmgRuntime from '@railmapgen/rmg-runtime';
 import { MdAdd, MdClose, MdInfoOutline, MdModeStandby, MdMoreHoriz } from 'react-icons/md';
+import { assetEnablement } from '../../util/asset-enablements';
 
 const style: SystemStyleObject = {
     '& button:first-of-type': {
@@ -46,6 +47,10 @@ const style: SystemStyleObject = {
             _hover: { bg: 'primary.600' },
         },
     },
+
+    '& > div': {
+        zIndex: 6,
+    },
 };
 
 interface AppItemProps {
@@ -62,7 +67,7 @@ export default function AppItemButton(props: AppItemProps) {
 
     const { activeTab, openedTabs } = useRootSelector(state => state.app);
 
-    const appDetail = appEnablement[appId];
+    const appDetail = assetEnablement[appId];
     const displayName = appDetail.name
         .split(' - ')
         .map(n => t(n))

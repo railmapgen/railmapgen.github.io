@@ -11,7 +11,7 @@ import {
     ModalOverlay,
 } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
-import { appEnablement } from '../../util/constants';
+import { assetEnablement } from '../../util/asset-enablements';
 import { getVersion } from '../../service/info-service';
 
 interface AboutModalProps {
@@ -24,7 +24,7 @@ export default function AboutModal(props: AboutModalProps) {
     const { t } = useTranslation();
 
     const [version, setVersion] = useState('Unknown');
-    const component = appId ? appEnablement[appId]?.url?.split('/')?.[1] : undefined;
+    const component = appId ? assetEnablement[appId]?.url?.split('/')?.[1] : undefined;
 
     useEffect(() => {
         if (component) {
@@ -42,7 +42,7 @@ export default function AboutModal(props: AboutModalProps) {
                     {t('About') +
                         ' ' +
                         (appId
-                            ? appEnablement[appId].name
+                            ? assetEnablement[appId].name
                                   .split(' - ')
                                   .map(n => t(n))
                                   .join(' - ')

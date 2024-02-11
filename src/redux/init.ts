@@ -1,9 +1,17 @@
-import { appEnablement, getAvailableAsset, LocalStorageKey, WorkspaceTab } from '../util/constants';
-import { openApp, setActiveTab, setIsPrimary, setOpenedTabs } from './app/app-slice';
+import { LocalStorageKey, WorkspaceTab } from '../util/constants';
+import { isShowDevtools, openApp, setActiveTab, setIsPrimary, setOpenedTabs, showDevtools } from './app/app-slice';
 import { RootStore, startRootListening } from './index';
 import rmgRuntime from '@railmapgen/rmg-runtime';
 import { checkInstance } from '../util/instance-checker';
 import { clearAllListeners } from '@reduxjs/toolkit';
+import { assetEnablement, getAllowedAssetTypes, getAvailableAsset } from '../util/asset-enablements';
+
+export const initShowDevtools = (store: RootStore) => {
+    const lastShowDevTools = Number(rmgRuntime.storage.get(LocalStorageKey.LAST_SHOW_DEVTOOLS));
+    if (lastShowDevTools) {
+        store.dispatch(showDevtools(lastShowDevTools));
+    }
+};
 
 export const initOpenedTabs = (store: RootStore) => {
     try {
@@ -13,7 +21,10 @@ export const initOpenedTabs = (store: RootStore) => {
         if (openedTabsString) {
             const openedTabs = JSON.parse(openedTabsString);
             if (Array.isArray(openedTabs)) {
-                const nextOpenTabs = (openedTabs as WorkspaceTab[]).filter(tab => tab.app in appEnablement);
+                const allowedAssetTypes = getAllowedAssetTypes(isShowDevtools(store.getState().app.lastShowDevtools));
+                const nextOpenTabs = (openedTabs as WorkspaceTab[]).filter(tab =>
+                    allowedAssetTypes.includes(assetEnablement[tab.app].assetType)
+                );
                 store.dispatch(setOpenedTabs(nextOpenTabs));
             } else {
                 console.warn('initOpenedTabs():: Cannot parse invalid opened tabs state from local storage');
@@ -39,7 +50,11 @@ export const openSearchedApp = (store: RootStore) => {
     const appSearched = searchParams.get('app') ?? '';
     console.log(`openSearchedApp():: searchParams app=${appSearched}`);
 
-    if (getAvailableAsset('app', rmgRuntime.getEnv(), rmgRuntime.getInstance()).includes(appSearched)) {
+    const allowedAssetTypes = getAllowedAssetTypes(isShowDevtools(store.getState().app.lastShowDevtools));
+    const allowedApps = allowedAssetTypes
+        .map(type => getAvailableAsset(type, rmgRuntime.getEnv(), rmgRuntime.getInstance()))
+        .flat();
+    if (allowedApps.includes(appSearched)) {
         store.dispatch(openApp({ appId: appSearched }));
     } else {
         console.warn(`openSearchedApp():: app ${appSearched} not found`);
@@ -47,14 +62,27 @@ export const openSearchedApp = (store: RootStore) => {
 };
 
 export default function initStore(store: RootStore) {
+    initShowDevtools(store);
     initOpenedTabs(store);
     initActiveTab(store);
 
     startRootListening({
-        predicate: (action, currentState, previousState) => {
+        predicate: (_action, currentState, previousState) => {
+            return currentState.app.lastShowDevtools !== previousState.app.lastShowDevtools;
+        },
+        effect: (_action, listenerApi) => {
+            rmgRuntime.storage.set(
+                LocalStorageKey.LAST_SHOW_DEVTOOLS,
+                listenerApi.getState().app.lastShowDevtools.toString()
+            );
+        },
+    });
+
+    startRootListening({
+        predicate: (_action, currentState, previousState) => {
             return JSON.stringify(currentState.app.openedTabs) !== JSON.stringify(previousState.app.openedTabs);
         },
-        effect: (action, listenerApi) => {
+        effect: (_action, listenerApi) => {
             window.localStorage.setItem(
                 LocalStorageKey.OPENED_TABS,
                 JSON.stringify(listenerApi.getState().app.openedTabs)
@@ -63,10 +91,10 @@ export default function initStore(store: RootStore) {
     });
 
     startRootListening({
-        predicate: (action, currentState, previousState) => {
+        predicate: (_action, currentState, previousState) => {
             return currentState.app.activeTab !== previousState.app.activeTab;
         },
-        effect: (action, listenerApi) => {
+        effect: (_action, listenerApi) => {
             const activeApp = listenerApi.getState().app.activeTab;
             activeApp !== undefined && window.localStorage.setItem(LocalStorageKey.ACTIVE_TAB, activeApp);
         },

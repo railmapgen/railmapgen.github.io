@@ -2,12 +2,15 @@ import rootReducer, { RootStore } from './index';
 import { createTestStore } from '../test-utils';
 import { LocalStorageKey, WorkspaceTab } from '../util/constants';
 import { initActiveTab, initOpenedTabs } from './init';
+import { showDevtools } from './app/app-slice';
 
 const realStore = rootReducer.getState();
 
 const mockOpenedTabs: WorkspaceTab[] = [
     { id: '01', app: 'rmg' },
     { id: '02', app: 'rmg-palette' },
+    { id: '03', app: 'runtime-demo' },
+    { id: '04', app: 'gitee-pages' },
 ];
 
 describe('ReduxInit', () => {
@@ -22,11 +25,23 @@ describe('ReduxInit', () => {
             window.localStorage.clear();
         });
 
-        it('Can parse openedTabs from localStorage as expected', () => {
+        it('Can filter out apps of invalid asset types', () => {
             window.localStorage.setItem(LocalStorageKey.OPENED_TABS, JSON.stringify(mockOpenedTabs));
             initOpenedTabs(mockStore);
 
-            expect(mockStore.getState().app.openedTabs).toHaveLength(2);
+            const openedApps = mockStore.getState().app.openedTabs.map(tab => tab.app);
+            expect(openedApps).toHaveLength(2);
+            expect(openedApps).toEqual(['rmg', 'rmg-palette']);
+        });
+
+        it('Can keep devtools if toggled on', () => {
+            window.localStorage.setItem(LocalStorageKey.OPENED_TABS, JSON.stringify(mockOpenedTabs));
+            mockStore.dispatch(showDevtools());
+            initOpenedTabs(mockStore);
+
+            const openedApps = mockStore.getState().app.openedTabs.map(tab => tab.app);
+            expect(openedApps).toHaveLength(3);
+            expect(openedApps).toEqual(['rmg', 'rmg-palette', 'runtime-demo']);
         });
     });
 
