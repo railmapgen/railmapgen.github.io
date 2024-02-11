@@ -7,7 +7,7 @@ import store from './redux';
 import { createRoot, Root } from 'react-dom/client';
 import { RmgErrorBoundary, RmgLoader, RmgThemeProvider } from '@railmapgen/rmg-components';
 import rmgRuntime from '@railmapgen/rmg-runtime';
-import { closeApp, openApp, updateTabUrl } from './redux/app/app-slice';
+import { closeApp, isShowDevtools, openApp, updateTabUrl } from './redux/app/app-slice';
 import { Events, FRAME_ID_PREFIX } from './util/constants';
 import initStore from './redux/init';
 import { I18nextProvider } from 'react-i18next';
@@ -38,7 +38,7 @@ rmgRuntime.ready().then(() => {
     renderApp();
 
     rmgRuntime.onAppOpen(app => {
-        const allowedAssetTypes = getAllowedAssetTypes(store.getState().app.isShowDevtools);
+        const allowedAssetTypes = getAllowedAssetTypes(isShowDevtools(store.getState().app.lastShowDevtools));
         const availableApps = allowedAssetTypes
             .map(type => getAvailableAsset(type, rmgRuntime.getEnv(), rmgRuntime.getInstance()))
             .flat();
