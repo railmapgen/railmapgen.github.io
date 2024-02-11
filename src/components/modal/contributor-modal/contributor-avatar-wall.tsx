@@ -1,4 +1,3 @@
-import { AppId } from '../../../util/constants';
 import { Alert, AlertIcon, Flex, SystemStyleObject, Wrap, WrapItem } from '@chakra-ui/react';
 import { RmgLoader } from '@railmapgen/rmg-components';
 import GithubAvatar from './github-avatar';
@@ -21,7 +20,7 @@ const styles: SystemStyleObject = {
 };
 
 interface ContributorAvatarWallProps {
-    appId: AppId;
+    appId: string;
 }
 
 export default function ContributorAvatarWall(props: ContributorAvatarWallProps) {

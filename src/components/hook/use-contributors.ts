@@ -1,4 +1,4 @@
-import { appEnablement, AppId } from '../../util/constants';
+import { appEnablement } from '../../util/constants';
 import { useEffect, useRef, useState } from 'react';
 import { getContributorsByPage } from '../../service/github-api-service';
 import { getLegacyContributors } from '../../service/info-service';
@@ -7,7 +7,7 @@ import useAppendingSet from './use-appending-set';
 const FILTERED_CONTRIBUTORS = ['', 'wongchito', 'thekingofcity', 'github-actions[bot]'];
 const contributorFilter = (id: string) => !FILTERED_CONTRIBUTORS.includes(id);
 
-export default function useContributors(appId: AppId) {
+export default function useContributors(appId: string) {
     const [contributors, appendContributors] = useAppendingSet<string>();
     const [isLoading, setIsLoading] = useState(true);
     const [isError, setIsError] = useState(false);

@@ -1,4 +1,4 @@
-import { appEnablement, getAvailableApps, LocalStorageKey, WorkspaceTab } from '../util/constants';
+import { appEnablement, getAvailableAsset, LocalStorageKey, WorkspaceTab } from '../util/constants';
 import { openApp, setActiveTab, setIsPrimary, setOpenedTabs } from './app/app-slice';
 import { RootStore, startRootListening } from './index';
 import rmgRuntime from '@railmapgen/rmg-runtime';
@@ -36,10 +36,10 @@ export const initActiveTab = (store: RootStore) => {
 
 export const openSearchedApp = (store: RootStore) => {
     const searchParams = new URLSearchParams(window.location.search);
-    const appSearched: any = searchParams.get('app');
+    const appSearched = searchParams.get('app') ?? '';
     console.log(`openSearchedApp():: searchParams app=${appSearched}`);
 
-    if (getAvailableApps(rmgRuntime.getEnv()).includes(appSearched)) {
+    if (getAvailableAsset('app', rmgRuntime.getEnv(), rmgRuntime.getInstance()).includes(appSearched)) {
         store.dispatch(openApp({ appId: appSearched }));
     } else {
         console.warn(`openSearchedApp():: app ${appSearched} not found`);

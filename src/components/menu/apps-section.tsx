@@ -1,43 +1,33 @@
 import React, { useState } from 'react';
-import { AppId, getAvailableApps } from '../../util/constants';
-import { Flex, Heading, SystemStyleObject } from '@chakra-ui/react';
+import { getAvailableAsset } from '../../util/constants';
+import { Flex, Heading } from '@chakra-ui/react';
 import AppItemButton from './app-item-button';
 import rmgRuntime from '@railmapgen/rmg-runtime';
 import { useTranslation } from 'react-i18next';
 import AboutModal from '../modal/about-modal';
-
-const style: SystemStyleObject = {
-    flexDirection: 'column',
-
-    '& h4': {
-        mx: 3,
-        my: 2,
-    },
-
-    '& > div': {
-        flexDirection: 'column',
-    },
-};
+import { RmgSection, RmgSectionHeader } from '@railmapgen/rmg-components';
 
 export default function AppsSection() {
     const { t } = useTranslation();
 
-    const [aboutModalAppId, setAboutModalAppId] = useState<AppId>();
+    const [aboutModalAppId, setAboutModalAppId] = useState<string>();
 
-    const availableApps = getAvailableApps(rmgRuntime.getEnv());
+    const availableApps = getAvailableAsset('app', rmgRuntime.getEnv(), rmgRuntime.getInstance());
 
     return (
-        <Flex sx={style}>
-            <Heading as="h4" size="md">
-                {t('Apps')}
-            </Heading>
-            <Flex>
+        <RmgSection>
+            <RmgSectionHeader>
+                <Heading as="h4" size="md" my={1}>
+                    {t('Apps')}
+                </Heading>
+            </RmgSectionHeader>
+            <Flex direction="column">
                 {availableApps.map(appId => (
                     <AppItemButton key={appId} appId={appId} onAboutOpen={() => setAboutModalAppId(appId)} />
                 ))}
             </Flex>
 
             <AboutModal appId={aboutModalAppId} onClose={() => setAboutModalAppId(undefined)} />
-        </Flex>
+        </RmgSection>
     );
 }

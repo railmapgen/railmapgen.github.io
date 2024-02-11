@@ -1,5 +1,5 @@
 import { closeApp, closeTab, openApp, openAppInNew, setActiveTab, toggleMenu } from '../../redux/app/app-slice';
-import { appEnablement, AppId, Events } from '../../util/constants';
+import { appEnablement, Events } from '../../util/constants';
 import {
     Badge,
     Box,
@@ -49,7 +49,7 @@ const style: SystemStyleObject = {
 };
 
 interface AppItemProps {
-    appId: AppId;
+    appId: string;
     onAboutOpen: () => void;
 }
 
@@ -102,7 +102,7 @@ export default function AppItemButton(props: AppItemProps) {
         rmgRuntime.event(Events.CLOSE_APP, { app: appId });
     };
 
-    const handleCloseApp = (appId: AppId) => {
+    const handleCloseApp = (appId: string) => {
         dispatch(closeApp(appId));
         rmgRuntime.event(Events.CLOSE_APP, { app: appId });
     };
