@@ -5,8 +5,9 @@ import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import AppsSection from './apps-section';
 import NavMenuFooter from './nav-menu-footer';
-import SettingsSection from './settings-section';
+import SettingsView from './settings-view';
 import LinksSection from './links-section';
+import { useRootSelector } from '../../redux';
 
 const NAV_MENU_WIDTH = 420;
 
@@ -73,6 +74,8 @@ const style: SystemStyleObject = {
 export default function NavMenu() {
     const { t } = useTranslation();
 
+    const { menuView } = useRootSelector(state => state.app);
+
     const [searchParams] = useSearchParams();
     const prdUrl =
         (rmgRuntime.getInstance() === 'GitLab' ? 'https://railmapgen.gitlab.io/' : 'https://railmapgen.github.io/') +
@@ -113,9 +116,18 @@ export default function NavMenu() {
 
                 {/* menu-body */}
                 <Flex className="nav-menu__body">
-                    <AppsSection />
-                    <LinksSection />
-                    <SettingsSection />
+                    {menuView === 'main' ? (
+                        <>
+                            <AppsSection />
+                            <LinksSection />
+                        </>
+                    ) : menuView === 'settings' ? (
+                        <>
+                            <SettingsView />
+                        </>
+                    ) : (
+                        <></>
+                    )}
                 </Flex>
 
                 {/* menu-footer */}

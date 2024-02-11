@@ -1,16 +1,22 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { appEnablement, WorkspaceTab } from '../../util/constants';
 
+type MenuView = 'main' | 'settings';
+
 export interface AppState {
     isPrimary?: boolean;
     isTerminated?: boolean;
     isShowMenu: boolean;
+    menuView: MenuView;
+    refreshRequired: boolean;
     openedTabs: WorkspaceTab[];
     activeTab?: string;
 }
 
 const initialState: AppState = {
     isShowMenu: true,
+    menuView: 'main',
+    refreshRequired: false,
     openedTabs: [],
     activeTab: undefined,
 };
@@ -29,6 +35,14 @@ const appSlice = createSlice({
 
         toggleMenu: state => {
             state.isShowMenu = !state.isShowMenu;
+        },
+
+        setMenuView: (state, action: PayloadAction<MenuView>) => {
+            state.menuView = action.payload;
+        },
+
+        requireRefresh: state => {
+            state.refreshRequired = true;
         },
 
         setOpenedTabs: (state, action: PayloadAction<WorkspaceTab[]>) => {
@@ -111,6 +125,8 @@ export const {
     setIsPrimary,
     terminateSession,
     toggleMenu,
+    setMenuView,
+    requireRefresh,
     setOpenedTabs,
     updateTabUrl,
     setActiveTab,
