@@ -54,7 +54,7 @@ export default function NavMenuFooter() {
                             leftIcon={<MdHelp />}
                             onClick={() => dispatch(setMenuView('support'))}
                         >
-                            {t('Help and support')}
+                            {t('Help & support')}
                         </Button>
                     </GridItem>
 

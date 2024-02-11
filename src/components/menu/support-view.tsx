@@ -21,7 +21,7 @@ export default function SupportView() {
         <RmgSection>
             <RmgSectionHeader>
                 <Heading as="h4" size="md" my={1}>
-                    {t('Help and support')}
+                    {t('Help & support')}
                 </Heading>
             </RmgSectionHeader>
 
