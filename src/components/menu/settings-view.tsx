@@ -1,18 +1,12 @@
 import { Alert, AlertIcon, Box, Heading } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 import { RmgFields, RmgFieldsField, RmgSection, RmgSectionHeader, useRmgColourMode } from '@railmapgen/rmg-components';
-import {
-    LANGUAGE_NAMES,
-    OPTIONAL_LANGUAGES,
-    OptionalLanguageCode,
-    SUPPORTED_LANGUAGES,
-    SupportedLanguageCode,
-} from '@railmapgen/rmg-translate';
 import rmgRuntime from '@railmapgen/rmg-runtime';
 import { Events } from '../../util/constants';
 import { useState } from 'react';
 import { useRootDispatch, useRootSelector } from '../../redux';
 import { hideDevtools, isShowDevtools, requireRefresh, showDevtools } from '../../redux/app/app-slice';
+import useLanguageField from '../hook/use-language-field';
 
 export default function SettingsView() {
     const { t } = useTranslation();
@@ -22,6 +16,7 @@ export default function SettingsView() {
     const { lastShowDevtools, refreshRequired } = useRootSelector(state => state.app);
 
     const [allowCookies, setAllowCookies] = useState(rmgRuntime.isAllowAnalytics());
+    const languageField = useLanguageField();
 
     const handleChangeCookiesSetting = (isAllow: boolean) => {
         setAllowCookies(isAllow);
@@ -38,33 +33,7 @@ export default function SettingsView() {
     };
 
     const fields: RmgFieldsField[] = [
-        {
-            type: 'select',
-            label: t('Language'),
-            value: rmgRuntime.getLanguage(),
-            options: {
-                [t('Main languages')]: SUPPORTED_LANGUAGES.reduce(
-                    (acc, cur) => ({
-                        ...acc,
-                        [cur]: LANGUAGE_NAMES[cur][cur],
-                    }),
-                    {} as Record<SupportedLanguageCode, string>
-                ),
-                [t('Other languages')]: OPTIONAL_LANGUAGES.reduce(
-                    (acc, cur) => ({
-                        ...acc,
-                        [cur]: LANGUAGE_NAMES[cur][cur],
-                    }),
-                    {} as Record<OptionalLanguageCode, string>
-                ),
-            },
-            onChange: value => {
-                const language = value as SupportedLanguageCode | OptionalLanguageCode;
-                rmgRuntime.setLanguage(language);
-                rmgRuntime.getI18nInstance().changeLanguage(language);
-                rmgRuntime.event(Events.CHANGE_LANGUAGE, { language });
-            },
-        },
+        languageField,
         {
             type: 'select',
             label: t('Appearance'),

@@ -1,5 +1,6 @@
 import {
     Button,
+    Flex,
     HStack,
     ListItem,
     Modal,
@@ -14,6 +15,8 @@ import {
 import rmgRuntime from '@railmapgen/rmg-runtime';
 import { useTranslation } from 'react-i18next';
 import { useRef } from 'react';
+import useLanguageField from '../hook/use-language-field';
+import { RmgFields } from '@railmapgen/rmg-components';
 
 interface CookiesModalProps {
     isOpen: boolean;
@@ -25,6 +28,8 @@ export default function CookiesModal(props: CookiesModalProps) {
 
     const { t } = useTranslation();
     const acceptButtonRef = useRef<HTMLButtonElement>(null);
+
+    const languageField = useLanguageField();
 
     const handleAccept = () => {
         rmgRuntime.allowAnalytics(true);
@@ -52,6 +57,9 @@ export default function CookiesModal(props: CookiesModalProps) {
             <ModalContent>
                 <ModalHeader>{t('CookiesModal.header')}</ModalHeader>
                 <ModalBody>
+                    <Flex justifyContent="flex-end" mt={-5}>
+                        <RmgFields fields={[languageField]} />
+                    </Flex>
                     <Text>{t('CookiesModal.text1')}</Text>
 
                     <Text mt={2}>{t('CookiesModal.text2')}</Text>
