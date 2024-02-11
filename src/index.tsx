@@ -8,9 +8,10 @@ import { createRoot, Root } from 'react-dom/client';
 import { RmgErrorBoundary, RmgLoader, RmgThemeProvider } from '@railmapgen/rmg-components';
 import rmgRuntime from '@railmapgen/rmg-runtime';
 import { closeApp, openApp, updateTabUrl } from './redux/app/app-slice';
-import { Events, FRAME_ID_PREFIX, getAvailableAsset } from './util/constants';
+import { Events, FRAME_ID_PREFIX } from './util/constants';
 import initStore from './redux/init';
 import { I18nextProvider } from 'react-i18next';
+import { getAllowedAssetTypes, getAvailableAsset } from './util/asset-enablements';
 
 let root: Root;
 const AppRoot = lazy(() => import('./components/app-root'));
@@ -37,7 +38,10 @@ rmgRuntime.ready().then(() => {
     renderApp();
 
     rmgRuntime.onAppOpen(app => {
-        const availableApps = getAvailableAsset('app', rmgRuntime.getEnv(), rmgRuntime.getInstance());
+        const allowedAssetTypes = getAllowedAssetTypes(store.getState().app.isShowDevtools);
+        const availableApps = allowedAssetTypes
+            .map(type => getAvailableAsset(type, rmgRuntime.getEnv(), rmgRuntime.getInstance()))
+            .flat();
         if (typeof app === 'object') {
             if (availableApps.includes(app.appId)) {
                 store.dispatch(openApp({ appId: app.appId, url: app.url }));
@@ -50,10 +54,7 @@ rmgRuntime.ready().then(() => {
     });
 
     rmgRuntime.onAppClose(app => {
-        const availableApps = getAvailableAsset('app', rmgRuntime.getEnv(), rmgRuntime.getInstance());
-        if (availableApps.includes(app)) {
-            store.dispatch(closeApp(app));
-        }
+        store.dispatch(closeApp(app));
     });
 
     rmgRuntime.onUrlUpdate((url, frameId) => {

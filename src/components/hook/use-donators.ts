@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { getDonatorsByPage } from '../../service/github-api-service';
-import { appEnablement } from '../../util/constants';
+import { assetEnablement } from '../../util/asset-enablements';
 import useAppendingSet from './use-appending-set';
 
 export default function useDonators() {
@@ -11,7 +11,7 @@ export default function useDonators() {
     const controllerRef = useRef<AbortController>();
 
     const getGitHubDonators = async () => {
-        const appIds = Object.entries(appEnablement)
+        const appIds = Object.entries(assetEnablement)
             .filter(([_, detail]) => detail.showDonators)
             .map(([appId]) => appId);
 

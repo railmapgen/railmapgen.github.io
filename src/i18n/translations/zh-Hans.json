@@ -22,11 +22,13 @@
     "Current session has been terminated. Please close this window.": "当前会话已被终止，请关闭此窗口。",
     "Dark": "深色",
     "Developer team": "开发者团队",
+    "Devtools": "开发者工具",
     "Donators": "捐赠者",
     "Download desktop app": "下载桌面应用程序",
     "GitHub Pages mirror": "GitHub Pages 镜像",
     "GitLab Pages mirror": "GitLab Pages 镜像",
     "Gitee Pages mirror": "Gitee (码云) Pages 镜像",
+    "Happy Chinese New Year!": "新年快乐！",
     "Light": "浅色",
     "Main languages": "主要语言",
     "More": "更多",
@@ -34,8 +36,6 @@
     "New tab": "新标签页",
     "Notes: Contributors are sorted by number of commits and commit time.": "注：贡献者名单按提交次数和时间排序。",
     "Other languages": "其他语言",
-    "Privacy": "隐私",
-    "Privacy settings": "隐私设置",
     "Rail Map Toolkit is opened in another window": "线路图工具包已在另一窗口中打开",
     "Refreshing is required for changes to take effect.": "刷新页面后变更才会生效",
     "Resource administrators": "资源管理员",
@@ -44,6 +44,7 @@
     "Running": "正在运行",
     "Save": "保存",
     "Select an app to start your own rail map design!": "选择一个应用程序来开始你的线路图设计！",
+    "Show dev tools for 1 day": "显示开发者工具 1 天",
     "Switch": "切换",
     "Switch to": "切换至",
     "System": "跟随系统",
@@ -55,6 +56,5 @@
     "Visit GitHub": "访问 GitHub",
     "Welcome to Rail Map Toolkit": "欢迎使用线路图工具包",
     "You cannot open multiple Rail Map Toolkit at the same time. Please close this window.": "您不能同时打开多个线路图工具包，请关闭当前窗口。",
-    "You're currently viewing a testing environment.": "您正在浏览测试环境。",
-    "Happy Chinese New Year!": "新年快乐！"
+    "You're currently viewing a testing environment.": "您正在浏览测试环境。"
 }

@@ -22,11 +22,13 @@
     "Current session has been terminated. Please close this window.": "當前工作階段已被終止，請關閉該視窗。",
     "Dark": "深色",
     "Developer team": "開發人員團隊",
+    "Devtools": "開發人員工具",
     "Donators": "捐贈者",
     "Download desktop app": "下載桌面應用程式",
     "GitHub Pages mirror": "GitHub Pages 鏡像",
     "GitLab Pages mirror": "GitLab Pages 鏡像",
     "Gitee Pages mirror": "Gitee (碼雲) Pages 鏡像",
+    "Happy Chinese New Year!": "新年快樂！",
     "Light": "淺色",
     "Main languages": "主要語言",
     "More": "更多",
@@ -34,8 +36,6 @@
     "New tab": "新分頁",
     "Notes: Contributors are sorted by number of commits and commit time.": "註：貢獻者列表按提交次數及時間排序。",
     "Other languages": "其他語言",
-    "Privacy": "私隱",
-    "Privacy settings": "私隱設定",
     "Rail Map Toolkit is opened in another window": "路綫圖工具組已於另一視窗中開啟",
     "Refreshing is required for changes to take effect.": "重新整理頁面後變更才會生效",
     "Resource administrators": "資源管理員",
@@ -44,6 +44,7 @@
     "Running": "運行中",
     "Save": "儲存",
     "Select an app to start your own rail map design!": "選擇一個應用程式以開始你的路綫圖設計！",
+    "Show dev tools for 1 day": "顯示開發人員工具 1 日",
     "Switch": "切換",
     "Switch to": "切換至",
     "System": "跟隨系統",
@@ -55,6 +56,5 @@
     "Visit GitHub": "造訪 GitHub",
     "Welcome to Rail Map Toolkit": "歡迎使用路綫圖工具組",
     "You cannot open multiple Rail Map Toolkit at the same time. Please close this window.": "你不能同時開啟多個路綫圖工具組，請關閉當前視窗。",
-    "You're currently viewing a testing environment.": "你正在檢視測試環境。",
-    "Happy Chinese New Year!": "新年快樂！"
+    "You're currently viewing a testing environment.": "你正在檢視測試環境。"
 }

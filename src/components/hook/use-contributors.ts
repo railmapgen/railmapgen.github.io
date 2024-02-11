@@ -1,4 +1,4 @@
-import { appEnablement } from '../../util/constants';
+import { assetEnablement } from '../../util/asset-enablements';
 import { useEffect, useRef, useState } from 'react';
 import { getContributorsByPage } from '../../service/github-api-service';
 import { getLegacyContributors } from '../../service/info-service';
@@ -31,7 +31,7 @@ export default function useContributors(appId: string) {
     useEffect(() => {
         getGitHubContributors()
             .then(() => {
-                if (appEnablement[appId].legacyContributors) {
+                if (assetEnablement[appId].legacyContributors) {
                     controllerRef.current = new AbortController();
                     return getLegacyContributors(appId, controllerRef.current?.signal);
                 } else {

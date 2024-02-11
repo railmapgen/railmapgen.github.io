@@ -42,7 +42,7 @@ export default defineConfig({
     },
     server: {
         proxy: {
-            '^(/rmg/|/rmp/|/rmg-palette/|/rmg-template/|/rmg-templates/|/rmp-gallery/|/rmg-components/|/rmg-translate/|/seed-project/)':
+            '^(/rmg/|/rmp/|/rmg-palette/|/rmg-template/|/rmg-templates/|/rmp-gallery/|/rmg-components/|/svg-assets/|/rmg-translate/|/seed-project/)':
                 {
                     target: 'https://railmapgen.github.io',
                     changeOrigin: true,
