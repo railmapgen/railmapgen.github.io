@@ -11,11 +11,11 @@ import {
     ModalOverlay,
 } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
-import { appEnablement, AppId } from '../../util/constants';
+import { appEnablement } from '../../util/constants';
 import { getVersion } from '../../service/info-service';
 
 interface AboutModalProps {
-    appId?: AppId;
+    appId?: string;
     onClose: () => void;
 }
 

@@ -1,51 +1,37 @@
 import { RmgEnv, RmgInstance } from '@railmapgen/rmg-runtime';
 
-export type AppId =
-    | 'rmg'
-    | 'rmp'
-    | 'rmg-palette'
-    | 'rmg-palette-upload'
-    | 'rmg-components'
-    | 'rmg-templates'
-    | 'rmg-templates-upload'
-    | 'rmp-gallery'
-    | 'seed-project'
-    | 'rmg-translate'
-    | 'runtime-demo';
+type AssetType = 'app' | 'link';
 
-interface AppDetail {
+interface AssetDetail {
     name: string;
     url: string;
-    allowedEnvs: RmgEnv[];
+    allowedEnvs?: RmgEnv[];
+    allowedInstances?: RmgInstance[];
     allowMultiInstances?: boolean;
     showContributors?: boolean;
     legacyContributors?: string;
     showDonators?: boolean;
 }
 
-export const appEnablement: Record<AppId, AppDetail> = {
+export const appEnablement: Record<string, AssetDetail> = {
     rmg: {
         name: 'Rail Map Generator',
         url: '/rmg/',
-        allowedEnvs: [RmgEnv.DEV, RmgEnv.UAT, RmgEnv.PRD],
         allowMultiInstances: true,
     },
     rmp: {
         name: 'Rail Map Painter',
         url: '/rmp/',
-        allowedEnvs: [RmgEnv.DEV, RmgEnv.UAT, RmgEnv.PRD],
     },
     'rmg-palette': {
         name: 'Palette',
         url: '/rmg-palette/',
-        allowedEnvs: [RmgEnv.DEV, RmgEnv.UAT, RmgEnv.PRD],
         showContributors: true,
         legacyContributors: 'legacy-contributor-list.txt',
     },
     'rmg-palette-upload': {
         name: 'Palette - Upload',
         url: '/rmg-palette/#/new',
-        allowedEnvs: [RmgEnv.DEV, RmgEnv.UAT, RmgEnv.PRD],
     },
     'rmg-components': {
         name: 'Components',
@@ -55,19 +41,16 @@ export const appEnablement: Record<AppId, AppDetail> = {
     'rmg-templates': {
         name: 'RMG Templates',
         url: '/rmg-templates/',
-        allowedEnvs: [RmgEnv.DEV, RmgEnv.UAT, RmgEnv.PRD],
         showContributors: true,
         legacyContributors: 'legacy-contributor-list.txt',
     },
     'rmg-templates-upload': {
         name: 'RMG Templates - Upload',
         url: '/rmg-templates/#/new',
-        allowedEnvs: [RmgEnv.DEV, RmgEnv.UAT, RmgEnv.PRD],
     },
     'rmp-gallery': {
         name: 'RMP Gallery',
         url: '/rmp-gallery/',
-        allowedEnvs: [RmgEnv.DEV, RmgEnv.UAT, RmgEnv.PRD],
         showContributors: true,
         showDonators: true,
     },
@@ -88,14 +71,60 @@ export const appEnablement: Record<AppId, AppDetail> = {
     },
 };
 
-export const getAvailableApps = (env: RmgEnv): AppId[] => {
-    return Object.entries(appEnablement)
-        .filter(([_, component]) => component.allowedEnvs.includes(env))
-        .map(([appId]) => appId as AppId);
+const getTauriUrl = () => {
+    const baseUrl = 'https://mirror.ghproxy.com/https://github.com/railmapgen/railmapgen.github.io/releases/download';
+    const d = new Date();
+    const tag = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}01`;
+    const ver = `${String(d.getFullYear()).slice(-2)}.${d.getMonth() + 1}.1`;
+    const platform = navigator.platform;
+    const suffix = platform.includes('Linux') ? 'amd64.deb' : platform.includes('Mac') ? 'x64.dmg' : 'x64-setup.exe';
+    return baseUrl + `/tauri-${tag}/railmapgen_${ver}_${suffix}`;
+};
+
+export const linkEnablement: Record<string, AssetDetail> = {
+    tutorial: {
+        name: 'Tutorial',
+        url: 'https://rmttutorial.wordpress.com',
+    },
+    'github-pages': {
+        name: 'GitHub Pages mirror',
+        url: 'https://railmapgen.github.io',
+        allowedInstances: ['GitLab', 'Gitee', 'localhost', 'unknown'],
+    },
+    'gitlab-pages': {
+        name: 'GitLab Pages mirror',
+        url: 'https://railmapgen.gitlab.io',
+        allowedInstances: ['GitHub', 'Gitee', 'localhost', 'unknown'],
+    },
+    'gitee-pages': {
+        name: 'Gitee Pages mirror',
+        url: 'https://railmapgen.gitee.io',
+        allowedInstances: ['localhost'],
+    },
+    tauri: {
+        name: 'Download desktop app',
+        url: getTauriUrl(),
+        allowedInstances: ['GitHub', 'GitLab', 'Gitee', 'localhost', 'unknown'],
+    },
+};
+
+const assetEnablement: Record<AssetType, Record<string, AssetDetail>> = {
+    app: appEnablement,
+    link: linkEnablement,
+};
+
+export const getAvailableAsset = (assetType: AssetType, env: RmgEnv, instance: RmgInstance): string[] => {
+    return Object.entries(assetEnablement[assetType])
+        .filter(([_, component]) => {
+            const envOk = !component.allowedEnvs || component.allowedEnvs.includes(env);
+            const instanceOk = !component.allowedInstances || component.allowedInstances.includes(instance);
+            return envOk && instanceOk;
+        })
+        .map(([assetId]) => assetId);
 };
 
 export interface WorkspaceTab {
-    app: AppId;
+    app: string;
     id: string;
     url?: string;
 }
@@ -106,24 +135,12 @@ export enum LocalStorageKey {
     ACTIVE_TAB = 'rmg-home__activeTab',
 }
 
-export const MIRRORS: RmgInstance[] = [
-    'GitHub',
-    'GitLab',
-    // 'Gitee',
-    'Tauri',
-];
-export const MIRROR_URLS: Partial<Record<RmgInstance, string>> = {
-    GitHub: 'https://railmapgen.github.io',
-    GitLab: 'https://railmapgen.gitlab.io',
-    Gitee: 'https://railmapgen.gitee.io',
-    Tauri: 'https://mirror.ghproxy.com/https://github.com/railmapgen/railmapgen.github.io/releases/download',
-};
-
 export enum Events {
     APP_LOAD = 'APP_LOAD',
 
     OPEN_APP = 'OPEN_APP',
     CLOSE_APP = 'CLOSE_APP',
+    OPEN_LINK = 'OPEN_LINK',
     TOGGLE_NAV_MENU = 'TOGGLE_NAV_MENU',
     CHANGE_LANGUAGE = 'CHANGE_LANGUAGE',
 

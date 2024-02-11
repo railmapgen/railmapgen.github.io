@@ -4,9 +4,9 @@ import rmgRuntime from '@railmapgen/rmg-runtime';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import AppsSection from './apps-section';
-import MirrorsSection from './mirrors-section';
 import NavMenuFooter from './nav-menu-footer';
 import SettingsSection from './settings-section';
+import LinksSection from './links-section';
 
 const NAV_MENU_WIDTH = 420;
 
@@ -15,6 +15,7 @@ const style: SystemStyleObject = {
     flexDirection: 'column',
     overflow: 'hidden',
     alignItems: 'flex-end',
+    background: 'inherit',
     transition: '0.3s ease-in-out',
     maxW: 0,
     visibility: 'hidden',
@@ -31,6 +32,7 @@ const style: SystemStyleObject = {
         flexDirection: 'column',
         h: '100%',
         w: { base: '100vw', md: NAV_MENU_WIDTH },
+        background: 'inherit',
 
         '& .nav-menu__header': {
             // header
@@ -45,12 +47,9 @@ const style: SystemStyleObject = {
             // body
             flexDirection: 'column',
             flex: 1,
-            overflow: 'hidden',
-
-            '& > div:first-of-type': {
-                flex: 1,
-                overflowY: 'auto',
-            },
+            overflowX: 'hidden',
+            overflowY: 'auto',
+            background: 'inherit',
         },
     },
 
@@ -81,7 +80,7 @@ export default function NavMenu() {
         searchParams.toString();
 
     return (
-        <Flex as="section" sx={style}>
+        <Flex sx={style}>
             <Flex>
                 {/* menu-header */}
                 <Flex className="nav-menu__header">
@@ -115,8 +114,8 @@ export default function NavMenu() {
                 {/* menu-body */}
                 <Flex className="nav-menu__body">
                     <AppsSection />
+                    <LinksSection />
                     <SettingsSection />
-                    <MirrorsSection />
                 </Flex>
 
                 {/* menu-footer */}

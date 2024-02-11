@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { appEnablement, AppId, WorkspaceTab } from '../../util/constants';
+import { appEnablement, WorkspaceTab } from '../../util/constants';
 
 export interface AppState {
     isPrimary?: boolean;
@@ -44,7 +44,7 @@ const appSlice = createSlice({
             state.activeTab = action.payload;
         },
 
-        openApp: (state, action: PayloadAction<{ appId: AppId; url?: string }>) => {
+        openApp: (state, action: PayloadAction<{ appId: string; url?: string }>) => {
             const { appId, url } = action.payload;
 
             const activeApp = state.openedTabs.find(({ id }) => id === state.activeTab);
@@ -64,7 +64,7 @@ const appSlice = createSlice({
             }
         },
 
-        openAppInNew: (state, action: PayloadAction<AppId>) => {
+        openAppInNew: (state, action: PayloadAction<string>) => {
             const tabId = crypto.randomUUID();
             state.openedTabs.push({ id: tabId, app: action.payload });
             state.activeTab = tabId;
@@ -85,7 +85,7 @@ const appSlice = createSlice({
             }
         },
 
-        closeApp: (state, action: PayloadAction<AppId>) => {
+        closeApp: (state, action: PayloadAction<string>) => {
             const id = action.payload;
             if (!state.openedTabs.some(tab => tab.app === id)) {
                 // input app is not opened

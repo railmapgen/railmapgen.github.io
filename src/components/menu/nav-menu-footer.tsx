@@ -1,7 +1,7 @@
 import { Button, Divider, Flex, Grid, GridItem, Link } from '@chakra-ui/react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { MdPeople, MdPrivacyTip, MdSchool } from 'react-icons/md';
+import { MdPeople, MdPrivacyTip } from 'react-icons/md';
 import ContributorModal from '../modal/contributor-modal/contributor-modal';
 import PrivacyModal from '../modal/privacy-modal';
 import { IoLogoSlack } from 'react-icons/io5';
@@ -16,7 +16,7 @@ export default function NavMenuFooter() {
         <Flex direction="column">
             <Divider />
 
-            <Grid templateColumns="repeat(4, auto)">
+            <Grid templateColumns="repeat(3, auto)">
                 <GridItem>
                     <Button
                         as={Link}
@@ -52,20 +52,6 @@ export default function NavMenuFooter() {
                         onClick={() => setIsPrivacyModalOpen(true)}
                     >
                         {t('Privacy')}
-                    </Button>
-                </GridItem>
-
-                <GridItem>
-                    <Button
-                        as={Link}
-                        variant="ghost"
-                        size="sm"
-                        w="100%"
-                        leftIcon={<MdSchool />}
-                        target="_blank"
-                        href="https://rmttutorial.wordpress.com"
-                    >
-                        {t('Tutorial')}
                     </Button>
                 </GridItem>
             </Grid>
