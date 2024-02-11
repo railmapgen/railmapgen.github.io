@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { AssetType, getAvailableAsset } from '../../util/asset-enablements';
 import { Flex, Heading } from '@chakra-ui/react';
 import AppItemButton from './app-item-button';

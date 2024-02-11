@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { FRAME_ID_PREFIX, WorkspaceTab } from '../../util/constants';
 import { Box } from '@chakra-ui/react';
 

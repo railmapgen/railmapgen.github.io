@@ -134,7 +134,7 @@ export const assetEnablement: Record<string, AssetDetail> = {
 
 export const getAvailableAsset = (assetType: AssetType, env: RmgEnv, instance: RmgInstance): string[] => {
     return Object.entries(assetEnablement)
-        .filter(([_, component]) => {
+        .filter(([, component]) => {
             const typeOk = component.assetType === assetType;
             const envOk = !component.allowedEnvs || component.allowedEnvs.includes(env);
             const instanceOk = !component.allowedInstances || component.allowedInstances.includes(instance);

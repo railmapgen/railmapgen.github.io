@@ -1,5 +1,5 @@
 import { IconButton } from '@chakra-ui/react';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Workspace from './workspace/workspace';
 import { RmgPage, RmgWindow } from '@railmapgen/rmg-components';
 import { MdMenu } from 'react-icons/md';

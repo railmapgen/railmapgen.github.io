@@ -1,6 +1,5 @@
 import { Heading, Wrap, WrapItem } from '@chakra-ui/react';
 import { RmgSection, RmgSectionHeader } from '@railmapgen/rmg-components';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 import GithubAvatar from './github-avatar';
 

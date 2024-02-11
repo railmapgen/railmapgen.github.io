@@ -1,6 +1,5 @@
 import { RmgSection, RmgSectionHeader } from '@railmapgen/rmg-components';
 import { Avatar, Heading, SystemStyleObject, Tag, TagLabel, Text, VStack } from '@chakra-ui/react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 const styles: SystemStyleObject = {

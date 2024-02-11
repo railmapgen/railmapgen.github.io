@@ -1,4 +1,4 @@
-import { RmgFields, RmgFieldsField, RmgOutput, RmgSection, RmgSectionHeader } from '@railmapgen/rmg-components';
+import { RmgFields, RmgFieldsField, RmgSection, RmgSectionHeader } from '@railmapgen/rmg-components';
 import { chakra, Heading, SystemStyleObject } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import rmgRuntime from '@railmapgen/rmg-runtime';

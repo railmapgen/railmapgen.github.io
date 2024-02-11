@@ -12,7 +12,7 @@ export default function useDonators() {
 
     const getGitHubDonators = async () => {
         const appIds = Object.entries(assetEnablement)
-            .filter(([_, detail]) => detail.showDonators)
+            .filter(([, detail]) => detail.showDonators)
             .map(([appId]) => appId);
 
         for (const appId of appIds) {

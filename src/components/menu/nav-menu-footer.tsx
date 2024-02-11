@@ -1,9 +1,8 @@
-import { Button, Divider, Flex, Grid, GridItem, Link } from '@chakra-ui/react';
+import { Button, Divider, Flex, Grid, GridItem } from '@chakra-ui/react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MdChevronLeft, MdHelp, MdPeople, MdSettings } from 'react-icons/md';
 import ContributorModal from '../modal/contributor-modal/contributor-modal';
-import { IoLogoSlack } from 'react-icons/io5';
 import { useRootDispatch, useRootSelector } from '../../redux';
 import { setMenuView } from '../../redux/app/app-slice';
 

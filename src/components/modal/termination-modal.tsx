@@ -1,4 +1,4 @@
-import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from '@chakra-ui/react';
+import { Modal, ModalBody, ModalContent, ModalHeader } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 
 const emptyCallback = () => {

@@ -1,6 +1,5 @@
 import { Alert, AlertIcon, Flex, Heading, SystemStyleObject, Wrap, WrapItem } from '@chakra-ui/react';
 import { RmgLoader, RmgSection, RmgSectionHeader } from '@railmapgen/rmg-components';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 import useDonators from '../../hook/use-donators';
 import GithubAvatar from './github-avatar';

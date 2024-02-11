@@ -1,7 +1,7 @@
 import { RmgSection, RmgSectionHeader } from '@railmapgen/rmg-components';
 import { Heading, SystemStyleObject, Text } from '@chakra-ui/react';
 import { assetEnablement } from '../../../util/asset-enablements';
-import React, { Fragment } from 'react';
+import { Fragment } from 'react';
 import ContributorAvatarWall from './contributor-avatar-wall';
 import { useTranslation } from 'react-i18next';
 
@@ -27,7 +27,7 @@ export default function ResourceContributorSection() {
             </RmgSectionHeader>
 
             {Object.entries(assetEnablement)
-                .filter(([_, detail]) => detail.showContributors)
+                .filter(([, detail]) => detail.showContributors)
                 .map(([appId, detail]) => (
                     <Fragment key={appId}>
                         <Heading as="h6" size="xs">
