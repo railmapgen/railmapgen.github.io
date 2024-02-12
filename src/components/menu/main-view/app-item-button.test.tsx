@@ -1,6 +1,6 @@
-import { createTestStore, render } from '../../test-utils';
+import { createTestStore, render } from '../../../test-utils';
 import AppItemButton from './app-item-button';
-import { RootStore } from '../../redux';
+import { RootStore } from '../../../redux';
 import { fireEvent, screen } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 

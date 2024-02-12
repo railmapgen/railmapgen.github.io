@@ -1,10 +1,10 @@
-import { Events } from '../../util/constants';
+import { Events } from '../../../util/constants';
 import { Box, Button, Flex, Heading, SystemStyleObject } from '@chakra-ui/react';
 import rmgRuntime from '@railmapgen/rmg-runtime';
 import { useTranslation } from 'react-i18next';
 import { MdOpenInNew } from 'react-icons/md';
 import { RmgSection, RmgSectionHeader } from '@railmapgen/rmg-components';
-import { assetEnablement, getAvailableAsset } from '../../util/asset-enablements';
+import { assetEnablement, getAvailableAsset } from '../../../util/asset-enablements';
 
 const style: SystemStyleObject = {
     '& button': {

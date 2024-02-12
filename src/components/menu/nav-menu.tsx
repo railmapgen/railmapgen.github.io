@@ -3,13 +3,14 @@ import { RmgEnvBadge } from '@railmapgen/rmg-components';
 import rmgRuntime from '@railmapgen/rmg-runtime';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
-import AppsSection from './apps-section';
+import AppsSection from './main-view/apps-section';
 import NavMenuFooter from './nav-menu-footer';
 import SettingsView from './settings-view';
-import LinksSection from './links-section';
+import LinksSection from './main-view/links-section';
 import { useRootSelector } from '../../redux';
 import { isShowDevtools } from '../../redux/app/app-slice';
-import SupportView from './support-view';
+import SupportSection from './support-view/support-section';
+import FontsSection from './support-view/fonts-section';
 
 const NAV_MENU_WIDTH = 420;
 
@@ -127,7 +128,10 @@ export default function NavMenu() {
                     ) : menuView === 'settings' ? (
                         <SettingsView />
                     ) : menuView === 'support' ? (
-                        <SupportView />
+                        <>
+                            <SupportSection />
+                            <FontsSection />
+                        </>
                     ) : (
                         <></>
                     )}

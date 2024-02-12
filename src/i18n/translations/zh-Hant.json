@@ -9,6 +9,13 @@
         "reject": "拒絕"
     },
 
+    "FontsSection": {
+        "text1": "你的專案使用的下列字型，是從我們的伺服器而非你的裝置載入。",
+        "text2": "這可能導致非必要的網絡流量，如你的連線不穩，還會造成載入緩慢。",
+        "text3": "你可以下載及安裝這些開源免費字型，以提升使用體驗。",
+        "safari": "不適用於 Safari ☹️"
+    },
+
     "About": "關於",
     "Allow cookies to help improve our website": "容許以 Cookies 幫助改進本網站",
     "Appearance": "外觀",
@@ -61,6 +68,7 @@
     "Unable to load contributors": "無法載入貢獻者列表",
     "Useful links": "實用連結",
     "Visit GitHub": "造訪 GitHub",
+    "Web fonts": "網絡字型",
     "Welcome to Rail Map Toolkit": "歡迎使用路綫圖工具組",
     "You cannot open multiple Rail Map Toolkit at the same time. Please close this window.": "你不能同時開啟多個路綫圖工具組，請關閉當前視窗。",
     "You're currently viewing a testing environment.": "你正在檢視測試環境。"

@@ -24,6 +24,7 @@ export enum Events {
 
     RAISE_ISSUE = 'RAISE_ISSUE',
     JOIN_SLACK = 'JOIN_SLACK',
+    DOWNLOAD_FONT = 'DOWNLOAD_FONT',
 }
 
 export const FRAME_ID_PREFIX = 'rmg-home:frame-';

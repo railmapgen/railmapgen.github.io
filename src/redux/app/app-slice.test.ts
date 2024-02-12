@@ -1,5 +1,5 @@
 import store from '../index';
-import appReducer, { AppState, closeApp, closeTab, openApp, openAppInNew } from './app-slice';
+import appReducer, { addRemoteFont, AppState, closeApp, closeTab, openApp, openAppInNew } from './app-slice';
 
 const realStore = store.getState();
 
@@ -89,6 +89,45 @@ describe('AppSlice', () => {
 
             expect(nextState.openedTabs).toHaveLength(2);
             expect(nextState.activeTab).toBe('01');
+        });
+    });
+
+    describe('AppSlice - fonts', () => {
+        it('Can show font advice when new remote font loaded', () => {
+            const state: AppState = {
+                ...realStore.app,
+                remoteFonts: {},
+                showFontAdvice: 'hide',
+            };
+            const nextState = appReducer(state, addRemoteFont({ family: 'Arial', config: {} }));
+
+            expect(nextState.remoteFonts).toHaveProperty('Arial');
+            expect(nextState.showFontAdvice).toBe('show');
+        });
+
+        it('Do not show font advice when existing remote font loaded', () => {
+            const state: AppState = {
+                ...realStore.app,
+                remoteFonts: { Arial: {} },
+                showFontAdvice: 'hide',
+            };
+            const nextState = appReducer(state, addRemoteFont({ family: 'Arial', config: {} }));
+
+            expect(Object.keys(nextState.remoteFonts)).toHaveLength(1);
+            expect(nextState.remoteFonts).toHaveProperty('Arial');
+            expect(nextState.showFontAdvice).toBe('hide');
+        });
+
+        it('Do not show font advice if user select do not show again', () => {
+            const state: AppState = {
+                ...realStore.app,
+                remoteFonts: {},
+                showFontAdvice: 'never',
+            };
+            const nextState = appReducer(state, addRemoteFont({ family: 'Arial', config: {} }));
+
+            expect(nextState.remoteFonts).toHaveProperty('Arial');
+            expect(nextState.showFontAdvice).toBe('never');
         });
     });
 });

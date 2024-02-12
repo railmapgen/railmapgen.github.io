@@ -7,5 +7,12 @@
         "text3": "These cookies are optional. If you'd like to accept all optional cookies, select 'Accept all cookies'. If you'd like to reject them, select 'Reject'.",
         "accept": "Accept all cookies",
         "reject": "Reject"
+    },
+
+    "FontsSection": {
+        "text1": "The fonts below used in your projects were loaded from our server instead of your device.",
+        "text2": "This may cause unnecessary network traffic and slowness especially if your connection is unstable.",
+        "text3": "You can download and install these open source and free fonts to get a better experience.",
+        "safari": "This is not applicable to Safari users. ☹️"
     }
 }
