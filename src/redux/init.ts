@@ -1,10 +1,19 @@
 import { LocalStorageKey, WorkspaceTab } from '../util/constants';
-import { isShowDevtools, openApp, setActiveTab, setIsPrimary, setOpenedTabs, showDevtools } from './app/app-slice';
+import {
+    isShowDevtools,
+    neverShowFontAdvice,
+    openApp,
+    setActiveTab,
+    setIsPrimary,
+    setOpenedTabs,
+    showDevtools,
+} from './app/app-slice';
 import { RootStore, startRootListening } from './index';
 import rmgRuntime from '@railmapgen/rmg-runtime';
 import { checkInstance } from '../util/instance-checker';
 import { clearAllListeners } from '@reduxjs/toolkit';
 import { assetEnablement, getAllowedAssetTypes, getAvailableAsset } from '../util/asset-enablements';
+import { isSafari } from '../util/utils';
 
 export const initShowDevtools = (store: RootStore) => {
     const lastShowDevTools = Number(rmgRuntime.storage.get(LocalStorageKey.LAST_SHOW_DEVTOOLS));
@@ -65,6 +74,10 @@ export default function initStore(store: RootStore) {
     initShowDevtools(store);
     initOpenedTabs(store);
     initActiveTab(store);
+
+    if (isSafari() || rmgRuntime.storage.get(LocalStorageKey.SHOW_FONT_ADVICE) === 'never') {
+        store.dispatch(neverShowFontAdvice());
+    }
 
     startRootListening({
         predicate: (_action, currentState, previousState) => {

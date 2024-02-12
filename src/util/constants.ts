@@ -9,6 +9,7 @@ export enum LocalStorageKey {
     OPENED_TABS = 'rmg-home__openedTabs',
     ACTIVE_TAB = 'rmg-home__activeTab',
     LAST_SHOW_DEVTOOLS = 'lastShowDevtools',
+    SHOW_FONT_ADVICE = 'showFontAdvice',
 }
 
 export enum Events {
