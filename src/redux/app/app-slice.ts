@@ -3,6 +3,12 @@ import { WorkspaceTab } from '../../util/constants';
 import { assetEnablement } from '../../util/asset-enablements';
 
 type MenuView = 'main' | 'settings' | 'support';
+type FontConfig = {
+    displayName?: string;
+    url?: string;
+};
+
+export const NEVER = 'never';
 
 export interface AppState {
     isPrimary?: boolean;
@@ -13,6 +19,8 @@ export interface AppState {
     lastShowDevtools: number;
     openedTabs: WorkspaceTab[];
     activeTab?: string;
+    remoteFonts: Record<string, FontConfig>;
+    showFontAdvice: typeof NEVER | 'hide' | 'show';
 }
 
 const initialState: AppState = {
@@ -22,6 +30,8 @@ const initialState: AppState = {
     lastShowDevtools: 0,
     openedTabs: [],
     activeTab: undefined,
+    remoteFonts: {},
+    showFontAdvice: 'hide',
 };
 
 const appSlice = createSlice({
@@ -134,6 +144,24 @@ const appSlice = createSlice({
                 state.activeTab = nextOpenedTabs.find(tab => tab.app === openedApps[Math.max(0, prevIndex - 1)])?.id;
             }
         },
+
+        addRemoteFont: (state, action: PayloadAction<{ family: string; config: FontConfig }>) => {
+            const { family, config } = action.payload;
+            if (!(family in state.remoteFonts)) {
+                state.remoteFonts[family] = config;
+                if (state.showFontAdvice === 'hide') {
+                    state.showFontAdvice = 'show';
+                }
+            }
+        },
+
+        hideFontAdvice: state => {
+            state.showFontAdvice = 'hide';
+        },
+
+        neverShowFontAdvice: state => {
+            state.showFontAdvice = 'never';
+        },
     },
 });
 
@@ -157,5 +185,8 @@ export const {
     openAppInNew,
     closeTab,
     closeApp,
+    addRemoteFont,
+    hideFontAdvice,
+    neverShowFontAdvice,
 } = appSlice.actions;
 export default appSlice.reducer;

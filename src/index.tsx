@@ -7,7 +7,7 @@ import store from './redux';
 import { createRoot, Root } from 'react-dom/client';
 import { RmgErrorBoundary, RmgLoader, RmgThemeProvider } from '@railmapgen/rmg-components';
 import rmgRuntime from '@railmapgen/rmg-runtime';
-import { closeApp, isShowDevtools, openApp, updateTabUrl } from './redux/app/app-slice';
+import { addRemoteFont, closeApp, isShowDevtools, openApp, updateTabUrl } from './redux/app/app-slice';
 import { Events, FRAME_ID_PREFIX } from './util/constants';
 import initStore from './redux/init';
 import { I18nextProvider } from 'react-i18next';
@@ -63,6 +63,10 @@ rmgRuntime.ready().then(() => {
             console.log(`Received URL update for frame=${id}, url=${url}`);
             store.dispatch(updateTabUrl({ id, url }));
         }
+    });
+
+    rmgRuntime.onRemoteFontLoaded(({ family, definition: { displayName, url } }) => {
+        store.dispatch(addRemoteFont({ family, config: { displayName, url } }));
     });
 
     rmgRuntime.event(Events.APP_LOAD, { openedApps: store.getState().app.openedTabs.map(tab => tab.app) });
