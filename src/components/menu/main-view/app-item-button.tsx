@@ -1,5 +1,5 @@
-import { closeApp, closeTab, openApp, openAppInNew, setActiveTab, toggleMenu } from '../../redux/app/app-slice';
-import { Events } from '../../util/constants';
+import { closeApp, closeTab, openApp, openAppInNew, setActiveTab, toggleMenu } from '../../../redux/app/app-slice';
+import { Events } from '../../../util/constants';
 import {
     Badge,
     Box,
@@ -14,11 +14,11 @@ import {
     theme,
     useMediaQuery,
 } from '@chakra-ui/react';
-import { useRootDispatch, useRootSelector } from '../../redux';
+import { useRootDispatch, useRootSelector } from '../../../redux';
 import { useTranslation } from 'react-i18next';
 import rmgRuntime from '@railmapgen/rmg-runtime';
 import { MdAdd, MdClose, MdInfoOutline, MdModeStandby, MdMoreHoriz } from 'react-icons/md';
-import { assetEnablement } from '../../util/asset-enablements';
+import { assetEnablement } from '../../../util/asset-enablements';
 
 const style: SystemStyleObject = {
     '& button:first-of-type': {

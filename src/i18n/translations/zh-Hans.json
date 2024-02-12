@@ -9,6 +9,13 @@
         "reject": "拒绝"
     },
 
+    "FontsSection": {
+        "text1": "您的项目使用的下列字体，是从我们的服务器而不是您的设备加载。",
+        "text2": "这可能导致非必要的网络流量，如您的连接不稳定，还会造成加载缓慢。",
+        "text3": "您可以下载和安装这些开源免费字体，以提升使用体验。",
+        "safari": "不适用于 Safari ☹️"
+    },
+
     "About": "关于",
     "Allow cookies to help improve our website": "允许用 Cookies 帮助改进本网站",
     "Appearance": "外观",
@@ -61,6 +68,7 @@
     "Unable to load contributors": "无法加载贡献者名单",
     "Useful links": "实用链接",
     "Visit GitHub": "访问 GitHub",
+    "Web fonts": "网络字体",
     "Welcome to Rail Map Toolkit": "欢迎使用线路图工具包",
     "You cannot open multiple Rail Map Toolkit at the same time. Please close this window.": "您不能同时打开多个线路图工具包，请关闭当前窗口。",
     "You're currently viewing a testing environment.": "您正在浏览测试环境。"

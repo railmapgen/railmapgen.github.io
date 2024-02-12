@@ -3,7 +3,7 @@ import { RmgSection, RmgSectionHeader } from '@railmapgen/rmg-components';
 import { useTranslation } from 'react-i18next';
 import { MdOpenInNew } from 'react-icons/md';
 import { IoLogoGithub, IoLogoSlack } from 'react-icons/io5';
-import { Events } from '../../util/constants';
+import { Events } from '../../../util/constants';
 import rmgRuntime from '@railmapgen/rmg-runtime';
 
 const stackStyles: SystemStyleObject = {
@@ -14,7 +14,7 @@ const stackStyles: SystemStyleObject = {
     },
 };
 
-export default function SupportView() {
+export default function SupportSection() {
     const { t } = useTranslation();
 
     return (
