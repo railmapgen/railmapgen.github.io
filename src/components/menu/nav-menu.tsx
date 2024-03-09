@@ -3,14 +3,14 @@ import { RmgEnvBadge } from '@railmapgen/rmg-components';
 import rmgRuntime from '@railmapgen/rmg-runtime';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
-import AppsSection from './main-view/apps-section';
-import NavMenuFooter from './nav-menu-footer';
-import SettingsView from './settings-view';
-import LinksSection from './main-view/links-section';
 import { useRootSelector } from '../../redux';
 import { isShowDevtools } from '../../redux/app/app-slice';
-import SupportSection from './support-view/support-section';
+import AppsSection from './main-view/apps-section';
+import LinksSection from './main-view/links-section';
+import NavMenuFooter from './nav-menu-footer';
+import SettingsView from './settings-view';
 import FontsSection from './support-view/fonts-section';
+import SupportSection from './support-view/support-section';
 
 const NAV_MENU_WIDTH = 420;
 
@@ -107,15 +107,6 @@ export default function NavMenu() {
                         </AlertDescription>
                     </Alert>
                 )}
-
-                <Alert status="error">
-                    <AlertDescription>
-                        🎇{' '}
-                        <Link href={'https://en.wikipedia.org/wiki/Chinese_New_Year'} isExternal>
-                            {t('Happy Chinese New Year!')}
-                        </Link>
-                    </AlertDescription>
-                </Alert>
 
                 {/* menu-body */}
                 <Flex className="nav-menu__body">
