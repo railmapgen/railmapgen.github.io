@@ -3,7 +3,7 @@ import { RmgSection, RmgSectionHeader } from '@railmapgen/rmg-components';
 import { useTranslation } from 'react-i18next';
 import GithubAvatar from './github-avatar';
 
-const RESOURCE_ADMIN = ['52PD', 'linchen1965', '28yfang', 'Windows-Taskmgr'];
+const RESOURCE_ADMIN = ['Swiftiecott', 'linchen1965', '28yfang', 'Windows-Taskmgr'];
 
 export default function ResourceAdminSection() {
     const { t } = useTranslation();
