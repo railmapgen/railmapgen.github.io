@@ -58,11 +58,13 @@ export const assetEnablement: Record<string, AssetDetail> = {
         assetType: 'app',
         showContributors: true,
         legacyContributors: 'legacy-contributor-list.txt',
+        allowedInstances: ['GitHub', 'GitLab', 'localhost', 'unknown'],
     },
     'rmg-templates-upload': {
         name: 'RMG Templates - Upload',
         url: '/rmg-templates/#/new',
         assetType: 'app',
+        allowedInstances: ['GitHub', 'GitLab', 'localhost', 'unknown'],
     },
     'rmp-gallery': {
         name: 'RMP Gallery',
@@ -70,6 +72,7 @@ export const assetEnablement: Record<string, AssetDetail> = {
         assetType: 'app',
         showContributors: true,
         showDonators: true,
+        allowedInstances: ['GitHub', 'GitLab', 'localhost', 'unknown'],
     },
     'rmg-components': {
         name: 'Components',
