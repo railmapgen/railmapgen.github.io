@@ -133,6 +133,12 @@ export const assetEnablement: Record<string, AssetDetail> = {
         assetType: 'link',
         allowedInstances: ['GitHub', 'GitLab', 'Gitee', 'localhost', 'unknown'],
     },
+    busLineDesigner: {
+        name: 'Bus Line Designer',
+        url: 'https://buslinedesigner.bobliu.tech',
+        assetType: 'link',
+        allowedInstances: ['GitHub', 'GitLab', 'Gitee', 'localhost', 'unknown'],
+    },
 };
 
 export const getAvailableAsset = (assetType: AssetType, env: RmgEnv, instance: RmgInstance): string[] => {
