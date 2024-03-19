@@ -17,7 +17,7 @@ BRANCH=$(git branch | grep \* | cut -d ' ' -f2 | tr '/' '.')
 npm config set tag-version-prefix "${APP_NAME}-"
 
 ### BUMP VERSION
-if [ "$BRANCH" = "master" ]
+if [ "$BRANCH" = "main" ]
 then
   # build with a normal version
   npm version $BUMP_VERSION -m "${APP_NAME}-%s release" --force || { echo "Release Error"; exit 1; }
