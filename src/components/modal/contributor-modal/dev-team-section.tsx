@@ -60,8 +60,8 @@ export default function DevTeamSection() {
                 <Tag size="lg" onClick={() => window.open('https://github.com/langonginc', '_blank')}>
                     <Avatar src="https://github.com/langonginc.png" size="lg" />
                     <TagLabel>
-                        <Text>5+1</Text>
-                        <Text>Author of RMP2RMG conversion</Text>
+                        <Text>langonginc</Text>
+                        <Text>Author of Rail Map Painter</Text>
                     </TagLabel>
                 </Tag>
             </VStack>
