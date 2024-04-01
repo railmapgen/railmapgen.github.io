@@ -58,13 +58,13 @@ export const assetEnablement: Record<string, AssetDetail> = {
         assetType: 'app',
         showContributors: true,
         legacyContributors: 'legacy-contributor-list.txt',
-        allowedInstances: ['GitHub', 'GitLab', 'localhost', 'unknown'],
+        allowedInstances: ['GitHub', 'GitLab', 'Tauri', 'localhost', 'unknown'],
     },
     'rmg-templates-upload': {
         name: 'RMG Templates - Upload',
         url: '/rmg-templates/#/new',
         assetType: 'app',
-        allowedInstances: ['GitHub', 'GitLab', 'localhost', 'unknown'],
+        allowedInstances: ['GitHub', 'GitLab', 'Tauri', 'localhost', 'unknown'],
     },
     'rmp-gallery': {
         name: 'RMP Gallery',
@@ -72,7 +72,7 @@ export const assetEnablement: Record<string, AssetDetail> = {
         assetType: 'app',
         showContributors: true,
         showDonators: true,
-        allowedInstances: ['GitHub', 'GitLab', 'localhost', 'unknown'],
+        allowedInstances: ['GitHub', 'GitLab', 'Tauri', 'localhost', 'unknown'],
     },
     'rmg-components': {
         name: 'Components',
@@ -125,7 +125,7 @@ export const assetEnablement: Record<string, AssetDetail> = {
         name: 'Gitee Pages mirror',
         url: 'https://railmapgen.gitee.io',
         assetType: 'link',
-        allowedInstances: ['localhost'],
+        allowedInstances: ['GitHub', 'GitLab', 'localhost', 'unknown'],
     },
     tauri: {
         name: 'Download desktop app',
@@ -137,7 +137,7 @@ export const assetEnablement: Record<string, AssetDetail> = {
         name: 'Bus Line Designer',
         url: 'https://buslinedesigner.bobliu.tech',
         assetType: 'link',
-        allowedInstances: ['GitHub', 'GitLab', 'Gitee', 'localhost', 'unknown'],
+        allowedInstances: ['GitHub', 'GitLab', 'Gitee', 'Tauri', 'localhost', 'unknown'],
     },
 };
 
