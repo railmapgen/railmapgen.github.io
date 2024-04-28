@@ -75,6 +75,24 @@ describe('AppSlice', () => {
             expect(url).toBe('/rmp/?id=456');
             expect(state.activeTab).toBe(id);
         });
+
+        it('Can retain predefined hash if not specified', () => {
+            state = appReducer(state, openApp({ appId: 'rmg-templates-upload' }));
+
+            expect(state.openedTabs).toHaveLength(4);
+            const { id, url } = state.openedTabs[3];
+            expect(url).toBe('/rmg-templates/#/new');
+            expect(state.activeTab).toBe(id);
+        });
+
+        it('Can update hash of predefined url if specified', () => {
+            state = appReducer(state, openApp({ appId: 'rmg-palette-upload', hash: '/new?city=hongkong' }));
+
+            expect(state.openedTabs).toHaveLength(5);
+            const { id, url } = state.openedTabs[4];
+            expect(url).toBe('/rmg-palette/#/new?city=hongkong');
+            expect(state.activeTab).toBe(id);
+        });
     });
 
     describe('AppSlice - close app', () => {

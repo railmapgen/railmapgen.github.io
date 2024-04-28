@@ -9,9 +9,9 @@ export const isSafari = () => {
     return ua.includes('Safari') && !ua.includes('Chrome');
 };
 
-export const constructUrl = (pathname: string, search?: string, hash?: string): string => {
-    const url = new URL(pathname, window.location.href);
-    url.search = search ?? '';
-    url.hash = hash ?? '';
+export const constructUrl = (path: string, search?: string, hash?: string): string => {
+    const url = new URL(path, window.location.href);
+    url.search = search ?? url.search;
+    url.hash = hash ?? url.hash;
     return url.pathname + url.search + url.hash;
 };
