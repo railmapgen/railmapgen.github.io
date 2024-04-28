@@ -1,4 +1,4 @@
-import { LocalStorageKey, WorkspaceTab } from '../util/constants';
+import { LocalStorageKey, QUERY_STRINGS, WorkspaceTab } from '../util/constants';
 import {
     isShowDevtools,
     neverShowFontAdvice,
@@ -56,15 +56,25 @@ export const initActiveTab = (store: RootStore) => {
 
 export const openSearchedApp = (store: RootStore) => {
     const searchParams = new URLSearchParams(window.location.search);
-    const appSearched = searchParams.get('app') ?? '';
-    console.log(`openSearchedApp():: searchParams app=${appSearched}`);
+    const appSearched = searchParams.get(QUERY_STRINGS.APP) ?? '';
+    const extraSearchParams = searchParams.get(QUERY_STRINGS.SEARCH_PARAMS) ?? undefined;
+    const extraHashParams = searchParams.get(QUERY_STRINGS.HASH_PARAMS) ?? undefined;
+    console.log(
+        `openSearchedApp():: searchParams app=${appSearched}, extraSearchParams are [${extraSearchParams}], extraHashParams are [${extraHashParams}]`
+    );
 
     const allowedAssetTypes = getAllowedAssetTypes(isShowDevtools(store.getState().app.lastShowDevtools));
     const allowedApps = allowedAssetTypes
         .map(type => getAvailableAsset(type, rmgRuntime.getEnv(), rmgRuntime.getInstance()))
         .flat();
     if (allowedApps.includes(appSearched)) {
-        store.dispatch(openApp({ appId: appSearched }));
+        store.dispatch(
+            openApp({
+                appId: appSearched,
+                search: extraSearchParams,
+                hash: extraHashParams,
+            })
+        );
     } else {
         console.warn(`openSearchedApp():: app ${appSearched} not found`);
     }

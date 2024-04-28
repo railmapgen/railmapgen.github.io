@@ -42,6 +42,41 @@ describe('AppSlice', () => {
         });
     });
 
+    describe('AppSlice - open app with search', () => {
+        let state: AppState = {
+            ...realStore.app,
+            openedTabs: [{ id: '01', app: 'rmg', url: '/rmg/' }],
+            activeTab: '01',
+        };
+
+        it('Can open new app with search', () => {
+            state = appReducer(state, openApp({ appId: 'rmp', search: 'id=123' }));
+
+            expect(state.openedTabs).toHaveLength(2);
+            const { id, url } = state.openedTabs[1];
+            expect(url).toBe('/rmp/?id=123');
+            expect(state.activeTab).toBe(id);
+        });
+
+        it('Can open new tab of opened app with hash', () => {
+            state = appReducer(state, openApp({ appId: 'rmg', hash: '/project=abc' }));
+
+            expect(state.openedTabs).toHaveLength(3);
+            const { id, url } = state.openedTabs[2];
+            expect(url).toBe('/rmg/#/project=abc');
+            expect(state.activeTab).toBe(id);
+        });
+
+        it('Can switch to another app with updated search', () => {
+            state = appReducer(state, openApp({ appId: 'rmp', search: 'id=456' }));
+
+            expect(state.openedTabs).toHaveLength(3);
+            const { id, url } = state.openedTabs[1];
+            expect(url).toBe('/rmp/?id=456');
+            expect(state.activeTab).toBe(id);
+        });
+    });
+
     describe('AppSlice - close app', () => {
         it('Can close current tab and set next active tab correctly', () => {
             const state: AppState = {

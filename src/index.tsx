@@ -42,14 +42,8 @@ rmgRuntime.ready().then(() => {
         const availableApps = allowedAssetTypes
             .map(type => getAvailableAsset(type, rmgRuntime.getEnv(), rmgRuntime.getInstance()))
             .flat();
-        if (typeof app === 'object') {
-            if (availableApps.includes(app.appId)) {
-                store.dispatch(openApp({ appId: app.appId, url: app.url }));
-            }
-        } else {
-            if (availableApps.includes(app)) {
-                store.dispatch(openApp({ appId: app }));
-            }
+        if (availableApps.includes(app.appId)) {
+            store.dispatch(openApp(app));
         }
     });
 

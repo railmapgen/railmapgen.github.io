@@ -28,3 +28,9 @@ export enum Events {
 }
 
 export const FRAME_ID_PREFIX = 'rmg-home:frame-';
+
+export const QUERY_STRINGS = {
+    APP: 'app',
+    SEARCH_PARAMS: 'searchParams',
+    HASH_PARAMS: 'hashParams',
+};

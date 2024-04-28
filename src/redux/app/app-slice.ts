@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { WorkspaceTab } from '../../util/constants';
 import { assetEnablement } from '../../util/asset-enablements';
+import { constructUrl } from '../../util/utils';
 
 type MenuView = 'main' | 'settings' | 'support';
 type FontConfig = {
@@ -84,23 +85,44 @@ const appSlice = createSlice({
             state.activeTab = action.payload;
         },
 
-        openApp: (state, action: PayloadAction<{ appId: string; url?: string }>) => {
-            const { appId, url } = action.payload;
+        openApp: (state, action: PayloadAction<{ appId: string; search?: string; hash?: string }>) => {
+            const { appId, search, hash } = action.payload;
 
             const activeApp = state.openedTabs.find(({ id }) => id === state.activeTab);
             const openedApp = state.openedTabs.find(({ app }) => app === appId);
+            const isAllowedMultiInstances = assetEnablement[appId].allowMultiInstances ?? false;
 
-            if (activeApp?.app === appId) {
-                // do nothing as app is opened
-                // this condition is required for multi-instance app
-            } else if (openedApp) {
-                // make app active
-                state.activeTab = openedApp.id;
+            if (search !== undefined || hash !== undefined) {
+                if (isAllowedMultiInstances || !openedApp) {
+                    // open new tab with search/hash for multi-instance app or not opened app
+                    const tabId = crypto.randomUUID();
+                    state.openedTabs.push({
+                        id: tabId,
+                        app: appId,
+                        url: constructUrl(assetEnablement[appId].url, search, hash),
+                    });
+                    state.activeTab = tabId;
+                } else {
+                    // update url if opened
+                    state.openedTabs = state.openedTabs.map(tab => {
+                        if (tab.id === openedApp.id) {
+                            return { ...tab, url: constructUrl(tab.url ?? assetEnablement[tab.app].url, search, hash) };
+                        } else {
+                            return tab;
+                        }
+                    });
+                    state.activeTab = openedApp.id;
+                }
             } else {
-                // open app in new tab
-                const tabId = crypto.randomUUID();
-                state.openedTabs.push({ id: tabId, app: appId, url: url ?? assetEnablement[appId].url });
-                state.activeTab = tabId;
+                if (!openedApp) {
+                    // open app in new tab
+                    const tabId = crypto.randomUUID();
+                    state.openedTabs.push({ id: tabId, app: appId, url: constructUrl(assetEnablement[appId].url) });
+                    state.activeTab = tabId;
+                } else if (activeApp?.app !== appId) {
+                    // make app active
+                    state.activeTab = openedApp.id;
+                }
             }
         },
 
