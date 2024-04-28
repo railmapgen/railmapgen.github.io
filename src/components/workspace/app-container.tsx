@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo } from 'react';
 import { FRAME_ID_PREFIX, WorkspaceTab } from '../../util/constants';
 import { Box } from '@chakra-ui/react';
 
@@ -10,9 +10,7 @@ interface AppContainerProps {
 export default function AppContainer(props: AppContainerProps) {
     const { tab, isActive } = props;
 
-    const [frameUrl] = useState(tab.url ?? '/' + tab.app + '/');
-
-    // setFrameUrl if tab.id is updated?
+    const frameUrl = useMemo(() => tab.url ?? '/' + tab.app + '/', [tab.url, tab.app]);
 
     return (
         <Box display={isActive ? 'block' : 'none'} flex={1}>
