@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { getDonatorsByPage } from '../../service/github-api-service';
 import { assetEnablement } from '../../util/asset-enablements';
 import useAppendingSet from './use-appending-set';
+import { logger } from '@railmapgen/rmg-runtime';
 
 export default function useDonators() {
     const [donators, appendDonators] = useAppendingSet<string>();
@@ -29,7 +30,7 @@ export default function useDonators() {
                     }
                 }
             } catch (err) {
-                console.error('[rmt] unable to fetch donators for:', appId, err);
+                logger.error('unable to fetch donators for:', appId, err);
                 throw err;
             }
         }

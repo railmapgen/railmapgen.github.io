@@ -6,7 +6,7 @@ import { Provider } from 'react-redux';
 import store from './redux';
 import { createRoot, Root } from 'react-dom/client';
 import { RmgErrorBoundary, RmgLoader, RmgThemeProvider } from '@railmapgen/rmg-components';
-import rmgRuntime from '@railmapgen/rmg-runtime';
+import rmgRuntime, { logger } from '@railmapgen/rmg-runtime';
 import {
     addRemoteFont,
     closeApp,
@@ -61,7 +61,7 @@ rmgRuntime.ready().then(() => {
     rmgRuntime.onAppMetadataUpdate((metadata, frameId) => {
         if (frameId) {
             const id = frameId.slice(FRAME_ID_PREFIX.length);
-            console.log(`[rmt] Received metadata update for frame=${id}, metadata is`, metadata);
+            logger.info(`Received metadata update for frame=${id}, metadata is`, metadata);
             store.dispatch(updateTabMetadata({ ...metadata, id }));
         }
     });
@@ -69,7 +69,7 @@ rmgRuntime.ready().then(() => {
     rmgRuntime.onUrlUpdate((url, frameId) => {
         if (frameId) {
             const id = frameId.slice(FRAME_ID_PREFIX.length);
-            console.log(`[rmt] Received URL update for frame=${id}, url=${url}`);
+            logger.info(`Received URL update for frame=${id}, url=${url}`);
             store.dispatch(updateTabUrl({ id, url }));
         }
     });

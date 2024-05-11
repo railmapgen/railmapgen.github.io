@@ -9,7 +9,7 @@ import {
     showDevtools,
 } from './app/app-slice';
 import { RootStore, startRootListening } from './index';
-import rmgRuntime from '@railmapgen/rmg-runtime';
+import rmgRuntime, { logger } from '@railmapgen/rmg-runtime';
 import { checkInstance } from '../util/instance-checker';
 import { clearAllListeners } from '@reduxjs/toolkit';
 import { assetEnablement, getAllowedAssetTypes, getAvailableAsset } from '../util/asset-enablements';
@@ -36,11 +36,11 @@ export const initOpenedTabs = (store: RootStore) => {
                 );
                 store.dispatch(setOpenedTabs(nextOpenTabs));
             } else {
-                console.warn('initOpenedTabs():: Cannot parse invalid opened tabs state from local storage');
+                logger.warn('initOpenedTabs(), Cannot parse invalid opened tabs state from local storage');
             }
         }
     } catch (e) {
-        console.warn('initOpenedTabs():: cannot parse opened apps state from local storage', e);
+        logger.warn('initOpenedTabs(), cannot parse opened apps state from local storage', e);
     }
 };
 
@@ -59,8 +59,8 @@ export const openSearchedApp = (store: RootStore) => {
     const appSearched = searchParams.get(QUERY_STRINGS.APP) ?? '';
     const extraSearchParams = searchParams.get(QUERY_STRINGS.SEARCH_PARAMS) ?? undefined;
     const extraHashParams = searchParams.get(QUERY_STRINGS.HASH_PARAMS) ?? undefined;
-    console.log(
-        `openSearchedApp():: searchParams app=${appSearched}, extraSearchParams are [${extraSearchParams}], extraHashParams are [${extraHashParams}]`
+    logger.info(
+        `openSearchedApp(), searchParams app=${appSearched}, extraSearchParams are [${extraSearchParams}], extraHashParams are [${extraHashParams}]`
     );
 
     const allowedAssetTypes = getAllowedAssetTypes(isShowDevtools(store.getState().app.lastShowDevtools));
@@ -76,7 +76,7 @@ export const openSearchedApp = (store: RootStore) => {
             })
         );
     } else {
-        console.warn(`openSearchedApp():: app ${appSearched} not found`);
+        logger.warn(`openSearchedApp(), app ${appSearched} not found`);
     }
 };
 

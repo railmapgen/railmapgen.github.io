@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { getContributorsByPage } from '../../service/github-api-service';
 import { getLegacyContributors } from '../../service/info-service';
 import useAppendingSet from './use-appending-set';
+import { logger } from '@railmapgen/rmg-runtime';
 
 const FILTERED_CONTRIBUTORS = ['', 'wongchito', 'thekingofcity', 'github-actions[bot]'];
 const contributorFilter = (id: string) => !FILTERED_CONTRIBUTORS.includes(id);
@@ -40,7 +41,7 @@ export default function useContributors(appId: string) {
             })
             .then(legacyResult => appendContributors(legacyResult.filter(contributorFilter)))
             .catch(err => {
-                console.error('[rmt] unable to fetch contributors for:', appId, err);
+                logger.error('unable to fetch contributors for:', appId, err);
                 setIsError(true);
             })
             .finally(() => setIsLoading(false));

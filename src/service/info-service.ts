@@ -1,3 +1,5 @@
+import { logger } from '@railmapgen/rmg-runtime';
+
 export const getVersion = async (component: string): Promise<string> => {
     const url = `/${component}/info.json`;
     try {
@@ -5,7 +7,7 @@ export const getVersion = async (component: string): Promise<string> => {
         const data = await res.json();
         return data.version as string;
     } catch (error) {
-        console.log(`Failed to get version for ${component}`);
+        logger.info(`Failed to get version of ${component}`);
         return 'unknown';
     }
 };

@@ -1,20 +1,8 @@
 import { RmgFields, RmgFieldsField, RmgSection, RmgSectionHeader } from '@railmapgen/rmg-components';
-import { chakra, Heading, SystemStyleObject } from '@chakra-ui/react';
+import { chakra, Heading } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import rmgRuntime from '@railmapgen/rmg-runtime';
 import FontPreview from './font-preview';
-
-const styles: SystemStyleObject = {
-    '& .chakra-form-control:nth-of-type(2)': {
-        maxW: '100%',
-        overflow: 'hidden',
-
-        '& output': {
-            height: 'unset',
-            textWrap: 'pretty',
-        },
-    },
-};
 
 export default function FontsDemo() {
     const [allFonts, setAllFonts] = useState<Awaited<ReturnType<typeof rmgRuntime.getAllFonts>>>({});
@@ -55,7 +43,7 @@ export default function FontsDemo() {
     ];
 
     return (
-        <RmgSection sx={styles}>
+        <RmgSection>
             <RmgSectionHeader>
                 <Heading as="h5" size="sm">
                     Fonts
