@@ -167,6 +167,22 @@ const appSlice = createSlice({
             }
         },
 
+        updateTabMetadata: (
+            state,
+            action: PayloadAction<{ id: string; title?: string; search?: string; hash?: string }>
+        ) => {
+            const { id, title, search, hash } = action.payload;
+            state.openedTabs = state.openedTabs.map(tab =>
+                tab.id === id
+                    ? {
+                          ...tab,
+                          title: title ?? tab.title,
+                          url: constructUrl(tab.url ?? assetEnablement[tab.app].url, search, hash),
+                      }
+                    : tab
+            );
+        },
+
         addRemoteFont: (state, action: PayloadAction<{ family: string; config: FontConfig }>) => {
             const { family, config } = action.payload;
             if (!(family in state.remoteFonts)) {
@@ -207,6 +223,7 @@ export const {
     openAppInNew,
     closeTab,
     closeApp,
+    updateTabMetadata,
     addRemoteFont,
     hideFontAdvice,
     neverShowFontAdvice,

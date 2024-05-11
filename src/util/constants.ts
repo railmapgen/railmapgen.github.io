@@ -2,6 +2,7 @@ export interface WorkspaceTab {
     app: string;
     id: string;
     url?: string;
+    title?: string;
 }
 
 // localStorage key

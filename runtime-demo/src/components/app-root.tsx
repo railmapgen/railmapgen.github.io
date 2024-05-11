@@ -1,6 +1,7 @@
 import WindowHeader from './window-header';
 import { RmgPage, RmgThemeProvider, RmgWindow } from '@railmapgen/rmg-components';
 import FontsDemo from './fonts-demo';
+import MetadataDemo from './metadata-demo';
 
 export default function AppRoot() {
     return (
@@ -14,6 +15,7 @@ export default function AppRoot() {
                     }}
                 >
                     <FontsDemo />
+                    <MetadataDemo />
                 </RmgPage>
             </RmgWindow>
         </RmgThemeProvider>

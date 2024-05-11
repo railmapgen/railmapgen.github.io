@@ -7,7 +7,14 @@ import store from './redux';
 import { createRoot, Root } from 'react-dom/client';
 import { RmgErrorBoundary, RmgLoader, RmgThemeProvider } from '@railmapgen/rmg-components';
 import rmgRuntime from '@railmapgen/rmg-runtime';
-import { addRemoteFont, closeApp, isShowDevtools, openApp, updateTabUrl } from './redux/app/app-slice';
+import {
+    addRemoteFont,
+    closeApp,
+    isShowDevtools,
+    openApp,
+    updateTabMetadata,
+    updateTabUrl,
+} from './redux/app/app-slice';
 import { Events, FRAME_ID_PREFIX } from './util/constants';
 import initStore from './redux/init';
 import { I18nextProvider } from 'react-i18next';
@@ -51,10 +58,18 @@ rmgRuntime.ready().then(() => {
         store.dispatch(closeApp(app));
     });
 
+    rmgRuntime.onAppMetadataUpdate((metadata, frameId) => {
+        if (frameId) {
+            const id = frameId.slice(FRAME_ID_PREFIX.length);
+            console.log(`[rmt] Received metadata update for frame=${id}, metadata is`, metadata);
+            store.dispatch(updateTabMetadata({ ...metadata, id }));
+        }
+    });
+
     rmgRuntime.onUrlUpdate((url, frameId) => {
         if (frameId) {
             const id = frameId.slice(FRAME_ID_PREFIX.length);
-            console.log(`Received URL update for frame=${id}, url=${url}`);
+            console.log(`[rmt] Received URL update for frame=${id}, url=${url}`);
             store.dispatch(updateTabUrl({ id, url }));
         }
     });
