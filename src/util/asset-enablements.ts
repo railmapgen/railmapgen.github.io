@@ -98,11 +98,18 @@ export const assetEnablement: Record<string, AssetDetail> = {
         assetType: 'devtool',
         allowedInstances: ['GitHub', 'GitLab', 'localhost', 'unknown'],
     },
+    'rmg-runtime': {
+        name: 'Runtime Documentation',
+        url: '/rmg-runtime/',
+        assetType: 'devtool',
+        allowedInstances: ['GitHub', 'GitLab', 'localhost', 'unknown'],
+    },
     'runtime-demo': {
         name: 'Runtime Demo',
         url: '/runtime-demo/',
         assetType: 'devtool',
         allowedInstances: ['GitHub', 'GitLab', 'localhost', 'unknown'],
+        allowMultiInstances: true,
     },
     tutorial: {
         name: 'Tutorial',

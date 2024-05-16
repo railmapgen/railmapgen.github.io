@@ -168,7 +168,7 @@ export default function AppItemButton(props: AppItemProps) {
                             >
                                 <Button onClick={() => handleSelectTab(tab.id)}>
                                     <Badge mr={2}>{i + 1}</Badge>
-                                    {t('Tab') + ' ' + (i + 1).toString() + ' - ' + displayName}
+                                    {tab.title ?? t('Tab') + ' ' + (i + 1).toString() + ' - ' + displayName}
                                 </Button>
                                 <IconButton
                                     aria-label={t('Close tab')}
