@@ -18,15 +18,13 @@ export default function useDonators() {
 
         for (const appId of appIds) {
             try {
-                let page = 1;
-                while (true) {
+                let page = 0;
+                while (++page) {
                     controllerRef.current = new AbortController();
                     const pageResult = await getDonatorsByPage(appId, page, controllerRef.current?.signal);
                     appendDonators(pageResult);
                     if (pageResult.length < 100) {
                         break;
-                    } else {
-                        page++;
                     }
                 }
             } catch (err) {

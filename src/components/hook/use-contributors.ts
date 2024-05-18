@@ -16,15 +16,13 @@ export default function useContributors(appId: string) {
     const controllerRef = useRef<AbortController>();
 
     const getGitHubContributors = async () => {
-        let page = 1;
-        while (true) {
+        let page = 0;
+        while (++page) {
             controllerRef.current = new AbortController();
             const pageResult = await getContributorsByPage(appId, page, controllerRef.current?.signal);
             appendContributors(pageResult.filter(contributorFilter));
             if (pageResult.length < 100) {
                 break;
-            } else {
-                page++;
             }
         }
     };
