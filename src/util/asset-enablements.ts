@@ -146,6 +146,12 @@ export const assetEnablement: Record<string, AssetDetail> = {
         assetType: 'link',
         allowedInstances: ['GitHub', 'GitLab', 'Gitee', 'Tauri', 'localhost', 'unknown'],
     },
+    linesPaper: {
+        name: 'LinesPaper线图荟',
+        url: 'https://space.bilibili.com/3546659889875715',
+        assetType: 'link',
+        allowedInstances: ['GitHub', 'GitLab', 'Gitee', 'Tauri', 'localhost', 'unknown'],
+    },
 };
 
 export const getAvailableAsset = (assetType: AssetType, env: RmgEnv, instance: RmgInstance): string[] => {
