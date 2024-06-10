@@ -1,4 +1,4 @@
-import { Alert, AlertIcon, Box, Heading } from '@chakra-ui/react';
+import { Alert, AlertIcon, Box, Button, Heading } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 import { RmgFields, RmgFieldsField, RmgSection, RmgSectionHeader, useRmgColourMode } from '@railmapgen/rmg-components';
 import rmgRuntime from '@railmapgen/rmg-runtime';
@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { useRootDispatch, useRootSelector } from '../../redux';
 import { hideDevtools, isShowDevtools, requireRefresh, showDevtools } from '../../redux/app/app-slice';
 import useLanguageField from '../hook/use-language-field';
+import LocalStorageModal from '../modal/local-storage-modal';
 
 export default function SettingsView() {
     const { t } = useTranslation();
@@ -16,6 +17,7 @@ export default function SettingsView() {
     const { lastShowDevtools, refreshRequired } = useRootSelector(state => state.app);
 
     const [allowCookies, setAllowCookies] = useState(rmgRuntime.isAllowAnalytics());
+    const [isLocalStorageOpen, setIsLocalStorageOpen] = useState(false);
     const languageField = useLanguageField();
 
     const handleChangeCookiesSetting = (isAllow: boolean) => {
@@ -82,7 +84,11 @@ export default function SettingsView() {
 
             <Box px={2}>
                 <RmgFields fields={fields} minW="full" />
+                <Button width="100%" onClick={() => setIsLocalStorageOpen(true)}>
+                    Export Local Storage
+                </Button>
             </Box>
+            <LocalStorageModal isOpen={isLocalStorageOpen} onClose={() => setIsLocalStorageOpen(false)} />
         </RmgSection>
     );
 }
