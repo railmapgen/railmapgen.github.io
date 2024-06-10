@@ -28,7 +28,7 @@ export default function LocalStorageModal(props: { isOpen: boolean; onClose: () 
                 <ModalBody>
                     <VStack p={1}>
                         {values.map(v => (
-                            <RmgLabel key={v[0]} label={v[0]} minW="full" >
+                            <RmgLabel key={v[0]} label={v[0]} minW="full">
                                 <Textarea value={v[1]} readOnly fontFamily="monospace" fontSize="xs" />
                             </RmgLabel>
                         ))}
