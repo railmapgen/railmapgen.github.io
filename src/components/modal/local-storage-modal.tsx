@@ -4,13 +4,16 @@ import {
     Modal,
     ModalBody,
     ModalCloseButton,
-    ModalContent, ModalFooter,
+    ModalContent,
+    ModalFooter,
     ModalHeader,
-    ModalOverlay, Textarea, VStack,
+    ModalOverlay,
+    Textarea,
+    VStack,
 } from '@chakra-ui/react';
 import { RmgLabel } from '@railmapgen/rmg-components';
 
-export default function LocalStorageModal(props: { isOpen: boolean, onClose: () => void }) {
+export default function LocalStorageModal(props: { isOpen: boolean; onClose: () => void }) {
     const { isOpen, onClose } = props;
     const { t } = useTranslation();
     const values = Object.entries(localStorage);
@@ -24,7 +27,7 @@ export default function LocalStorageModal(props: { isOpen: boolean, onClose: () 
 
                 <ModalBody>
                     <VStack p={1}>
-                        {values.map((v) => (
+                        {values.map(v => (
                             <RmgLabel key={v[0]} label={v[0]} minW="full" >
                                 <Textarea value={v[1]} readOnly fontFamily="monospace" fontSize="xs" />
                             </RmgLabel>
@@ -33,11 +36,7 @@ export default function LocalStorageModal(props: { isOpen: boolean, onClose: () 
                 </ModalBody>
 
                 <ModalFooter>
-                    <Button
-                        onClick={onClose}
-                    >
-                        {t('Go back')}
-                    </Button>
+                    <Button onClick={onClose}>{t('Go back')}</Button>
                 </ModalFooter>
             </ModalContent>
         </Modal>
