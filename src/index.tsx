@@ -1,12 +1,13 @@
-import './index.css';
-import './inject-seo';
-import i18n from './i18n/config';
-import { lazy, StrictMode } from 'react';
-import { Provider } from 'react-redux';
-import store from './redux';
-import { createRoot, Root } from 'react-dom/client';
 import { RmgErrorBoundary, RmgLoader, RmgThemeProvider } from '@railmapgen/rmg-components';
 import rmgRuntime, { logger } from '@railmapgen/rmg-runtime';
+import { StrictMode, lazy } from 'react';
+import { Root, createRoot } from 'react-dom/client';
+import { I18nextProvider } from 'react-i18next';
+import { Provider } from 'react-redux';
+import i18n from './i18n/config';
+import './index.css';
+import './inject-seo';
+import store from './redux';
 import {
     addRemoteFont,
     closeApp,
@@ -15,10 +16,10 @@ import {
     updateTabMetadata,
     updateTabUrl,
 } from './redux/app/app-slice';
-import { Events, FRAME_ID_PREFIX } from './util/constants';
 import initStore from './redux/init';
-import { I18nextProvider } from 'react-i18next';
 import { getAllowedAssetTypes, getAvailableAsset } from './util/asset-enablements';
+import { Events, FRAME_ID_PREFIX } from './util/constants';
+import { registerOnRMPSaveChange, registerOnTokenRequest } from './util/local-storage-save';
 
 let root: Root;
 const AppRoot = lazy(() => import('./components/app-root'));
@@ -79,4 +80,7 @@ rmgRuntime.ready().then(() => {
     });
 
     rmgRuntime.event(Events.APP_LOAD, { openedApps: store.getState().app.openedTabs.map(tab => tab.app) });
+
+    registerOnRMPSaveChange(store);
+    registerOnTokenRequest(store);
 });
