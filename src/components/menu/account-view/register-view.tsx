@@ -17,7 +17,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRootDispatch } from '../../../redux';
 import { login } from '../../../redux/account/account-slice';
-import { API_ENDPOINT } from '../../../util/constants';
+import { API_ENDPOINT, API_URL } from '../../../util/constants';
 
 interface LoginResponse {
     user: { name: string };
@@ -36,7 +36,7 @@ const RegisterView = (props: { setLoginOrRegister: (_: 'login' | 'register') => 
     const [emailVerificationSent, setEmailVerificationSent] = React.useState('');
 
     const handleVerifyEmail = async () => {
-        const rep = await fetch(API_ENDPOINT.AUTH_SEND_VERIFICATION_EMAIL, {
+        const rep = await fetch(API_URL + API_ENDPOINT.AUTH_SEND_VERIFICATION_EMAIL, {
             method: 'POST',
             headers: {
                 accept: 'application/json',
@@ -55,7 +55,7 @@ const RegisterView = (props: { setLoginOrRegister: (_: 'login' | 'register') => 
     };
 
     const handleRegister = async () => {
-        const registerRep = await fetch(API_ENDPOINT.AUTH_REGISTER, {
+        const registerRep = await fetch(API_URL + API_ENDPOINT.AUTH_REGISTER, {
             method: 'POST',
             headers: {
                 accept: 'application/json',
