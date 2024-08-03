@@ -120,37 +120,31 @@ export const assetEnablement: Record<string, AssetDetail> = {
         name: 'GitHub Pages mirror',
         url: 'https://railmapgen.github.io',
         assetType: 'link',
-        allowedInstances: ['GitLab', 'Gitee', 'localhost', 'unknown'],
+        allowedInstances: ['GitLab', 'localhost', 'unknown'],
     },
     'gitlab-pages': {
         name: 'GitLab Pages mirror',
         url: 'https://railmapgen.gitlab.io',
         assetType: 'link',
-        allowedInstances: ['GitHub', 'Gitee', 'localhost', 'unknown'],
-    },
-    'gitee-pages': {
-        name: 'Gitee Pages mirror',
-        url: 'https://railmapgen.gitee.io',
-        assetType: 'link',
-        allowedInstances: ['GitHub', 'GitLab', 'localhost', 'unknown'],
+        allowedInstances: ['GitHub', 'localhost', 'unknown'],
     },
     tauri: {
         name: 'Download desktop app',
         url: getTauriUrl(),
         assetType: 'link',
-        allowedInstances: ['GitHub', 'GitLab', 'Gitee', 'localhost', 'unknown'],
+        allowedInstances: ['GitHub', 'GitLab', 'localhost', 'unknown'],
     },
     busLineDesigner: {
         name: 'Bus Line Designer',
         url: 'https://buslinedesigner.bobliu.tech',
         assetType: 'link',
-        allowedInstances: ['GitHub', 'GitLab', 'Gitee', 'Tauri', 'localhost', 'unknown'],
+        allowedInstances: ['GitHub', 'GitLab', 'Tauri', 'localhost', 'unknown'],
     },
     linesPaper: {
         name: 'LinesPaper线图荟',
         url: 'https://space.bilibili.com/3546659889875715',
         assetType: 'link',
-        allowedInstances: ['GitHub', 'GitLab', 'Gitee', 'Tauri', 'localhost', 'unknown'],
+        allowedInstances: ['GitHub', 'GitLab', 'Tauri', 'localhost', 'unknown'],
     },
 };
 
