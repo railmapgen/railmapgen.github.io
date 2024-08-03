@@ -97,6 +97,12 @@ const RegisterView = (props: { setLoginOrRegister: (_: 'login' | 'register') => 
             },
         } = (await loginRes.json()) as LoginResponse;
         dispatch(login({ name: username, email, token, refreshToken }));
+        toast({
+            title: t('Welcome ') + username,
+            status: 'success' as const,
+            duration: 5000,
+            isClosable: true,
+        });
     };
 
     return (

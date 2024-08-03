@@ -46,6 +46,12 @@ const LoginView = (props: { setLoginOrRegister: (_: 'login' | 'register') => voi
         } = (await rep.json()) as LoginResponse;
         dispatch(login({ name, email, token, refreshToken }));
         dispatch(fetchSaveList());
+        toast({
+            title: t('Welcome ') + name,
+            status: 'success' as const,
+            duration: 5000,
+            isClosable: true,
+        });
     };
 
     return (
