@@ -53,5 +53,5 @@
         "lint:fix": "eslint ./src ./runtime-demo --fix",
         "preview": "vite preview"
     },
-    "version": "1.6.10"
+    "version": "1.6.11"
 }
