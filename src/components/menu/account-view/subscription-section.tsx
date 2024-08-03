@@ -1,4 +1,4 @@
-import { Button, Card, CardBody, CardFooter, CardHeader, Heading, Stack, Text } from '@chakra-ui/react';
+import { Button, Card, CardBody, CardFooter, CardHeader, Heading, Stack, Text, useToast } from '@chakra-ui/react';
 import { RmgSection, RmgSectionHeader } from '@railmapgen/rmg-components';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -19,12 +19,21 @@ interface APISubscription {
 }
 
 const SubscriptionSection = () => {
+    const toast = useToast();
     const { t } = useTranslation();
     const { isLoggedIn, token, refreshToken } = useRootSelector(state => state.account);
     const dispatch = useRootDispatch();
 
     const [subscriptions, setSubscriptions] = React.useState([] as APISubscription[]);
     const [isRedeemModalOpen, setIsRedeemModalOpen] = React.useState(false);
+
+    const showErrorToast = (msg: string) =>
+        toast({
+            title: msg,
+            status: 'error' as const,
+            duration: 9000,
+            isClosable: true,
+        });
 
     const getSubscriptions = async () => {
         if (!isLoggedIn) return;
@@ -33,9 +42,15 @@ const SubscriptionSection = () => {
             token: updatedToken,
             refreshToken: updatedRefreshToken,
         } = await apiFetch(API_ENDPOINT.SUBSCRIPTION, {}, token, refreshToken);
-        if (!updatedRefreshToken || !updatedToken) return;
+        if (!updatedRefreshToken || !updatedToken) {
+            showErrorToast(t('Login status expired'));
+            return;
+        }
         dispatch(setToken({ access: updatedToken, refresh: updatedRefreshToken }));
-        if (rep.status !== 200) return;
+        if (rep.status !== 200) {
+            showErrorToast(await rep.text());
+            return;
+        }
         const subscriptions = (await rep.json()).subscriptions as APISubscription[];
         if (!subscriptions.map(_ => _.type).includes('RMP_CLOUD')) return;
         setSubscriptions([{ type: 'RMP', expires: subscriptions[0].expires }]);

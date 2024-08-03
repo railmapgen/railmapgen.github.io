@@ -11,6 +11,7 @@ import {
     Input,
     InputGroup,
     InputRightElement,
+    useToast,
 } from '@chakra-ui/react';
 import { RmgSection, RmgSectionHeader } from '@railmapgen/rmg-components';
 import React from 'react';
@@ -25,6 +26,7 @@ interface LoginResponse {
 }
 
 const RegisterView = (props: { setLoginOrRegister: (_: 'login' | 'register') => void }) => {
+    const toast = useToast();
     const { t } = useTranslation();
     const dispatch = useRootDispatch();
 
@@ -34,6 +36,14 @@ const RegisterView = (props: { setLoginOrRegister: (_: 'login' | 'register') => 
     const [emailVerificationToken, setEmailVerificationToken] = React.useState('');
 
     const [emailVerificationSent, setEmailVerificationSent] = React.useState('');
+
+    const showErrorToast = (msg: string) =>
+        toast({
+            title: msg,
+            status: 'error' as const,
+            duration: 9000,
+            isClosable: true,
+        });
 
     const handleVerifyEmail = async () => {
         const rep = await fetch(API_URL + API_ENDPOINT.AUTH_SEND_VERIFICATION_EMAIL, {
@@ -63,7 +73,10 @@ const RegisterView = (props: { setLoginOrRegister: (_: 'login' | 'register') => 
             },
             body: JSON.stringify({ name, email, password, emailVerificationToken: Number(emailVerificationToken) }),
         });
-        if (registerRep.status !== 201) return;
+        if (registerRep.status !== 201) {
+            showErrorToast(await registerRep.text());
+            return;
+        }
         const loginRes = await fetch(API_ENDPOINT.AUTH_LOGIN, {
             method: 'POST',
             headers: {
@@ -72,7 +85,10 @@ const RegisterView = (props: { setLoginOrRegister: (_: 'login' | 'register') => 
             },
             body: JSON.stringify({ email, password }),
         });
-        if (loginRes.status !== 200) return;
+        if (loginRes.status !== 200) {
+            showErrorToast(await registerRep.text());
+            return;
+        }
         const {
             user: { name: username },
             tokens: {

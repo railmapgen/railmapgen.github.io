@@ -1,4 +1,4 @@
-import { Button, Flex, FormControl, FormLabel, Heading, Input } from '@chakra-ui/react';
+import { Button, Flex, FormControl, FormLabel, Heading, Input, useToast } from '@chakra-ui/react';
 import { RmgSection, RmgSectionHeader } from '@railmapgen/rmg-components';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -13,8 +13,17 @@ interface LoginResponse {
 }
 
 const LoginView = (props: { setLoginOrRegister: (_: 'login' | 'register') => void }) => {
+    const toast = useToast();
     const { t } = useTranslation();
     const dispatch = useRootDispatch();
+
+    const showErrorToast = (msg: string) =>
+        toast({
+            title: msg,
+            status: 'error' as const,
+            duration: 9000,
+            isClosable: true,
+        });
 
     const [email, setEmail] = React.useState('');
     const [password, setPassword] = React.useState('');
@@ -24,7 +33,10 @@ const LoginView = (props: { setLoginOrRegister: (_: 'login' | 'register') => voi
             method: 'POST',
             body: JSON.stringify({ email, password }),
         });
-        if (rep.status !== 200) return;
+        if (rep.status !== 200) {
+            showErrorToast(await rep.text());
+            return;
+        }
         const {
             user: { name },
             tokens: {

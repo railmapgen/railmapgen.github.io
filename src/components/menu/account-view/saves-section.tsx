@@ -1,4 +1,4 @@
-import { Button, Card, CardBody, CardFooter, CardHeader, Heading, Stack, Text } from '@chakra-ui/react';
+import { Button, Card, CardBody, CardFooter, CardHeader, Heading, Stack, Text, useToast } from '@chakra-ui/react';
 import { RmgSection, RmgSectionHeader } from '@railmapgen/rmg-components';
 import { logger } from '@railmapgen/rmg-runtime';
 import { useTranslation } from 'react-i18next';
@@ -12,6 +12,7 @@ const MAXIMUM_FREE_SAVE = 1;
 const MAXIMUM_SAVE = 10;
 
 const SavesSection = () => {
+    const toast = useToast();
     const { t } = useTranslation();
     const dispatch = useRootDispatch();
     const {
@@ -31,9 +32,20 @@ const SavesSection = () => {
     const isUpdateDisabled = (saveId: number) =>
         !activeSubscriptions.RMP_CLOUD && saveId !== firstSaveIdIfSubscriptionIsExpired;
 
+    const showErrorToast = (msg: string) =>
+        toast({
+            title: msg,
+            status: 'error' as const,
+            duration: 9000,
+            isClosable: true,
+        });
+
     const handleCreateNewSave = async () => {
         const save = await getRMPSave(SAVE_KEY.RMP);
-        if (!isLoggedIn || !save || !token) return;
+        if (!isLoggedIn || !save || !token) {
+            showErrorToast(t('Failed to get the RMP save!'));
+            return;
+        }
         const { data, hash } = save;
         const {
             rep,
@@ -48,15 +60,24 @@ const SavesSection = () => {
             token,
             refreshToken
         );
-        if (!updatedRefreshToken || !updatedToken) return;
+        if (!updatedRefreshToken || !updatedToken) {
+            showErrorToast(t('Login status expired'));
+            return;
+        }
         dispatch(setToken({ access: updatedToken, refresh: updatedRefreshToken }));
-        if (rep.status !== 200) return;
+        if (rep.status !== 200) {
+            showErrorToast(await rep.text());
+            return;
+        }
         dispatch(fetchSaveList());
     };
     const handleSync = async (saveId: number) => {
         if (!isLoggedIn || !token) return;
         if (saveId === currentSaveId) {
-            if (!currentSaveId || isUpdateDisabled(currentSaveId)) return;
+            if (!currentSaveId || isUpdateDisabled(currentSaveId)) {
+                showErrorToast(t('Failed to get the RMP save!'));
+                return;
+            }
             const save = await getRMPSave(SAVE_KEY.RMP);
             if (!save) return;
             const { data, hash } = save;
@@ -73,9 +94,15 @@ const SavesSection = () => {
                 token,
                 refreshToken
             );
-            if (!updatedRefreshToken || !updatedToken) return;
+            if (!updatedRefreshToken || !updatedToken) {
+                showErrorToast(t('Login status expired'));
+                return;
+            }
             dispatch(setToken({ access: updatedToken, refresh: updatedRefreshToken }));
-            if (rep.status !== 200) return;
+            if (rep.status !== 200) {
+                showErrorToast(await rep.text());
+                return;
+            }
         } else {
             // sync another save slot
             const {
@@ -83,9 +110,15 @@ const SavesSection = () => {
                 token: updatedToken,
                 refreshToken: updatedRefreshToken,
             } = await apiFetch(API_ENDPOINT.SAVES + '/' + saveId, {}, token, refreshToken);
-            if (!updatedRefreshToken || !updatedToken) return;
+            if (!updatedRefreshToken || !updatedToken) {
+                showErrorToast(t('Login status expired'));
+                return;
+            }
             dispatch(setToken({ access: updatedToken, refresh: updatedRefreshToken }));
-            if (rep.status !== 200) return;
+            if (rep.status !== 200) {
+                showErrorToast(await rep.text());
+                return;
+            }
             logger.info(`Set ${SAVE_KEY.RMP} with save id: ${saveId}`);
             setRMPSave(SAVE_KEY.RMP, await rep.text());
             notifyRMPSaveChange();
@@ -99,9 +132,15 @@ const SavesSection = () => {
             token: updatedToken,
             refreshToken,
         } = await apiFetch(API_ENDPOINT.SAVES + '/' + currentSaveId, { method: 'DELETE' }, token);
-        if (!refreshToken || !updatedToken) return;
+        if (!refreshToken || !updatedToken) {
+            showErrorToast(t('Login status expired'));
+            return;
+        }
         dispatch(setToken({ access: updatedToken, refresh: refreshToken }));
-        if (rep.status !== 200) return;
+        if (rep.status !== 200) {
+            showErrorToast(await rep.text());
+            return;
+        }
         dispatch(fetchSaveList());
     };
 
