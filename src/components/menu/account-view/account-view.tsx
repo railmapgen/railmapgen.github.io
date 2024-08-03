@@ -4,6 +4,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRootDispatch, useRootSelector } from '../../../redux';
 import { logout } from '../../../redux/account/account-slice';
+import { API_ENDPOINT, API_URL } from '../../../util/constants';
 import LoginView from './login-view';
 import RegisterView from './register-view';
 import SavesSection from './saves-section';
@@ -18,7 +19,7 @@ const AccountView = () => {
 
     const handleLogOut = async () => {
         if (!isLoggedIn) return;
-        await fetch('http://localhost:3000/v1/auth/logout', {
+        await fetch(API_URL + API_ENDPOINT.AUTH_LOGOUT, {
             method: 'POST',
             headers: {
                 accept: 'application/json',
