@@ -48,7 +48,7 @@ export enum API_ENDPOINT {
     SAVES = '/saves',
 }
 
-export const API_URL = 'https://railmapgen.org:3000/v1';
+export const API_URL = 'https://railmapgen.org/v1';
 
 export interface APISaveInfo {
     index: string;
