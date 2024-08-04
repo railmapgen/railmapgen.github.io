@@ -130,13 +130,13 @@ const SavesSection = () => {
         const {
             rep,
             token: updatedToken,
-            refreshToken,
-        } = await apiFetch(API_ENDPOINT.SAVES + '/' + currentSaveId, { method: 'DELETE' }, token);
-        if (!refreshToken || !updatedToken) {
+            refreshToken: updatedRefreshToken,
+        } = await apiFetch(API_ENDPOINT.SAVES + '/' + currentSaveId, { method: 'DELETE' }, token, refreshToken);
+        if (!updatedRefreshToken || !updatedToken) {
             showErrorToast(t('Login status expired'));
             return;
         }
-        dispatch(setToken({ access: updatedToken, refresh: refreshToken }));
+        dispatch(setToken({ access: updatedToken, refresh: updatedRefreshToken }));
         if (rep.status !== 200) {
             showErrorToast(await rep.text());
             return;
