@@ -53,6 +53,7 @@ export const API_URL = 'https://railmapgen.org/v1';
 export interface APISaveInfo {
     index: string;
     id: number;
+    hash: string;
     lastUpdateAt: Date;
 }
 

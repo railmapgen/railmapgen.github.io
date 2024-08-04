@@ -1,6 +1,7 @@
 import { Button, Card, CardBody, CardFooter, CardHeader, Heading, Stack, Text, useToast } from '@chakra-ui/react';
 import { RmgSection, RmgSectionHeader } from '@railmapgen/rmg-components';
 import { logger } from '@railmapgen/rmg-runtime';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRootDispatch, useRootSelector } from '../../../redux';
 import { fetchSaveList, setToken } from '../../../redux/account/account-slice';
@@ -143,6 +144,49 @@ const SavesSection = () => {
         }
         dispatch(fetchSaveList());
     };
+
+    // Below: Set RMP save with cloud latest on logged in
+
+    React.useEffect(() => {
+        if (!currentSaveId) return;
+        checkIfRMPSaveNeedsUpdated();
+    }, [currentSaveId]);
+
+    const checkIfRMPSaveNeedsUpdated = async () => {
+        const save = await getRMPSave(SAVE_KEY.RMP);
+        if (!save) {
+            setRMPSaveWithCloudLatest();
+            return;
+        }
+        const { hash: localHash } = save;
+        const cloudHash = saveList.filter(save => save.id === currentSaveId).at(0)?.hash;
+        if (!cloudHash) return;
+        if (cloudHash !== localHash) {
+            setRMPSaveWithCloudLatest();
+        }
+    };
+
+    const setRMPSaveWithCloudLatest = async () => {
+        const {
+            rep,
+            token: updatedToken,
+            refreshToken: updatedRefreshToken,
+        } = await apiFetch(API_ENDPOINT.SAVES + '/' + currentSaveId, {}, token, refreshToken);
+        if (!updatedRefreshToken || !updatedToken) {
+            showErrorToast(t('Login status expired'));
+            return;
+        }
+        dispatch(setToken({ access: updatedToken, refresh: updatedRefreshToken }));
+        if (rep.status !== 200) {
+            showErrorToast(await rep.text());
+            return;
+        }
+        logger.info(`Set ${SAVE_KEY.RMP} with save id: ${currentSaveId}`);
+        setRMPSave(SAVE_KEY.RMP, await rep.text());
+        notifyRMPSaveChange();
+    };
+
+    // Above: Set RMP save with cloud latest on logged in
 
     return (
         <RmgSection>
