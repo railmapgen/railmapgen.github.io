@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { API_ENDPOINT, APISaveInfo, APISaveList } from '../../util/constants';
-import { apiFetch } from '../../util/utils';
 import { RootState } from '../../redux/index';
+import { API_ENDPOINT, API_URL, APILoginResponse, APISaveInfo, APISaveList } from '../../util/constants';
+import { apiFetch } from '../../util/utils';
 
 export interface ActiveSubscriptions {
     RMP_CLOUD: boolean;
@@ -61,6 +61,33 @@ export const fetchSaveList = createAsyncThunk<APISaveList, undefined>(
             rejectWithValue(rep.text);
         }
         return (await rep.json()) as APISaveList;
+    }
+);
+
+export const fetchLogin = createAsyncThunk<{ error?: string; username?: string }, { email: string; password: string }>(
+    'account/fetchLogin',
+    async (accountInfo, { dispatch }) => {
+        const { email, password } = accountInfo;
+        const loginRes = await fetch(API_URL + API_ENDPOINT.AUTH_LOGIN, {
+            method: 'POST',
+            headers: {
+                accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email, password }),
+        });
+        if (loginRes.status !== 200) {
+            return { error: await loginRes.text(), username: undefined };
+        }
+        const {
+            user: { name: username },
+            tokens: {
+                access: { token },
+                refresh: { token: refreshToken },
+            },
+        } = (await loginRes.json()) as APILoginResponse;
+        dispatch(login({ name: username, email, token, refreshToken }));
+        return { error: undefined, username };
     }
 );
 

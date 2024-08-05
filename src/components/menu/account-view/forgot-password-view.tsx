@@ -5,7 +5,6 @@ import {
     Button,
     Flex,
     FormControl,
-    FormHelperText,
     FormLabel,
     Heading,
     Input,
@@ -20,17 +19,16 @@ import { useRootDispatch } from '../../../redux';
 import { fetchLogin } from '../../../redux/account/account-slice';
 import { API_ENDPOINT, API_URL } from '../../../util/constants';
 
-const RegisterView = (props: { setLoginState: (_: 'login' | 'register') => void }) => {
+const ForgotPasswordView = (props: { setLoginState: (_: 'login' | 'register' | 'forgot-password') => void }) => {
     const toast = useToast();
     const { t } = useTranslation();
     const dispatch = useRootDispatch();
 
-    const [name, setName] = React.useState('');
     const [email, setEmail] = React.useState('');
     const [password, setPassword] = React.useState('');
-    const [emailVerificationToken, setEmailVerificationToken] = React.useState('');
+    const [resetPasswordToken, setResetPasswordToken] = React.useState('');
 
-    const [emailVerificationSent, setEmailVerificationSent] = React.useState('');
+    const [emailResetPasswordSent, setEmailResetPasswordSent] = React.useState('');
 
     const showErrorToast = (msg: string) =>
         toast({
@@ -40,8 +38,8 @@ const RegisterView = (props: { setLoginState: (_: 'login' | 'register') => void 
             isClosable: true,
         });
 
-    const handleVerifyEmail = async () => {
-        const rep = await fetch(API_URL + API_ENDPOINT.AUTH_SEND_VERIFICATION_EMAIL, {
+    const handleSendResetPasswordEmail = async () => {
+        const rep = await fetch(API_URL + API_ENDPOINT.AUTH_SEND_RESET_PASSWORD_EMAIL, {
             method: 'POST',
             headers: {
                 accept: 'application/json',
@@ -50,26 +48,28 @@ const RegisterView = (props: { setLoginState: (_: 'login' | 'register') => void 
             body: JSON.stringify({ email }),
         });
         if (rep.status === 204) {
-            setEmailVerificationSent(email);
+            setEmailResetPasswordSent(email);
             return;
         }
         if (rep.status === 400) {
-            setEmailVerificationSent('error');
+            setEmailResetPasswordSent('error');
             return;
         }
     };
 
-    const handleRegister = async () => {
-        const registerRep = await fetch(API_URL + API_ENDPOINT.AUTH_REGISTER, {
+    const handleResetPassword = async () => {
+        const resetPasswordParam = new URLSearchParams({ token: resetPasswordToken });
+        const resetPasswordURL = `${API_URL}${API_ENDPOINT.AUTH_RESET_PASSWORD}?${resetPasswordParam.toString()}`;
+        const resetPasswordRep = await fetch(resetPasswordURL, {
             method: 'POST',
             headers: {
                 accept: 'application/json',
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ name, email, password, emailVerificationToken: Number(emailVerificationToken) }),
+            body: JSON.stringify({ password }),
         });
-        if (registerRep.status !== 201) {
-            showErrorToast(await registerRep.text());
+        if (resetPasswordRep.status !== 204) {
+            showErrorToast(await resetPasswordRep.text());
             return;
         }
 
@@ -98,57 +98,47 @@ const RegisterView = (props: { setLoginState: (_: 'login' | 'register') => void 
         <RmgSection>
             <RmgSectionHeader>
                 <Heading as="h4" size="md" my={1}>
-                    {t('Sign up')}
+                    {t('Forgot password')}
                 </Heading>
             </RmgSectionHeader>
 
-            {emailVerificationSent && (
-                <Alert status={emailVerificationSent === 'error' ? 'error' : 'info'}>
+            {emailResetPasswordSent && (
+                <Alert status={emailResetPasswordSent === 'error' ? 'error' : 'info'}>
                     <AlertIcon />
                     <AlertDescription>
-                        {emailVerificationSent === 'error'
-                            ? t('The email is not valid!')
-                            : t('Verification email is sent to: ') + emailVerificationSent}
+                        {emailResetPasswordSent === 'error'
+                            ? t('Check your email again!')
+                            : t('Email with reset link is sent to: ') + emailResetPasswordSent}
                     </AlertDescription>
                 </Alert>
             )}
 
             <Flex p="3" flexDirection="column">
                 <FormControl>
-                    <FormLabel>{t('Name')}</FormLabel>
-                    <Input type="text" value={name} onChange={e => setName(e.target.value)} />
-                    <FormHelperText>{t('You may always change it later.')}</FormHelperText>
-                </FormControl>
-                <FormControl>
                     <FormLabel>{t('Email')}</FormLabel>
                     <InputGroup size="md">
                         <Input type="email" value={email} onChange={e => setEmail(e.target.value)} />
                         <InputRightElement width="4.5rem">
-                            <Button h="1.75rem" size="sm" onClick={handleVerifyEmail}>
-                                {t('Send verification code')}
+                            <Button h="1.75rem" size="sm" onClick={handleSendResetPasswordEmail}>
+                                {t('Send reset link')}
                             </Button>
                         </InputRightElement>
                     </InputGroup>
-                    <FormHelperText>{t("We'll never share your email.")}</FormHelperText>
                 </FormControl>
                 <FormControl>
-                    <FormLabel>{t('Verification code')}</FormLabel>
-                    <Input
-                        type="number"
-                        value={emailVerificationToken}
-                        onChange={e => setEmailVerificationToken(e.target.value)}
-                    />
+                    <FormLabel>{t('Reset password token')}</FormLabel>
+                    <Input value={resetPasswordToken} onChange={e => setResetPasswordToken(e.target.value)} />
                 </FormControl>
                 <FormControl>
                     <FormLabel>{t('Password')}</FormLabel>
                     <Input type="password" value={password} onChange={e => setPassword(e.target.value)} />
                 </FormControl>
 
-                <Button onClick={handleRegister}>{t('Sign up')}</Button>
+                <Button onClick={handleResetPassword}>{t('Reset password')}</Button>
                 <Button onClick={() => props.setLoginState('login')}>{t('Back to log in')}</Button>
             </Flex>
         </RmgSection>
     );
 };
 
-export default RegisterView;
+export default ForgotPasswordView;

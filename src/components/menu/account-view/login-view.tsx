@@ -3,55 +3,36 @@ import { RmgSection, RmgSectionHeader } from '@railmapgen/rmg-components';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRootDispatch } from '../../../redux';
-import { fetchSaveList, login } from '../../../redux/account/account-slice';
-import { API_ENDPOINT } from '../../../util/constants';
-import { apiFetch } from '../../../util/utils';
+import { fetchLogin } from '../../../redux/account/account-slice';
 
-interface LoginResponse {
-    user: { name: string };
-    tokens: { access: { token: string }; refresh: { token: string } };
-}
-
-const LoginView = (props: { setLoginOrRegister: (_: 'login' | 'register') => void }) => {
+const LoginView = (props: { setLoginState: (_: 'login' | 'register' | 'forgot-password') => void }) => {
     const toast = useToast();
     const { t } = useTranslation();
     const dispatch = useRootDispatch();
-
-    const showErrorToast = (msg: string) =>
-        toast({
-            title: msg,
-            status: 'error' as const,
-            duration: 9000,
-            isClosable: true,
-        });
 
     const [email, setEmail] = React.useState('');
     const [password, setPassword] = React.useState('');
 
     const handleLogIn = async () => {
-        const { rep } = await apiFetch(API_ENDPOINT.AUTH_LOGIN, {
-            method: 'POST',
-            body: JSON.stringify({ email, password }),
-        });
-        if (rep.status !== 200) {
-            showErrorToast(await rep.text());
-            return;
+        const { error, username } = (await dispatch(fetchLogin({ email, password }))).payload as {
+            error?: string;
+            username?: string;
+        };
+        if (error) {
+            toast({
+                title: error,
+                status: 'error' as const,
+                duration: 9000,
+                isClosable: true,
+            });
+        } else {
+            toast({
+                title: t('Welcome ') + username,
+                status: 'success' as const,
+                duration: 5000,
+                isClosable: true,
+            });
         }
-        const {
-            user: { name },
-            tokens: {
-                access: { token },
-                refresh: { token: refreshToken },
-            },
-        } = (await rep.json()) as LoginResponse;
-        dispatch(login({ name, email, token, refreshToken }));
-        dispatch(fetchSaveList());
-        toast({
-            title: t('Welcome ') + name,
-            status: 'success' as const,
-            duration: 5000,
-            isClosable: true,
-        });
     };
 
     return (
@@ -73,7 +54,8 @@ const LoginView = (props: { setLoginOrRegister: (_: 'login' | 'register') => voi
                 </FormControl>
 
                 <Button onClick={handleLogIn}>{t('Log in')}</Button>
-                <Button onClick={() => props.setLoginOrRegister('register')}>{t('Sign up')}</Button>
+                <Button onClick={() => props.setLoginState('forgot-password')}>{t('Forgot password')}</Button>
+                <Button onClick={() => props.setLoginState('register')}>{t('Sign up')}</Button>
             </Flex>
         </RmgSection>
     );
