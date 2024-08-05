@@ -74,7 +74,7 @@ const RedeemModal = (props: { isOpen: boolean; onClose: () => void; getSubscript
                     <Text>{t('CDKey could be purchased in the following site:')}</Text>
                     <UnorderedList>
                         <ListItem>
-                            <Link color={linkColour} href="https://afdian.net/a/rail-map-toolkit" isExternal={true}>
+                            <Link color={linkColour} href="https://afdian.com/a/rail-map-toolkit" isExternal={true}>
                                 爱发电 <Icon as={MdOpenInNew} />
                             </Link>
                         </ListItem>
