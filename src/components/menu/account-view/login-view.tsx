@@ -1,4 +1,4 @@
-import { Button, Flex, FormControl, FormLabel, Heading, Input, useToast } from '@chakra-ui/react';
+import { Button, Flex, FormControl, FormLabel, Heading, Input, Stack, useToast } from '@chakra-ui/react';
 import { RmgSection, RmgSectionHeader } from '@railmapgen/rmg-components';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -53,9 +53,11 @@ const LoginView = (props: { setLoginState: (_: 'login' | 'register' | 'forgot-pa
                     <Input type="password" value={password} onChange={e => setPassword(e.target.value)} />
                 </FormControl>
 
-                <Button onClick={handleLogIn}>{t('Log in')}</Button>
-                <Button onClick={() => props.setLoginState('forgot-password')}>{t('Forgot password')}</Button>
-                <Button onClick={() => props.setLoginState('register')}>{t('Sign up')}</Button>
+                <Stack mt="10">
+                    <Button onClick={handleLogIn}>{t('Log in')}</Button>
+                    <Button onClick={() => props.setLoginState('register')}>{t('Sign up')}</Button>
+                    <Button onClick={() => props.setLoginState('forgot-password')}>{t('Forgot password')}</Button>
+                </Stack>
             </Flex>
         </RmgSection>
     );

@@ -71,7 +71,7 @@ const RedeemModal = (props: { isOpen: boolean; onClose: () => void; getSubscript
                 <ModalCloseButton />
 
                 <ModalBody>
-                    <Text>{t('CDKey could be purchased in the following site:')}</Text>
+                    <Text>{t('CDKey could be purchased in the following sites:')}</Text>
                     <UnorderedList>
                         <ListItem>
                             <Link color={linkColour} href="https://afdian.com/a/rail-map-toolkit" isExternal={true}>

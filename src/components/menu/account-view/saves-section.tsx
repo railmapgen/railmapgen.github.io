@@ -1,4 +1,4 @@
-import { Button, Card, CardBody, CardFooter, CardHeader, Heading, Stack, Text, useToast } from '@chakra-ui/react';
+import { Button, Card, CardBody, CardFooter, HStack, Heading, Stack, Text, useToast } from '@chakra-ui/react';
 import { RmgSection, RmgSectionHeader } from '@railmapgen/rmg-components';
 import { logger } from '@railmapgen/rmg-runtime';
 import React from 'react';
@@ -33,6 +33,9 @@ const SavesSection = () => {
     const isUpdateDisabled = (saveId: number) =>
         !activeSubscriptions.RMP_CLOUD && saveId !== firstSaveIdIfSubscriptionIsExpired;
 
+    const [syncButtonIsLoading, setSyncButtonIsLoading] = React.useState(undefined as number | undefined);
+    const [deleteButtonIsLoading, setDeleteButtonIsLoading] = React.useState(undefined as number | undefined);
+
     const showErrorToast = (msg: string) =>
         toast({
             title: msg,
@@ -48,6 +51,7 @@ const SavesSection = () => {
             return;
         }
         const { data, hash } = save;
+        const index = crypto.randomUUID();
         const {
             rep,
             token: updatedToken,
@@ -56,7 +60,7 @@ const SavesSection = () => {
             API_ENDPOINT.SAVES,
             {
                 method: 'POST',
-                body: JSON.stringify({ index: saveList.length.toString(), data, hash }),
+                body: JSON.stringify({ index, data, hash }),
             },
             token,
             refreshToken
@@ -75,12 +79,18 @@ const SavesSection = () => {
     const handleSync = async (saveId: number) => {
         if (!isLoggedIn || !token) return;
         if (saveId === currentSaveId) {
+            setSyncButtonIsLoading(currentSaveId);
             if (!currentSaveId || isUpdateDisabled(currentSaveId)) {
-                showErrorToast(t('Failed to get the RMP save!'));
+                showErrorToast(t('Can not sync this save!'));
+                setSyncButtonIsLoading(undefined);
                 return;
             }
             const save = await getRMPSave(SAVE_KEY.RMP);
-            if (!save) return;
+            if (!save) {
+                showErrorToast(t('Failed to get the RMP save!'));
+                setSyncButtonIsLoading(undefined);
+                return;
+            }
             const { data, hash } = save;
             const {
                 rep,
@@ -97,15 +107,19 @@ const SavesSection = () => {
             );
             if (!updatedRefreshToken || !updatedToken) {
                 showErrorToast(t('Login status expired'));
+                setSyncButtonIsLoading(undefined);
                 return;
             }
             dispatch(setToken({ access: updatedToken, refresh: updatedRefreshToken }));
             if (rep.status !== 200) {
                 showErrorToast(await rep.text());
+                setSyncButtonIsLoading(undefined);
                 return;
             }
+            setSyncButtonIsLoading(undefined);
         } else {
             // sync another save slot
+            setSyncButtonIsLoading(saveId);
             const {
                 rep,
                 token: updatedToken,
@@ -113,21 +127,25 @@ const SavesSection = () => {
             } = await apiFetch(API_ENDPOINT.SAVES + '/' + saveId, {}, token, refreshToken);
             if (!updatedRefreshToken || !updatedToken) {
                 showErrorToast(t('Login status expired'));
+                setSyncButtonIsLoading(undefined);
                 return;
             }
             dispatch(setToken({ access: updatedToken, refresh: updatedRefreshToken }));
             if (rep.status !== 200) {
                 showErrorToast(await rep.text());
+                setSyncButtonIsLoading(undefined);
                 return;
             }
             logger.info(`Set ${SAVE_KEY.RMP} with save id: ${saveId}`);
             setRMPSave(SAVE_KEY.RMP, await rep.text());
             notifyRMPSaveChange();
+            setSyncButtonIsLoading(undefined);
         }
         dispatch(fetchSaveList());
     };
     const handleDeleteSave = async (saveId: number) => {
         if (!isLoggedIn || !saveId || !token) return;
+        setDeleteButtonIsLoading(saveId);
         const {
             rep,
             token: updatedToken,
@@ -135,14 +153,17 @@ const SavesSection = () => {
         } = await apiFetch(API_ENDPOINT.SAVES + '/' + currentSaveId, { method: 'DELETE' }, token, refreshToken);
         if (!updatedRefreshToken || !updatedToken) {
             showErrorToast(t('Login status expired'));
+            setDeleteButtonIsLoading(undefined);
             return;
         }
         dispatch(setToken({ access: updatedToken, refresh: updatedRefreshToken }));
         if (rep.status !== 200) {
             showErrorToast(await rep.text());
+            setDeleteButtonIsLoading(undefined);
             return;
         }
         dispatch(fetchSaveList());
+        setDeleteButtonIsLoading(undefined);
     };
 
     // Below: Set RMP save with cloud latest on logged in
@@ -191,45 +212,57 @@ const SavesSection = () => {
     return (
         <RmgSection>
             <RmgSectionHeader>
-                <Heading as="h4" size="md" my={1}>
-                    {t('Synced saves')}
-                </Heading>
+                <HStack width="100%">
+                    <Heading as="h4" size="md" my={1}>
+                        {t('Synced saves')}
+                    </Heading>
+                    <Text ml="auto">
+                        {t('Maximum save count:')} {activeSubscriptions.RMP_CLOUD ? 10 : 1}
+                    </Text>
+                    <Button size="sm" isDisabled={!canCreateNewSave} onClick={handleCreateNewSave}>
+                        {t('Create')}
+                    </Button>
+                </HStack>
             </RmgSectionHeader>
 
-            {saveList &&
-                saveList.map(_ => (
-                    <Card key={_.id} overflow="hidden" variant="outline" mb="3">
-                        <CardHeader>
-                            <Heading size="md">{t(_.index)}</Heading>
-                        </CardHeader>
-                        <Stack direction={{ base: 'column', sm: 'row' }}>
-                            <CardBody>
-                                <Text py="2">
-                                    {t('Last update at:')} {new Date(_.lastUpdateAt).toLocaleString()}
-                                </Text>
-                            </CardBody>
-                            <CardFooter>
-                                <Stack>
-                                    <Button variant="solid" colorScheme="red" onClick={() => handleDeleteSave(_.id)}>
-                                        {t('Delete this save')}
-                                    </Button>
-                                    <Button
-                                        variant="solid"
-                                        colorScheme="blue"
-                                        isDisabled={isUpdateDisabled(_.id)}
-                                        onClick={() => handleSync(_.id)}
-                                    >
-                                        {_.id === currentSaveId ? t('Sync now') : t('Sync this slot')}
-                                    </Button>
-                                </Stack>
-                            </CardFooter>
-                        </Stack>
-                    </Card>
-                ))}
-
-            <Button isDisabled={!canCreateNewSave} onClick={handleCreateNewSave}>
-                {t('Create a new save')}
-            </Button>
+            <Stack mt="2">
+                {saveList &&
+                    saveList.map(_ => (
+                        <Card key={_.id} overflow="hidden" variant="outline" mb="3">
+                            <Stack direction={{ base: 'column', sm: 'row' }}>
+                                <CardBody>
+                                    <Text py="2" as="b">
+                                        {_.id === currentSaveId ? t('Current save') : t('Cloud save')}
+                                    </Text>
+                                    <Text py="2">
+                                        {t('Last update at:')} {new Date(_.lastUpdateAt).toLocaleString()}
+                                    </Text>
+                                </CardBody>
+                                <CardFooter>
+                                    <Stack>
+                                        <Button
+                                            variant="solid"
+                                            colorScheme="red"
+                                            isLoading={deleteButtonIsLoading === _.id}
+                                            onClick={() => handleDeleteSave(_.id)}
+                                        >
+                                            {t('Delete this save')}
+                                        </Button>
+                                        <Button
+                                            variant="solid"
+                                            colorScheme="blue"
+                                            isDisabled={isUpdateDisabled(_.id)}
+                                            isLoading={syncButtonIsLoading === _.id}
+                                            onClick={() => handleSync(_.id)}
+                                        >
+                                            {_.id === currentSaveId ? t('Sync now') : t('Sync this slot')}
+                                        </Button>
+                                    </Stack>
+                                </CardFooter>
+                            </Stack>
+                        </Card>
+                    ))}
+            </Stack>
         </RmgSection>
     );
 };

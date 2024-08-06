@@ -10,6 +10,7 @@ import {
     Input,
     InputGroup,
     InputRightElement,
+    Stack,
     useToast,
 } from '@chakra-ui/react';
 import { RmgSection, RmgSectionHeader } from '@railmapgen/rmg-components';
@@ -134,8 +135,10 @@ const ForgotPasswordView = (props: { setLoginState: (_: 'login' | 'register' | '
                     <Input type="password" value={password} onChange={e => setPassword(e.target.value)} />
                 </FormControl>
 
-                <Button onClick={handleResetPassword}>{t('Reset password')}</Button>
-                <Button onClick={() => props.setLoginState('login')}>{t('Back to log in')}</Button>
+                <Stack mt="10">
+                    <Button onClick={handleResetPassword}>{t('Reset password')}</Button>
+                    <Button onClick={() => props.setLoginState('login')}>{t('Back to log in')}</Button>
+                </Stack>
             </Flex>
         </RmgSection>
     );

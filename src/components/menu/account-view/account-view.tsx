@@ -1,4 +1,4 @@
-import { Avatar, Button, Flex, Heading, Text } from '@chakra-ui/react';
+import { Avatar, Button, Divider, Flex, HStack, Heading, Stack, Text } from '@chakra-ui/react';
 import { RmgSection, RmgSectionHeader } from '@railmapgen/rmg-components';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -49,14 +49,23 @@ const AccountView = () => {
                 )
             ) : (
                 <Flex flexDirection="column" alignItems="center">
-                    <Avatar size="xl" name={name} src="https://github.com/thekingofcity.png?size=200" />
-                    <Text as="b" fontSize="xl">
-                        {name}
-                    </Text>
-                    <Button onClick={handleLogOut}>{t('Log out')}</Button>
-
-                    <SubscriptionSection />
-                    <SavesSection />
+                    <Stack width="100%" p="2" spacing="30px">
+                        <RmgSectionHeader width="100%">
+                            <HStack width="100%">
+                                <Avatar size="md" name={name} />
+                                <Text as="b" fontSize="xl">
+                                    {name}
+                                </Text>
+                                <Button size="sm" ml="auto" onClick={handleLogOut}>
+                                    {t('Log out')}
+                                </Button>
+                            </HStack>
+                        </RmgSectionHeader>
+                        <Divider />
+                        <SubscriptionSection />
+                        <Divider />
+                        <SavesSection />
+                    </Stack>
                 </Flex>
             )}
         </RmgSection>

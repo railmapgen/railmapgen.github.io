@@ -11,6 +11,7 @@ import {
     Input,
     InputGroup,
     InputRightElement,
+    Stack,
     useToast,
 } from '@chakra-ui/react';
 import { RmgSection, RmgSectionHeader } from '@railmapgen/rmg-components';
@@ -114,38 +115,42 @@ const RegisterView = (props: { setLoginState: (_: 'login' | 'register') => void 
             )}
 
             <Flex p="3" flexDirection="column">
-                <FormControl>
-                    <FormLabel>{t('Name')}</FormLabel>
-                    <Input type="text" value={name} onChange={e => setName(e.target.value)} />
-                    <FormHelperText>{t('You may always change it later.')}</FormHelperText>
-                </FormControl>
-                <FormControl>
-                    <FormLabel>{t('Email')}</FormLabel>
-                    <InputGroup size="md">
-                        <Input type="email" value={email} onChange={e => setEmail(e.target.value)} />
-                        <InputRightElement width="4.5rem">
-                            <Button h="1.75rem" size="sm" onClick={handleVerifyEmail}>
-                                {t('Send verification code')}
-                            </Button>
-                        </InputRightElement>
-                    </InputGroup>
-                    <FormHelperText>{t("We'll never share your email.")}</FormHelperText>
-                </FormControl>
-                <FormControl>
-                    <FormLabel>{t('Verification code')}</FormLabel>
-                    <Input
-                        type="number"
-                        value={emailVerificationToken}
-                        onChange={e => setEmailVerificationToken(e.target.value)}
-                    />
-                </FormControl>
-                <FormControl>
-                    <FormLabel>{t('Password')}</FormLabel>
-                    <Input type="password" value={password} onChange={e => setPassword(e.target.value)} />
-                </FormControl>
+                <Stack spacing="25px">
+                    <FormControl>
+                        <FormLabel>{t('Name')}</FormLabel>
+                        <Input type="text" value={name} onChange={e => setName(e.target.value)} />
+                        <FormHelperText>{t('You may always change it later.')}</FormHelperText>
+                    </FormControl>
+                    <FormControl>
+                        <FormLabel>{t('Email')}</FormLabel>
+                        <InputGroup size="md">
+                            <Input type="email" value={email} onChange={e => setEmail(e.target.value)} />
+                            <InputRightElement width="auto">
+                                <Button h="1.75rem" size="sm" onClick={handleVerifyEmail}>
+                                    {t('Send verification code')}
+                                </Button>
+                            </InputRightElement>
+                        </InputGroup>
+                        <FormHelperText>{t("We'll never share your email.")}</FormHelperText>
+                    </FormControl>
+                    <FormControl>
+                        <FormLabel>{t('Verification code')}</FormLabel>
+                        <Input
+                            type="number"
+                            value={emailVerificationToken}
+                            onChange={e => setEmailVerificationToken(e.target.value)}
+                        />
+                    </FormControl>
+                    <FormControl>
+                        <FormLabel>{t('Password')}</FormLabel>
+                        <Input type="password" value={password} onChange={e => setPassword(e.target.value)} />
+                    </FormControl>
+                </Stack>
 
-                <Button onClick={handleRegister}>{t('Sign up')}</Button>
-                <Button onClick={() => props.setLoginState('login')}>{t('Back to log in')}</Button>
+                <Stack mt="10">
+                    <Button onClick={handleRegister}>{t('Sign up')}</Button>
+                    <Button onClick={() => props.setLoginState('login')}>{t('Back to log in')}</Button>
+                </Stack>
             </Flex>
         </RmgSection>
     );
