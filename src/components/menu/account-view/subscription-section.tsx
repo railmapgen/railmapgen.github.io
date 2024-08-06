@@ -1,4 +1,17 @@
-import { Button, Card, CardBody, CardFooter, CardHeader, Heading, Stack, Text, useToast } from '@chakra-ui/react';
+import {
+    Button,
+    Card,
+    CardBody,
+    CardFooter,
+    CardHeader,
+    HStack,
+    Heading,
+    ListItem,
+    Stack,
+    Text,
+    UnorderedList,
+    useToast,
+} from '@chakra-ui/react';
 import { RmgSection, RmgSectionHeader } from '@railmapgen/rmg-components';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -71,32 +84,70 @@ const SubscriptionSection = () => {
     return (
         <RmgSection>
             <RmgSectionHeader>
-                <Heading as="h4" size="md" my={1}>
-                    {t('All subscriptions')}
-                </Heading>
+                <HStack width="100%">
+                    <Heading as="h4" size="md" my={1}>
+                        {t('All subscriptions')}
+                    </Heading>
+                    <Button size="sm" ml="auto" onClick={() => setIsRedeemModalOpen(true)}>
+                        {t('Redeem')}
+                    </Button>
+                </HStack>
             </RmgSectionHeader>
 
-            {subscriptions.map(_ => (
-                <Card key={_.type} overflow="hidden" variant="outline" mb="3">
-                    <CardHeader>
-                        <Heading size="md">{t(_.type)}</Heading>
-                    </CardHeader>
-                    <Stack direction={{ base: 'column', sm: 'row' }}>
-                        <CardBody>
-                            <Text py="2">
-                                {t('Expires at:')} {new Date(_.expires).toLocaleString()}
-                            </Text>
-                        </CardBody>
-                        <CardFooter>
-                            <Button variant="solid" colorScheme="blue">
-                                {t('Renew')}
-                            </Button>
-                        </CardFooter>
-                    </Stack>
-                </Card>
-            ))}
+            <Stack mt="2">
+                {subscriptions.length > 0 && (
+                    <Card overflow="hidden" variant="outline" mb="3">
+                        <CardHeader>
+                            <Heading size="md">{t('Rail Map Painter')}</Heading>
+                        </CardHeader>
+                        <Stack direction={{ base: 'column', sm: 'row' }}>
+                            <CardBody>
+                                <Stack>
+                                    <Text>{t('With this subscription, the following features are unlocked:')}</Text>
+                                    <UnorderedList>
+                                        <ListItem>
+                                            <Text>{t('PRO features')}</Text>
+                                        </ListItem>
+                                        <ListItem>
+                                            <Text>{t('Sync 9 more saves')}</Text>
+                                        </ListItem>
+                                        <ListItem>
+                                            <Text>{t('Unlimited master nodes')}</Text>
+                                        </ListItem>
+                                        <ListItem>
+                                            <Text>{t('Unlimited parallel lines')}</Text>
+                                        </ListItem>
+                                    </UnorderedList>
 
-            <Button onClick={() => setIsRedeemModalOpen(true)}>{t('Redeem')}</Button>
+                                    <Text>
+                                        {t('Expires at:')} {t('Not applicable')}
+                                    </Text>
+                                </Stack>
+                            </CardBody>
+                        </Stack>
+                    </Card>
+                )}
+
+                {subscriptions.map(_ => (
+                    <Card key={_.type} overflow="hidden" variant="outline" mb="3">
+                        <CardHeader>
+                            <Heading size="md">{t(_.type === 'RMP' ? 'Rail Map Painter' : _.type)}</Heading>
+                        </CardHeader>
+                        <Stack direction={{ base: 'column', sm: 'row' }}>
+                            <CardBody>
+                                <Text py="2">
+                                    {t('Expires at:')} {new Date(_.expires).toLocaleString()}
+                                </Text>
+                            </CardBody>
+                            <CardFooter>
+                                <Button variant="solid" colorScheme="blue">
+                                    {t('Renew')}
+                                </Button>
+                            </CardFooter>
+                        </Stack>
+                    </Card>
+                ))}
+            </Stack>
 
             <RedeemModal
                 isOpen={isRedeemModalOpen}
