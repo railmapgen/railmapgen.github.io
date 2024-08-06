@@ -11,6 +11,7 @@ export enum LocalStorageKey {
     ACTIVE_TAB = 'rmg-home__activeTab',
     LAST_SHOW_DEVTOOLS = 'lastShowDevtools',
     SHOW_FONT_ADVICE = 'showFontAdvice',
+    ACCOUNT = 'rmg-home__account',
 }
 
 export enum Events {
@@ -35,3 +36,39 @@ export const QUERY_STRINGS = {
     SEARCH_PARAMS: 'searchParams',
     HASH_PARAMS: 'hashParams',
 };
+
+export enum API_ENDPOINT {
+    AUTH_REGISTER = '/auth/register',
+    AUTH_LOGIN = '/auth/login',
+    AUTH_SEND_VERIFICATION_EMAIL = '/auth/send-verification-email',
+    AUTH_SEND_RESET_PASSWORD_EMAIL = '/auth/forgot-password',
+    AUTH_RESET_PASSWORD = '/auth/reset-password',
+    AUTH_REFRESH = '/auth/refresh-tokens',
+    AUTH_LOGOUT = '/auth/logout',
+    SUBSCRIPTION = '/subscription',
+    SUBSCRIPTION_REDEEM = '/subscription/redeem',
+    SAVES = '/saves',
+}
+
+export const API_URL = 'https://railmapgen.org/v1';
+
+export interface APILoginResponse {
+    user: { name: string };
+    tokens: { access: { token: string }; refresh: { token: string } };
+}
+
+export interface APISaveInfo {
+    index: string;
+    id: number;
+    hash: string;
+    lastUpdateAt: Date;
+}
+
+export interface APISaveList {
+    saves: APISaveInfo[];
+    currentSaveId: number;
+}
+
+export enum SAVE_KEY {
+    RMP = 'rmp__param',
+}

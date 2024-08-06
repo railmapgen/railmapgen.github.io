@@ -1,4 +1,10 @@
+import rmgRuntime, { logger } from '@railmapgen/rmg-runtime';
+import { clearAllListeners } from '@reduxjs/toolkit';
+import { assetEnablement, getAllowedAssetTypes, getAvailableAsset } from '../util/asset-enablements';
 import { LocalStorageKey, QUERY_STRINGS, WorkspaceTab } from '../util/constants';
+import { checkInstance } from '../util/instance-checker';
+import { isSafari } from '../util/utils';
+import { login } from './account/account-slice';
 import {
     isShowDevtools,
     neverShowFontAdvice,
@@ -9,11 +15,6 @@ import {
     showDevtools,
 } from './app/app-slice';
 import { RootStore, startRootListening } from './index';
-import rmgRuntime, { logger } from '@railmapgen/rmg-runtime';
-import { checkInstance } from '../util/instance-checker';
-import { clearAllListeners } from '@reduxjs/toolkit';
-import { assetEnablement, getAllowedAssetTypes, getAvailableAsset } from '../util/asset-enablements';
-import { isSafari } from '../util/utils';
 
 export const initShowDevtools = (store: RootStore) => {
     const lastShowDevTools = Number(rmgRuntime.storage.get(LocalStorageKey.LAST_SHOW_DEVTOOLS));
@@ -80,10 +81,21 @@ export const openSearchedApp = (store: RootStore) => {
     }
 };
 
+export const initAccount = (store: RootStore) => {
+    const accountString = window.localStorage.getItem(LocalStorageKey.ACCOUNT);
+
+    if (accountString) {
+        const accountData = JSON.parse(accountString);
+        logger.debug(`Get account data from local storage: ${accountData}`);
+        store.dispatch(login(accountData));
+    }
+};
+
 export default function initStore(store: RootStore) {
     initShowDevtools(store);
     initOpenedTabs(store);
     initActiveTab(store);
+    initAccount(store);
 
     if (isSafari() || rmgRuntime.storage.get(LocalStorageKey.SHOW_FONT_ADVICE) === 'never') {
         store.dispatch(neverShowFontAdvice());
@@ -120,6 +132,24 @@ export default function initStore(store: RootStore) {
         effect: (_action, listenerApi) => {
             const activeApp = listenerApi.getState().app.activeTab;
             activeApp !== undefined && window.localStorage.setItem(LocalStorageKey.ACTIVE_TAB, activeApp);
+        },
+    });
+
+    startRootListening({
+        predicate: (_action, currentState, previousState) => {
+            return currentState.account.isLoggedIn !== previousState.account.isLoggedIn;
+        },
+        effect: (_action, listenerApi) => {
+            const { isLoggedIn, name, email, token, refreshToken } = listenerApi.getState().account;
+            if (isLoggedIn) {
+                window.localStorage.setItem(
+                    LocalStorageKey.ACCOUNT,
+                    JSON.stringify({ name, email, token, refreshToken })
+                );
+            } else {
+                logger.debug(`Remove account from local storage due to logout.`);
+                window.localStorage.removeItem(LocalStorageKey.ACCOUNT);
+            }
         },
     });
 

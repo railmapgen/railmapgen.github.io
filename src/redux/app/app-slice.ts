@@ -1,9 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { WorkspaceTab } from '../../util/constants';
 import { assetEnablement } from '../../util/asset-enablements';
+import { WorkspaceTab } from '../../util/constants';
 import { constructUrl } from '../../util/utils';
 
-type MenuView = 'main' | 'settings' | 'support';
+type MenuView = 'main' | 'settings' | 'support' | 'account';
 type FontConfig = {
     displayName?: string;
     url?: string;
