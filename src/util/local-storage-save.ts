@@ -36,30 +36,46 @@ export const notifyRMPSaveChange = () => {
     } as SaveManagerEvent);
 };
 
+/**
+ * Slightly reduce the server load by notifying a sequence of updates once.
+ */
+let updateSaveTimeout: number | undefined;
+
+const SAVE_UPDATE_TIMEOUT_MS = 3 * 1000; // 3s
+
 export const registerOnRMPSaveChange = (store: ReturnType<typeof createStore>) => {
     const eventHandler = async (ev: MessageEvent<SaveManagerEvent>) => {
-        const { isLoggedIn, currentSaveId, token, refreshToken } = store.getState().account;
-        if (!isLoggedIn || !currentSaveId || !token || !refreshToken) return;
-
-        const { type, key, from } = ev.data;
-        if (type === SaveManagerEventType.SAVE_CHANGED && from === 'rmp') {
-            logger.info(`Received save changed event on key: ${key}`);
-            if (isLoggedIn && currentSaveId) {
-                logger.info(`Update remote save id: ${currentSaveId} with local key: ${key}`);
-                const {
-                    rep,
-                    token: updatedToken,
-                    refreshToken: updatedRefreshToken,
-                } = await onSaveUpdate(currentSaveId, token, refreshToken, key!);
-                if (!updatedRefreshToken || !updatedToken) {
-                    store.dispatch(logout());
-                    return;
-                }
-                store.dispatch(setToken({ access: updatedToken, refresh: updatedRefreshToken }));
-                if (rep.status !== 200) return;
-                store.dispatch(fetchSaveList());
-            }
+        if (updateSaveTimeout) {
+            return;
         }
+
+        updateSaveTimeout = window.setTimeout(async () => {
+            const { isLoggedIn, currentSaveId, token, refreshToken } = store.getState().account;
+            if (!isLoggedIn || !currentSaveId || !token || !refreshToken) return;
+
+            const { type, key, from } = ev.data;
+            if (type === SaveManagerEventType.SAVE_CHANGED && from === 'rmp') {
+                logger.info(`Received save changed event on key: ${key}`);
+                if (isLoggedIn && currentSaveId) {
+                    logger.info(`Update remote save id: ${currentSaveId} with local key: ${key}`);
+                    // TODO: updating save won't have a isLoading button effect on the save being synced
+                    const {
+                        rep,
+                        token: updatedToken,
+                        refreshToken: updatedRefreshToken,
+                    } = await onSaveUpdate(currentSaveId, token, refreshToken, key!);
+                    if (!updatedRefreshToken || !updatedToken) {
+                        store.dispatch(logout());
+                        return;
+                    }
+                    store.dispatch(setToken({ access: updatedToken, refresh: updatedRefreshToken }));
+                    if (rep.status !== 200) return;
+                    store.dispatch(fetchSaveList());
+                }
+            }
+
+            updateSaveTimeout = undefined;
+        }, SAVE_UPDATE_TIMEOUT_MS);
     };
 
     channel.addEventListener('message', eventHandler);
