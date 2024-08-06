@@ -87,6 +87,7 @@ export const fetchLogin = createAsyncThunk<{ error?: string; username?: string }
             },
         } = (await loginRes.json()) as APILoginResponse;
         dispatch(login({ name: username, email, token, refreshToken }));
+        dispatch(fetchSaveList());
         return { error: undefined, username };
     }
 );
