@@ -5,6 +5,8 @@ import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import { useRootSelector } from '../../redux';
 import { isShowDevtools } from '../../redux/app/app-slice';
+import AccountStatus from './account-view/account-status';
+import AccountView from './account-view/account-view';
 import AppsSection from './main-view/apps-section';
 import LinksSection from './main-view/links-section';
 import NavMenuFooter from './nav-menu-footer';
@@ -110,6 +112,8 @@ export default function NavMenu() {
 
                 {/* menu-body */}
                 <Flex className="nav-menu__body">
+                    {menuView === 'main' && <AccountStatus />}
+
                     {menuView === 'main' ? (
                         <>
                             <AppsSection assetType="app" />
@@ -123,6 +127,8 @@ export default function NavMenu() {
                             <SupportSection />
                             <FontsSection />
                         </>
+                    ) : menuView === 'account' ? (
+                        <AccountView />
                     ) : (
                         <></>
                     )}

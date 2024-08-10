@@ -10,7 +10,6 @@ const mockOpenedTabs: WorkspaceTab[] = [
     { id: '01', app: 'rmg' },
     { id: '02', app: 'rmg-palette' },
     { id: '03', app: 'runtime-demo' },
-    { id: '04', app: 'gitee-pages' },
 ];
 
 describe('ReduxInit', () => {
