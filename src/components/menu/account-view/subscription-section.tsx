@@ -95,7 +95,7 @@ const SubscriptionSection = () => {
             </RmgSectionHeader>
 
             <Stack mt="2">
-                {subscriptions.length > 0 && (
+                {subscriptions.length === 0 && (
                     <Card overflow="hidden" variant="outline" mb="3">
                         <CardHeader>
                             <Heading size="md">{t('Rail Map Painter')}</Heading>

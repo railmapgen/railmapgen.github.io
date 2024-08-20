@@ -45,6 +45,7 @@ export enum API_ENDPOINT {
     AUTH_RESET_PASSWORD = '/auth/reset-password',
     AUTH_REFRESH = '/auth/refresh-tokens',
     AUTH_LOGOUT = '/auth/logout',
+    USER = '/users',
     SUBSCRIPTION = '/subscription',
     SUBSCRIPTION_REDEEM = '/subscription/redeem',
     SAVES = '/saves',
@@ -53,7 +54,7 @@ export enum API_ENDPOINT {
 export const API_URL = 'https://railmapgen.org/v1';
 
 export interface APILoginResponse {
-    user: { name: string };
+    user: { id: number; name: string };
     tokens: { access: { token: string }; refresh: { token: string } };
 }
 

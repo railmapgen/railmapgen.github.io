@@ -15,6 +15,7 @@ export const defaultActiveSubscriptions: ActiveSubscriptions = {
 
 export interface AccountState {
     isLoggedIn: boolean;
+    id?: number;
     name?: string;
     email?: string;
     token?: string;
@@ -26,6 +27,7 @@ export interface AccountState {
 
 const initialState: AccountState = {
     isLoggedIn: false,
+    id: undefined,
     name: '',
     email: undefined,
     token: undefined,
@@ -36,6 +38,7 @@ const initialState: AccountState = {
 };
 
 interface LoginInfo {
+    id: number;
     name: string;
     email: string;
     token: string;
@@ -80,13 +83,13 @@ export const fetchLogin = createAsyncThunk<{ error?: string; username?: string }
             return { error: await loginRes.text(), username: undefined };
         }
         const {
-            user: { name: username },
+            user: { name: username, id: userId },
             tokens: {
                 access: { token },
                 refresh: { token: refreshToken },
             },
         } = (await loginRes.json()) as APILoginResponse;
-        dispatch(login({ name: username, email, token, refreshToken }));
+        dispatch(login({ id: userId, name: username, email, token, refreshToken }));
         dispatch(fetchSaveList());
         return { error: undefined, username };
     }
@@ -98,6 +101,7 @@ const accountSlice = createSlice({
     reducers: {
         login: (state, action: PayloadAction<LoginInfo>) => {
             state.isLoggedIn = true;
+            state.id = action.payload.id;
             state.name = action.payload.name;
             state.email = action.payload.email;
             state.token = action.payload.token;
@@ -109,6 +113,7 @@ const accountSlice = createSlice({
 
         logout: state => {
             state.isLoggedIn = false;
+            state.id = undefined;
             state.name = undefined;
             state.email = undefined;
             state.token = undefined;
@@ -116,6 +121,10 @@ const accountSlice = createSlice({
             state.activeSubscriptions = defaultActiveSubscriptions;
             state.currentSaveId = undefined;
             state.saves = [];
+        },
+
+        updateName: (state, action: PayloadAction<string>) => {
+            state.name = action.payload;
         },
 
         setToken: (state, action: PayloadAction<{ access: string; refresh: string }>) => {
@@ -140,5 +149,5 @@ const accountSlice = createSlice({
     },
 });
 
-export const { login, logout, setActiveSubscriptions, setToken } = accountSlice.actions;
+export const { login, logout, updateName, setActiveSubscriptions, setToken } = accountSlice.actions;
 export default accountSlice.reducer;

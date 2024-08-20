@@ -140,11 +140,11 @@ export default function initStore(store: RootStore) {
             return currentState.account.isLoggedIn !== previousState.account.isLoggedIn;
         },
         effect: (_action, listenerApi) => {
-            const { isLoggedIn, name, email, token, refreshToken } = listenerApi.getState().account;
+            const { isLoggedIn, id, name, email, token, refreshToken } = listenerApi.getState().account;
             if (isLoggedIn) {
                 window.localStorage.setItem(
                     LocalStorageKey.ACCOUNT,
-                    JSON.stringify({ name, email, token, refreshToken })
+                    JSON.stringify({ id, name, email, token, refreshToken })
                 );
             } else {
                 logger.debug(`Remove account from local storage due to logout.`);
