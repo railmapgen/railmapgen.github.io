@@ -1,10 +1,9 @@
-import { Avatar, Button, Divider, Flex, HStack, Heading, Stack, Text } from '@chakra-ui/react';
+import { Divider, Flex, Heading, Stack } from '@chakra-ui/react';
 import { RmgSection, RmgSectionHeader } from '@railmapgen/rmg-components';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useRootDispatch, useRootSelector } from '../../../redux';
-import { logout } from '../../../redux/account/account-slice';
-import { API_ENDPOINT, API_URL } from '../../../util/constants';
+import { useRootSelector } from '../../../redux';
+import AccountInfo from './account-info';
 import ForgotPasswordView from './forgot-password-view';
 import LoginView from './login-view';
 import RegisterView from './register-view';
@@ -13,23 +12,9 @@ import SubscriptionSection from './subscription-section';
 
 const AccountView = () => {
     const { t } = useTranslation();
-    const dispatch = useRootDispatch();
-    const { isLoggedIn, name, refreshToken } = useRootSelector(state => state.account);
+    const { isLoggedIn } = useRootSelector(state => state.account);
 
     const [loginState, setLoginState] = React.useState('login' as 'login' | 'register' | 'forgot-password');
-
-    const handleLogOut = async () => {
-        if (!isLoggedIn) return;
-        await fetch(API_URL + API_ENDPOINT.AUTH_LOGOUT, {
-            method: 'POST',
-            headers: {
-                accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ refreshToken }),
-        });
-        dispatch(logout());
-    };
 
     return (
         <RmgSection>
@@ -50,17 +35,7 @@ const AccountView = () => {
             ) : (
                 <Flex flexDirection="column" alignItems="center">
                     <Stack width="100%" p="2" spacing="30px">
-                        <RmgSectionHeader width="100%">
-                            <HStack width="100%">
-                                <Avatar size="md" name={name} />
-                                <Text as="b" fontSize="xl">
-                                    {name}
-                                </Text>
-                                <Button size="sm" ml="auto" onClick={handleLogOut}>
-                                    {t('Log out')}
-                                </Button>
-                            </HStack>
-                        </RmgSectionHeader>
+                        <AccountInfo />
                         <Divider />
                         <SubscriptionSection />
                         <Divider />

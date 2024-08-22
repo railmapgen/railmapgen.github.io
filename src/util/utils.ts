@@ -76,6 +76,38 @@ export const apiFetch = async (
     return { rep: retryRep, token: newToken, refreshToken: refresh.refresh.token };
 };
 
+// TODO: this is duplicate in apiFetch, and all token refreshes should be handled
+// in initAccount instead of mixed in each request.
+export const refreshToken = async (refreshToken: string) => {
+    const defaultHeaders = {
+        accept: 'application/json',
+        'Content-Type': 'application/json',
+    } as {
+        accept: string;
+        'Content-Type': string;
+        Authorization?: string;
+    };
+    const refreshRep = await fetch(`${API_URL}${API_ENDPOINT.AUTH_REFRESH}`, {
+        method: 'POST',
+        headers: defaultHeaders,
+        body: JSON.stringify({ refreshToken }),
+    });
+    if (refreshRep.status !== 200) {
+        return;
+    }
+    const refresh = (await refreshRep.json()) as {
+        access: {
+            token: string;
+            expires: string;
+        };
+        refresh: {
+            token: string;
+            expires: string;
+        };
+    };
+    return refresh;
+};
+
 export const createHash = async (data: string, algorithm = 'SHA-256') => {
     const encoder = new TextEncoder();
     const encodedData = encoder.encode(data);

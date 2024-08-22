@@ -121,6 +121,12 @@ export const assetEnablement: Record<string, AssetDetail> = {
         url: 'https://rmttutorial.wordpress.com',
         assetType: 'link',
     },
+    'official-website': {
+        name: 'Official website',
+        url: 'https://railmapgen.org',
+        assetType: 'link',
+        allowedInstances: ['GitHub', 'GitLab', 'localhost', 'unknown'],
+    },
     'github-pages': {
         name: 'GitHub Pages mirror',
         url: 'https://railmapgen.github.io',
