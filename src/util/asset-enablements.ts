@@ -74,6 +74,11 @@ export const assetEnablement: Record<string, AssetDetail> = {
         showDonators: true,
         allowedInstances: ['Org', 'GitHub', 'GitLab', 'Tauri', 'localhost', 'unknown'],
     },
+    'rmp-designer': {
+        name: 'RMP Designer',
+        url: '/rmp-designer/',
+        assetType: 'app',
+    },
     'rmg-components': {
         name: 'Components',
         url: '/rmg-components/',
