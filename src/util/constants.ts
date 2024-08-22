@@ -55,7 +55,7 @@ export const API_URL = 'https://railmapgen.org/v1';
 
 export interface APILoginResponse {
     user: { id: number; name: string };
-    tokens: { access: { token: string }; refresh: { token: string } };
+    tokens: { access: { token: string; expires: string }; refresh: { token: string; expires: string } };
 }
 
 export interface APISaveInfo {

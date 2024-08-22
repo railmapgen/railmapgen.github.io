@@ -19,7 +19,9 @@ export interface AccountState {
     name?: string;
     email?: string;
     token?: string;
+    expires?: string;
     refreshToken?: string;
+    refreshExpires?: string;
     activeSubscriptions: ActiveSubscriptions;
     currentSaveId?: number;
     saves: APISaveInfo[];
@@ -31,18 +33,22 @@ const initialState: AccountState = {
     name: '',
     email: undefined,
     token: undefined,
+    expires: undefined,
     refreshToken: undefined,
+    refreshExpires: undefined,
     activeSubscriptions: defaultActiveSubscriptions,
     currentSaveId: undefined,
     saves: [],
 };
 
-interface LoginInfo {
+export interface LoginInfo {
     id: number;
     name: string;
     email: string;
     token: string;
+    expires: string;
     refreshToken: string;
+    refreshExpires: string;
 }
 
 export const fetchSaveList = createAsyncThunk<APISaveList, undefined>(
@@ -85,11 +91,11 @@ export const fetchLogin = createAsyncThunk<{ error?: string; username?: string }
         const {
             user: { name: username, id: userId },
             tokens: {
-                access: { token },
-                refresh: { token: refreshToken },
+                access: { token, expires },
+                refresh: { token: refreshToken, expires: refreshExpires },
             },
         } = (await loginRes.json()) as APILoginResponse;
-        dispatch(login({ id: userId, name: username, email, token, refreshToken }));
+        dispatch(login({ id: userId, name: username, email, token, expires, refreshToken, refreshExpires }));
         dispatch(fetchSaveList());
         return { error: undefined, username };
     }
@@ -105,7 +111,9 @@ const accountSlice = createSlice({
             state.name = action.payload.name;
             state.email = action.payload.email;
             state.token = action.payload.token;
+            state.expires = action.payload.expires;
             state.refreshToken = action.payload.refreshToken;
+            state.refreshExpires = action.payload.refreshExpires;
             state.activeSubscriptions = defaultActiveSubscriptions;
             state.currentSaveId = undefined;
             state.saves = [];
@@ -117,7 +125,9 @@ const accountSlice = createSlice({
             state.name = undefined;
             state.email = undefined;
             state.token = undefined;
+            state.expires = undefined;
             state.refreshToken = undefined;
+            state.refreshExpires = undefined;
             state.activeSubscriptions = defaultActiveSubscriptions;
             state.currentSaveId = undefined;
             state.saves = [];
@@ -130,6 +140,11 @@ const accountSlice = createSlice({
         setToken: (state, action: PayloadAction<{ access: string; refresh: string }>) => {
             state.token = action.payload.access;
             state.refreshToken = action.payload.refresh;
+        },
+
+        setExpires: (state, action: PayloadAction<{ expires: string; refreshExpires: string }>) => {
+            state.expires = action.payload.expires;
+            state.refreshExpires = action.payload.refreshExpires;
         },
 
         setActiveSubscriptions: (state, action: PayloadAction<ActiveSubscriptions>) => {
@@ -149,5 +164,5 @@ const accountSlice = createSlice({
     },
 });
 
-export const { login, logout, updateName, setActiveSubscriptions, setToken } = accountSlice.actions;
+export const { login, logout, updateName, setActiveSubscriptions, setToken, setExpires } = accountSlice.actions;
 export default accountSlice.reducer;
