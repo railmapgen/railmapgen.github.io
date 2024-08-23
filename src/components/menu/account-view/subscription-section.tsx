@@ -140,7 +140,7 @@ const SubscriptionSection = () => {
                                 </Text>
                             </CardBody>
                             <CardFooter>
-                                <Button variant="solid" colorScheme="blue">
+                                <Button variant="solid" colorScheme="blue" onClick={() => setIsRedeemModalOpen(true)}>
                                     {t('Renew')}
                                 </Button>
                             </CardFooter>
