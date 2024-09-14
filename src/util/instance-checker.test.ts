@@ -1,7 +1,7 @@
 import { waitFor } from '@testing-library/react';
 
 let testChannel: BroadcastChannel;
-let messagesReceived: any[] = [];
+let messagesReceived: unknown[] = [];
 
 describe('InstanceChecker', () => {
     beforeEach(() => {

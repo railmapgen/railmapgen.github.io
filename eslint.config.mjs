@@ -18,9 +18,7 @@ export default tseslint.config(
     {
         files: ['**/*.{js,jsx,mjs,cjs,ts,tsx}'],
         extends: [...tseslint.configs.recommended],
-        rules: {
-            '@typescript-eslint/no-explicit-any': 'off',
-        },
+        rules: {},
     },
     {
         files: ['**/*.{js,jsx,ts,tsx}'],
@@ -35,7 +33,7 @@ export default tseslint.config(
         plugins: { prettier },
         rules: {
             'prettier/prettier': [
-                'warn',
+                'error',
                 {
                     endOfLine: 'auto',
                 },

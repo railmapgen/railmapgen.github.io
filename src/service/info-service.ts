@@ -7,7 +7,7 @@ export const getVersion = async (component: string): Promise<string> => {
         const data = await res.json();
         return data.version as string;
     } catch (error) {
-        logger.info(`Failed to get version of ${component}`);
+        logger.info(`Failed to get version of ${component}`, error);
         return 'unknown';
     }
 };

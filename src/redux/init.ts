@@ -26,7 +26,7 @@ export const initShowDevtools = (store: RootStore) => {
 export const initOpenedTabs = (store: RootStore) => {
     try {
         // opened tabs
-        const openedTabsString = window.localStorage.getItem(LocalStorageKey.OPENED_TABS);
+        const openedTabsString = rmgRuntime.storage.get(LocalStorageKey.OPENED_TABS);
 
         if (openedTabsString) {
             const openedTabs = JSON.parse(openedTabsString);
@@ -46,7 +46,7 @@ export const initOpenedTabs = (store: RootStore) => {
 };
 
 export const initActiveTab = (store: RootStore) => {
-    const activeTab = window.localStorage.getItem(LocalStorageKey.ACTIVE_TAB);
+    const activeTab = rmgRuntime.storage.get(LocalStorageKey.ACTIVE_TAB);
     const openedTabs = store.getState().app.openedTabs;
     if (activeTab && openedTabs.some(({ id }) => id === activeTab)) {
         store.dispatch(setActiveTab(activeTab));
@@ -147,10 +147,7 @@ export default function initStore(store: RootStore) {
             return JSON.stringify(currentState.app.openedTabs) !== JSON.stringify(previousState.app.openedTabs);
         },
         effect: (_action, listenerApi) => {
-            window.localStorage.setItem(
-                LocalStorageKey.OPENED_TABS,
-                JSON.stringify(listenerApi.getState().app.openedTabs)
-            );
+            rmgRuntime.storage.set(LocalStorageKey.OPENED_TABS, JSON.stringify(listenerApi.getState().app.openedTabs));
         },
     });
 
@@ -160,7 +157,7 @@ export default function initStore(store: RootStore) {
         },
         effect: (_action, listenerApi) => {
             const activeApp = listenerApi.getState().app.activeTab;
-            activeApp !== undefined && window.localStorage.setItem(LocalStorageKey.ACTIVE_TAB, activeApp);
+            if (activeApp !== undefined) rmgRuntime.storage.set(LocalStorageKey.ACTIVE_TAB, activeApp);
         },
     });
 

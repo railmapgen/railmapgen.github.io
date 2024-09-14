@@ -3,6 +3,7 @@ import { createTestStore } from '../test-utils';
 import { LocalStorageKey, WorkspaceTab } from '../util/constants';
 import { initActiveTab, initOpenedTabs, openSearchedApp } from './init';
 import { showDevtools } from './app/app-slice';
+import rmgRuntime from '@railmapgen/rmg-runtime';
 
 const realStore = rootReducer.getState();
 
@@ -21,11 +22,11 @@ describe('ReduxInit', () => {
         });
 
         afterEach(() => {
-            window.localStorage.clear();
+            rmgRuntime.storage.clear();
         });
 
         it('Can filter out apps of invalid asset types', () => {
-            window.localStorage.setItem(LocalStorageKey.OPENED_TABS, JSON.stringify(mockOpenedTabs));
+            rmgRuntime.storage.set(LocalStorageKey.OPENED_TABS, JSON.stringify(mockOpenedTabs));
             initOpenedTabs(mockStore);
 
             const openedApps = mockStore.getState().app.openedTabs.map(tab => tab.app);
@@ -34,7 +35,7 @@ describe('ReduxInit', () => {
         });
 
         it('Can keep devtools if toggled on', () => {
-            window.localStorage.setItem(LocalStorageKey.OPENED_TABS, JSON.stringify(mockOpenedTabs));
+            rmgRuntime.storage.set(LocalStorageKey.OPENED_TABS, JSON.stringify(mockOpenedTabs));
             mockStore.dispatch(showDevtools());
             initOpenedTabs(mockStore);
 
@@ -57,11 +58,11 @@ describe('ReduxInit', () => {
         });
 
         afterEach(() => {
-            window.localStorage.clear();
+            rmgRuntime.storage.clear();
         });
 
         it('Can set active tab based on localStorage value as expected', () => {
-            window.localStorage.setItem(LocalStorageKey.ACTIVE_TAB, '02');
+            rmgRuntime.storage.set(LocalStorageKey.ACTIVE_TAB, '02');
             initActiveTab(mockStore);
 
             expect(mockStore.getState().app.activeTab).toBe('02');
@@ -80,7 +81,7 @@ describe('ReduxInit', () => {
             vi.spyOn(window, 'location', 'get').mockReturnValue(
                 new URL(
                     'https://railmapgen.github.io/?app=rmg&hashParams=' + encodeURIComponent('/?project=abc')
-                ) as any
+                ) as unknown as Location
             );
             openSearchedApp(mockStore);
 
@@ -92,7 +93,9 @@ describe('ReduxInit', () => {
         it('Can open searched app with extra search params', () => {
             const mockStore = createTestStore();
             vi.spyOn(window, 'location', 'get').mockReturnValue(
-                new URL('https://railmapgen.github.io/?app=rmp&searchParams=' + encodeURIComponent('id=123')) as any
+                new URL(
+                    'https://railmapgen.github.io/?app=rmp&searchParams=' + encodeURIComponent('id=123')
+                ) as unknown as Location
             );
             openSearchedApp(mockStore);
 

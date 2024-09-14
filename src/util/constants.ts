@@ -7,8 +7,8 @@ export interface WorkspaceTab {
 
 // localStorage key
 export enum LocalStorageKey {
-    OPENED_TABS = 'rmg-home__openedTabs',
-    ACTIVE_TAB = 'rmg-home__activeTab',
+    OPENED_TABS = 'openedTabs',
+    ACTIVE_TAB = 'activeTab',
     LAST_SHOW_DEVTOOLS = 'lastShowDevtools',
     SHOW_FONT_ADVICE = 'showFontAdvice',
     ACCOUNT = 'rmg-home__account',

@@ -11,7 +11,7 @@ const mockCallbacks = {
     onAboutOpen: vi.fn(),
 };
 
-let testMessagesReceived: any[] = [];
+let testMessagesReceived: unknown[] = [];
 const testChannel = new BroadcastChannel('rmg-runtime-channel');
 testChannel.onmessage = ev => testMessagesReceived.push(ev.data);
 

@@ -28,5 +28,10 @@ export const useRootSelector: TypedUseSelectorHook<RootState> = useSelector;
 type RootStartListening = TypedStartListening<RootState, RootDispatch>;
 export const startRootListening = listenerMiddleware.startListening as RootStartListening;
 
-(window as any).rmgStore = store;
+declare global {
+    interface Window {
+        rmgStore: RootStore;
+    }
+}
+window.rmgStore = store;
 export default store;
