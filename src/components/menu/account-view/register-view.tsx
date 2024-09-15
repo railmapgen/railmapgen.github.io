@@ -1,37 +1,38 @@
+import { useState } from 'react';
 import {
     Alert,
     AlertDescription,
     AlertIcon,
     Button,
     Flex,
-    FormControl,
-    FormHelperText,
-    FormLabel,
     Heading,
-    Input,
     InputGroup,
     InputRightElement,
     Stack,
     useToast,
 } from '@chakra-ui/react';
-import { RmgSection, RmgSectionHeader } from '@railmapgen/rmg-components';
-import React from 'react';
+import { RmgDebouncedInput, RmgFields, RmgSection, RmgSectionHeader } from '@railmapgen/rmg-components';
 import { useTranslation } from 'react-i18next';
 import { useRootDispatch } from '../../../redux';
 import { fetchLogin } from '../../../redux/account/account-slice';
 import { API_ENDPOINT, API_URL } from '../../../util/constants';
+import { emailValidator, passwordValidator } from './account-utils';
 
 const RegisterView = (props: { setLoginState: (_: 'login' | 'register') => void }) => {
     const toast = useToast();
     const { t } = useTranslation();
     const dispatch = useRootDispatch();
 
-    const [name, setName] = React.useState('');
-    const [email, setEmail] = React.useState('');
-    const [password, setPassword] = React.useState('');
-    const [emailVerificationToken, setEmailVerificationToken] = React.useState('');
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [emailVerificationToken, setEmailVerificationToken] = useState('');
+    const [emailVerificationSent, setEmailVerificationSent] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
 
-    const [emailVerificationSent, setEmailVerificationSent] = React.useState('');
+    const isEmailValid = !!email && emailValidator(email);
+    const areFieldsValid =
+        !!name && isEmailValid && !!emailVerificationToken && !!password && passwordValidator(password);
 
     const showErrorToast = (msg: string) =>
         toast({
@@ -61,37 +62,42 @@ const RegisterView = (props: { setLoginState: (_: 'login' | 'register') => void 
     };
 
     const handleRegister = async () => {
-        const registerRep = await fetch(API_URL + API_ENDPOINT.AUTH_REGISTER, {
-            method: 'POST',
-            headers: {
-                accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ name, email, password, emailVerificationToken: Number(emailVerificationToken) }),
-        });
-        if (registerRep.status !== 201) {
-            showErrorToast(await registerRep.text());
-            return;
-        }
+        setIsLoading(true);
+        try {
+            const registerRep = await fetch(API_URL + API_ENDPOINT.AUTH_REGISTER, {
+                method: 'POST',
+                headers: {
+                    accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name, email, password, emailVerificationToken: Number(emailVerificationToken) }),
+            });
+            if (registerRep.status !== 201) {
+                showErrorToast(await registerRep.text());
+                return;
+            }
 
-        const { error, username } = (await dispatch(fetchLogin({ email, password }))).payload as {
-            error?: string;
-            username?: string;
-        };
-        if (error) {
-            toast({
-                title: error,
-                status: 'error' as const,
-                duration: 9000,
-                isClosable: true,
-            });
-        } else {
-            toast({
-                title: t('Welcome ') + username,
-                status: 'success' as const,
-                duration: 5000,
-                isClosable: true,
-            });
+            const { error, username } = (await dispatch(fetchLogin({ email, password }))).payload as {
+                error?: string;
+                username?: string;
+            };
+            if (error) {
+                toast({
+                    title: error,
+                    status: 'error' as const,
+                    duration: 9000,
+                    isClosable: true,
+                });
+            } else {
+                toast({
+                    title: t('Welcome ') + username,
+                    status: 'success' as const,
+                    duration: 5000,
+                    isClosable: true,
+                });
+            }
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -99,7 +105,7 @@ const RegisterView = (props: { setLoginState: (_: 'login' | 'register') => void 
         <RmgSection>
             <RmgSectionHeader>
                 <Heading as="h4" size="md" my={1}>
-                    {t('Sign up')}
+                    {t('Create an account')}
                 </Heading>
             </RmgSectionHeader>
 
@@ -114,42 +120,72 @@ const RegisterView = (props: { setLoginState: (_: 'login' | 'register') => void 
                 </Alert>
             )}
 
-            <Flex p="3" flexDirection="column">
-                <Stack spacing="25px">
-                    <FormControl>
-                        <FormLabel>{t('Name')}</FormLabel>
-                        <Input type="text" value={name} onChange={e => setName(e.target.value)} />
-                        <FormHelperText>{t('You may always change it later.')}</FormHelperText>
-                    </FormControl>
-                    <FormControl>
-                        <FormLabel>{t('Email')}</FormLabel>
-                        <InputGroup size="md">
-                            <Input type="email" value={email} onChange={e => setEmail(e.target.value)} />
-                            <InputRightElement width="auto">
-                                <Button h="1.75rem" size="sm" onClick={handleVerifyEmail}>
-                                    {t('Send verification code')}
-                                </Button>
-                            </InputRightElement>
-                        </InputGroup>
-                        <FormHelperText>{t("We'll never share your email.")}</FormHelperText>
-                    </FormControl>
-                    <FormControl>
-                        <FormLabel>{t('Verification code')}</FormLabel>
-                        <Input
-                            type="number"
-                            value={emailVerificationToken}
-                            onChange={e => setEmailVerificationToken(e.target.value)}
-                        />
-                    </FormControl>
-                    <FormControl>
-                        <FormLabel>{t('Password')}</FormLabel>
-                        <Input type="password" value={password} onChange={e => setPassword(e.target.value)} />
-                    </FormControl>
-                </Stack>
+            <Flex px={2} flexDirection="column">
+                <RmgFields
+                    fields={[
+                        {
+                            label: t('Name'),
+                            type: 'input',
+                            value: name,
+                            onChange: setName,
+                            debouncedDelay: 0,
+                            helper: t('You may always change it later.'),
+                        },
+                        {
+                            label: t('Email'),
+                            type: 'custom',
+                            component: (
+                                <InputGroup size="sm">
+                                    <RmgDebouncedInput
+                                        type="email"
+                                        value={email}
+                                        onDebouncedChange={setEmail}
+                                        delay={0}
+                                        validator={emailValidator}
+                                    />
+                                    <InputRightElement width="auto" bottom={0} top="unset">
+                                        <Button size="xs" onClick={handleVerifyEmail} isDisabled={!isEmailValid}>
+                                            {t('Send verification code')}
+                                        </Button>
+                                    </InputRightElement>
+                                </InputGroup>
+                            ),
+                            helper: t("We'll never share your email."),
+                        },
+                        {
+                            label: t('Verification code'),
+                            type: 'input',
+                            variant: 'number',
+                            value: emailVerificationToken,
+                            onChange: setEmailVerificationToken,
+                            debouncedDelay: 0,
+                        },
+                        {
+                            label: t('Password'),
+                            type: 'input',
+                            variant: 'password',
+                            value: password,
+                            onChange: setPassword,
+                            debouncedDelay: 0,
+                            validator: passwordValidator,
+                            helper: t('Mininum 8 characters. Contain at least 1 letter and 1 number.'),
+                        },
+                    ]}
+                    minW="full"
+                />
 
-                <Stack mt="10">
-                    <Button onClick={handleRegister}>{t('Sign up')}</Button>
-                    <Button onClick={() => props.setLoginState('login')}>{t('Back to log in')}</Button>
+                <Stack mt={1}>
+                    <Button
+                        colorScheme="primary"
+                        onClick={handleRegister}
+                        isLoading={isLoading}
+                        isDisabled={!areFieldsValid || isLoading}
+                    >
+                        {t('Sign up')}
+                    </Button>
+                    <Button onClick={() => props.setLoginState('login')} isDisabled={isLoading}>
+                        {t('Back to log in')}
+                    </Button>
                 </Stack>
             </Flex>
         </RmgSection>
