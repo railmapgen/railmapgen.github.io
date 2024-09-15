@@ -96,6 +96,15 @@ const onSaveUpdate = async (currentSaveId: number, token: string, refreshToken: 
     );
 };
 
+// This should triggger RMP to refetch subscription info.
+export const notifyRMPTokenUpdate = (token: string) => {
+    channel.postMessage({
+        type: SaveManagerEventType.TOKEN_REQUEST,
+        token: token,
+        from: 'rmt',
+    } as SaveManagerEvent);
+};
+
 export const registerOnTokenRequest = (store: ReturnType<typeof createStore>) => {
     const eventHandler = async (ev: MessageEvent<SaveManagerEvent>) => {
         const { type, from } = ev.data;
@@ -128,11 +137,7 @@ export const registerOnTokenRequest = (store: ReturnType<typeof createStore>) =>
                 return;
             }
 
-            channel.postMessage({
-                type: SaveManagerEventType.TOKEN_REQUEST,
-                token: tokenAfterFetch,
-                from: 'rmt',
-            } as SaveManagerEvent);
+            notifyRMPTokenUpdate(tokenAfterFetch);
         }
     };
 

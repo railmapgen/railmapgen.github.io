@@ -23,6 +23,7 @@ import { MdOpenInNew } from 'react-icons/md';
 import { useRootDispatch, useRootSelector } from '../../redux';
 import { setToken } from '../../redux/account/account-slice';
 import { API_ENDPOINT } from '../../util/constants';
+import { notifyRMPTokenUpdate } from '../../util/local-storage-save';
 import { apiFetch } from '../../util/utils';
 
 const RedeemModal = (props: { isOpen: boolean; onClose: () => void; getSubscriptions: () => Promise<void> }) => {
@@ -60,6 +61,7 @@ const RedeemModal = (props: { isOpen: boolean; onClose: () => void; getSubscript
             return;
         }
         await getSubscriptions();
+        notifyRMPTokenUpdate(updatedToken);
         onClose();
     };
 
