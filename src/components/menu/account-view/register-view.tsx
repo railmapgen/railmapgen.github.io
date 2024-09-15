@@ -9,6 +9,7 @@ import {
     InputGroup,
     InputRightElement,
     Stack,
+    Text,
     useToast,
 } from '@chakra-ui/react';
 import { RmgDebouncedInput, RmgFields, RmgSection, RmgSectionHeader } from '@railmapgen/rmg-components';
@@ -17,6 +18,7 @@ import { useRootDispatch } from '../../../redux';
 import { fetchLogin } from '../../../redux/account/account-slice';
 import { API_ENDPOINT, API_URL } from '../../../util/constants';
 import { emailValidator, passwordValidator } from './account-utils';
+import { MdCheck } from 'react-icons/md';
 
 const RegisterView = (props: { setLoginState: (_: 'login' | 'register') => void }) => {
     const toast = useToast();
@@ -144,9 +146,18 @@ const RegisterView = (props: { setLoginState: (_: 'login' | 'register') => void 
                                         validator={emailValidator}
                                     />
                                     <InputRightElement width="auto" bottom={0} top="unset">
-                                        <Button size="xs" onClick={handleVerifyEmail} isDisabled={!isEmailValid}>
-                                            {t('Send verification code')}
-                                        </Button>
+                                        {emailVerificationSent ? (
+                                            <>
+                                                <MdCheck />
+                                                <Text fontSize="xs" ml={1}>
+                                                    {t('Verification code sent')}
+                                                </Text>
+                                            </>
+                                        ) : (
+                                            <Button size="xs" onClick={handleVerifyEmail} isDisabled={!isEmailValid}>
+                                                {t('Send verification code')}
+                                            </Button>
+                                        )}
                                     </InputRightElement>
                                 </InputGroup>
                             ),
