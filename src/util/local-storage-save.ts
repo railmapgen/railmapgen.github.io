@@ -41,7 +41,7 @@ export const notifyRMPSaveChange = () => {
  */
 let updateSaveTimeout: number | undefined;
 
-const SAVE_UPDATE_TIMEOUT_MS = 3 * 1000; // 3s
+const SAVE_UPDATE_TIMEOUT_MS = 60 * 1000; // 1min
 
 export const registerOnRMPSaveChange = (store: ReturnType<typeof createStore>) => {
     const eventHandler = async (ev: MessageEvent<SaveManagerEvent>) => {
