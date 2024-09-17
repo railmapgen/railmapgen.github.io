@@ -1,4 +1,4 @@
-import { Divider, Flex, Heading, VStack } from '@chakra-ui/react';
+import { Divider, Flex, Heading } from '@chakra-ui/react';
 import { RmgSection, RmgSectionHeader } from '@railmapgen/rmg-components';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
