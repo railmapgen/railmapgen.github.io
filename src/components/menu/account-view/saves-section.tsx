@@ -1,4 +1,4 @@
-import { Button, Card, CardBody, CardFooter, HStack, Heading, Stack, Text, useToast } from '@chakra-ui/react';
+import { Button, Card, CardBody, CardFooter, Heading, Stack, Text, useToast } from '@chakra-ui/react';
 import { RmgSection, RmgSectionHeader } from '@railmapgen/rmg-components';
 import { logger } from '@railmapgen/rmg-runtime';
 import React from 'react';
@@ -212,20 +212,18 @@ const SavesSection = () => {
     return (
         <RmgSection>
             <RmgSectionHeader>
-                <HStack width="100%">
-                    <Heading as="h4" size="md" my={1}>
-                        {t('Synced saves')}
-                    </Heading>
-                    <Text ml="auto">
-                        {t('Maximum save count:')} {activeSubscriptions.RMP_CLOUD ? 10 : 1}
-                    </Text>
-                    <Button size="sm" isDisabled={!canCreateNewSave} onClick={handleCreateNewSave}>
-                        {t('Create')}
-                    </Button>
-                </HStack>
+                <Heading as="h4" size="md" my={1}>
+                    {t('Synced saves')}
+                </Heading>
+                <Text ml="auto">
+                    {t('Maximum save count:')} {activeSubscriptions.RMP_CLOUD ? 10 : 1}
+                </Text>
+                <Button size="sm" ml={1} isDisabled={!canCreateNewSave} onClick={handleCreateNewSave}>
+                    {t('Create')}
+                </Button>
             </RmgSectionHeader>
 
-            <Stack mt="2">
+            <Stack p={2}>
                 {saveList &&
                     saveList.map(_ => (
                         <Card key={_.id} overflow="hidden" variant="outline" mb="3">
@@ -250,7 +248,7 @@ const SavesSection = () => {
                                         </Button>
                                         <Button
                                             variant="solid"
-                                            colorScheme="blue"
+                                            colorScheme="primary"
                                             isDisabled={isUpdateDisabled(_.id)}
                                             isLoading={syncButtonIsLoading === _.id}
                                             onClick={() => handleSync(_.id)}

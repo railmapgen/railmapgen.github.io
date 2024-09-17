@@ -4,7 +4,6 @@ import {
     CardBody,
     CardFooter,
     CardHeader,
-    HStack,
     Heading,
     ListItem,
     Stack,
@@ -84,17 +83,15 @@ const SubscriptionSection = () => {
     return (
         <RmgSection>
             <RmgSectionHeader>
-                <HStack width="100%">
-                    <Heading as="h4" size="md" my={1}>
-                        {t('All subscriptions')}
-                    </Heading>
-                    <Button size="sm" ml="auto" onClick={() => setIsRedeemModalOpen(true)}>
-                        {t('Redeem')}
-                    </Button>
-                </HStack>
+                <Heading as="h4" size="md" my={1}>
+                    {t('All subscriptions')}
+                </Heading>
+                <Button size="sm" ml="auto" onClick={() => setIsRedeemModalOpen(true)}>
+                    {t('Redeem')}
+                </Button>
             </RmgSectionHeader>
 
-            <Stack mt="2">
+            <Stack px={2}>
                 {subscriptions.length === 0 && (
                     <Card overflow="hidden" variant="outline" mb="3">
                         <CardHeader>

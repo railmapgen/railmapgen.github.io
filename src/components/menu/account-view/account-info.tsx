@@ -1,7 +1,9 @@
 import {
     Avatar,
     Button,
+    Flex,
     HStack,
+    IconButton,
     Modal,
     ModalBody,
     ModalCloseButton,
@@ -9,17 +11,29 @@ import {
     ModalFooter,
     ModalHeader,
     ModalOverlay,
-    Stack,
+    SystemStyleObject,
     Text,
     useToast,
+    VStack,
 } from '@chakra-ui/react';
-import { RmgDebouncedInput, RmgSectionHeader } from '@railmapgen/rmg-components';
+import { RmgDebouncedInput } from '@railmapgen/rmg-components';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRootDispatch, useRootSelector } from '../../../redux';
 import { logout, setToken, updateName } from '../../../redux/account/account-slice';
 import { API_ENDPOINT, API_URL } from '../../../util/constants';
 import { apiFetch } from '../../../util/utils';
+import { MdDriveFileRenameOutline, MdLogout, MdPassword } from 'react-icons/md';
+
+const style: SystemStyleObject = {
+    alignItems: 'center',
+    m: 2,
+    px: 3,
+
+    alignSelf: { base: 'center', md: 'auto' },
+    maxW: { base: '100vw', md: 'unset' },
+    w: { base: 400, md: 'unset' },
+};
 
 const AccountInfo = () => {
     const { t } = useTranslation();
@@ -41,33 +55,42 @@ const AccountInfo = () => {
     };
 
     return (
-        <RmgSectionHeader width="100%">
-            <Stack width="100%">
+        <>
+            <Flex sx={style}>
                 <Avatar size="md" name={name} />
-                <HStack width="100%">
-                    <Text as="b" fontSize="xl">
-                        {email}
-                    </Text>
-                    <Button size="sm" ml="auto" onClick={handleLogOut}>
-                        {t('Log out')}
-                    </Button>
+                <VStack spacing={0} alignItems="flex-start" ml={2}>
+                    <Text as="b">{name}</Text>
+                    <Text fontSize="sm">{email}</Text>
+                </VStack>
+                <HStack ml="auto" spacing={1}>
+                    <IconButton
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setIsChangeModalType('name')}
+                        aria-label={t('Change name')}
+                        title={t('Change name')}
+                        icon={<MdDriveFileRenameOutline />}
+                    />
+                    <IconButton
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setIsChangeModalType('password')}
+                        aria-label={t('Change password')}
+                        title={t('Change password')}
+                        icon={<MdPassword />}
+                    />
+                    <IconButton
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleLogOut}
+                        aria-label={t('Log out')}
+                        title={t('Log out')}
+                        icon={<MdLogout />}
+                    />
                 </HStack>
-                <HStack width="100%">
-                    <Text as="b" fontSize="xl">
-                        {name}
-                    </Text>
-                    <Button size="sm" ml="auto" onClick={() => setIsChangeModalType('name')}>
-                        {t('Change name')}
-                    </Button>
-                </HStack>
-                <HStack width="100%">
-                    <Button size="sm" ml="auto" onClick={() => setIsChangeModalType('password')}>
-                        {t('Change password')}
-                    </Button>
-                </HStack>
-            </Stack>
+            </Flex>
             <ChangeModal infoType={isChangeModalType} onClose={() => setIsChangeModalType(undefined)} />
-        </RmgSectionHeader>
+        </>
     );
 };
 

@@ -1,4 +1,4 @@
-import { Divider, Flex, Heading, Stack } from '@chakra-ui/react';
+import { Divider, Flex, Heading, VStack } from '@chakra-ui/react';
 import { RmgSection, RmgSectionHeader } from '@railmapgen/rmg-components';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -17,7 +17,7 @@ const AccountView = () => {
     const [loginState, setLoginState] = React.useState('login' as 'login' | 'register' | 'forgot-password');
 
     return (
-        <RmgSection>
+        <RmgSection display="flex" flexDirection="column" h="100%" overflow="hidden">
             <RmgSectionHeader>
                 <Heading as="h4" size="md" my={1}>
                     {t('Account')}
@@ -33,14 +33,14 @@ const AccountView = () => {
                     <ForgotPasswordView setLoginState={setLoginState} />
                 )
             ) : (
-                <Flex flexDirection="column" alignItems="center">
-                    <Stack width="100%" p="2" spacing="30px">
-                        <AccountInfo />
-                        <Divider />
+                <Flex flexDirection="column" h="100%" overflow="hidden" bg="inherit">
+                    <AccountInfo />
+                    <Divider />
+                    <VStack overflowY="auto" bg="inherit">
                         <SubscriptionSection />
                         <Divider />
                         <SavesSection />
-                    </Stack>
+                    </VStack>
                 </Flex>
             )}
         </RmgSection>

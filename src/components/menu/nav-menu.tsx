@@ -110,10 +110,10 @@ export default function NavMenu() {
                     </Alert>
                 )}
 
+                {menuView === 'main' && <AccountStatus />}
+
                 {/* menu-body */}
                 <Flex className="nav-menu__body">
-                    {menuView === 'main' && <AccountStatus />}
-
                     {menuView === 'main' ? (
                         <>
                             <AppsSection assetType="app" />
