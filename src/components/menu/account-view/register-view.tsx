@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import {
     Alert,
     AlertDescription,
@@ -13,12 +12,15 @@ import {
     useToast,
 } from '@chakra-ui/react';
 import { RmgDebouncedInput, RmgFields, RmgSection, RmgSectionHeader } from '@railmapgen/rmg-components';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { MdCheck } from 'react-icons/md';
 import { useRootDispatch } from '../../../redux';
 import { fetchLogin } from '../../../redux/account/account-slice';
 import { API_ENDPOINT, API_URL } from '../../../util/constants';
 import { emailValidator, passwordValidator } from './account-utils';
-import { MdCheck } from 'react-icons/md';
+
+const sendEmailVerificationInterval = 60;
 
 const RegisterView = (props: { setLoginState: (_: 'login' | 'register') => void }) => {
     const toast = useToast();
@@ -31,6 +33,23 @@ const RegisterView = (props: { setLoginState: (_: 'login' | 'register') => void 
     const [emailVerificationToken, setEmailVerificationToken] = useState('');
     const [emailVerificationSent, setEmailVerificationSent] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+
+    const [isSendEmailVerificationDisabled, setIsSendEmailVerificationDisabled] = useState(false);
+    const [sendEmailVerificationDisabledseconds, setSendEmailVerificationDisabledSeconds] =
+        useState(sendEmailVerificationInterval);
+
+    useEffect(() => {
+        let timer: number;
+        if (isSendEmailVerificationDisabled && sendEmailVerificationDisabledseconds > 0) {
+            timer = window.setTimeout(() => {
+                setSendEmailVerificationDisabledSeconds(sendEmailVerificationDisabledseconds - 1);
+            }, 1000);
+        } else if (sendEmailVerificationDisabledseconds === 0) {
+            setIsSendEmailVerificationDisabled(false);
+        }
+
+        return () => clearTimeout(timer);
+    }, [isSendEmailVerificationDisabled, sendEmailVerificationDisabledseconds]);
 
     const isEmailValid = !!email && emailValidator(email);
     const areFieldsValid =
@@ -45,6 +64,8 @@ const RegisterView = (props: { setLoginState: (_: 'login' | 'register') => void 
         });
 
     const handleVerifyEmail = async () => {
+        setIsSendEmailVerificationDisabled(true);
+        setSendEmailVerificationDisabledSeconds(sendEmailVerificationInterval);
         const rep = await fetch(API_URL + API_ENDPOINT.AUTH_SEND_VERIFICATION_EMAIL, {
             method: 'POST',
             headers: {
@@ -154,8 +175,14 @@ const RegisterView = (props: { setLoginState: (_: 'login' | 'register') => void 
                                                 </Text>
                                             </>
                                         ) : (
-                                            <Button size="xs" onClick={handleVerifyEmail} isDisabled={!isEmailValid}>
-                                                {t('Send verification code')}
+                                            <Button
+                                                size="xs"
+                                                onClick={handleVerifyEmail}
+                                                isDisabled={!isEmailValid || isSendEmailVerificationDisabled}
+                                            >
+                                                {isSendEmailVerificationDisabled
+                                                    ? `${sendEmailVerificationDisabledseconds}s`
+                                                    : t('Send verification code')}
                                             </Button>
                                         )}
                                     </InputRightElement>
