@@ -36,11 +36,11 @@ const AccountView = () => {
                 <Flex flexDirection="column" h="100%" overflow="hidden" bg="inherit">
                     <AccountInfo />
                     <Divider />
-                    <VStack overflowY="auto" bg="inherit">
+                    <Flex flexDirection="column" overflowY="auto" bg="inherit">
                         <SubscriptionSection />
                         <Divider />
                         <SavesSection />
-                    </VStack>
+                    </Flex>
                 </Flex>
             )}
         </RmgSection>
