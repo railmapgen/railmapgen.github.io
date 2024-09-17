@@ -1,4 +1,6 @@
-# railmapgen.github.io
+# Rail Map Toolkit
+
+[Official Website](https://railmapgen.github.io) | [GitHub Pages](https://railmapgen.github.io)
 
 ![GitHub License](https://img.shields.io/github/license/railmapgen/railmapgen.github.io)
 ![GitHub package.json version](https://img.shields.io/github/package-json/v/railmapgen/railmapgen.github.io)
