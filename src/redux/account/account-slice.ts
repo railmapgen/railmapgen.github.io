@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../../redux/index';
 import { API_ENDPOINT, API_URL, APILoginResponse, APISaveInfo, APISaveList } from '../../util/constants';
+import { notifyRMPTokenUpdate } from '../../util/local-storage-save';
 import { apiFetch } from '../../util/utils';
 
 export interface ActiveSubscriptions {
@@ -97,6 +98,7 @@ export const fetchLogin = createAsyncThunk<{ error?: string; username?: string }
         } = (await loginRes.json()) as APILoginResponse;
         dispatch(login({ id: userId, name: username, email, token, expires, refreshToken, refreshExpires }));
         dispatch(fetchSaveList());
+        notifyRMPTokenUpdate(token);
         return { error: undefined, username };
     }
 );
