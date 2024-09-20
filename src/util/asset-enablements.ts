@@ -145,17 +145,20 @@ export const assetEnablement: Record<string, AssetDetail> = {
         assetType: 'link',
         allowedInstances: ['Org', 'GitHub', 'GitLab', 'localhost', 'unknown'],
     },
+    'mini-metro-web': {
+        name: 'Mini Metro Web',
+        url: 'https://mini-metro-web.gitlab.io/',
+        assetType: 'link',
+    },
     busLineDesigner: {
         name: 'Bus Line Designer',
         url: 'https://buslinedesigner.bobliu.tech',
         assetType: 'link',
-        allowedInstances: ['Org', 'GitHub', 'GitLab', 'Tauri', 'localhost', 'unknown'],
     },
     linesPaper: {
         name: 'LinesPaper线图荟',
         url: 'https://space.bilibili.com/3546659889875715',
         assetType: 'link',
-        allowedInstances: ['Org', 'GitHub', 'GitLab', 'Tauri', 'localhost', 'unknown'],
     },
 };
 
