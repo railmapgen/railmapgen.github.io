@@ -36,7 +36,7 @@ const RedeemModal = (props: { isOpen: boolean; onClose: () => void; getSubscript
     const linkColour = useColorModeValue('primary.500', 'primary.300');
     const [CDKey, setCDKey] = React.useState('');
 
-    const handleRedeem = async () => {
+    const handleRedeem = async (CDKey: string) => {
         if (!isLoggedIn) return;
         const {
             rep,
@@ -44,7 +44,7 @@ const RedeemModal = (props: { isOpen: boolean; onClose: () => void; getSubscript
             refreshToken: updatedRefreshToken,
         } = await apiFetch(
             API_ENDPOINT.SUBSCRIPTION_REDEEM,
-            { method: 'POST', body: JSON.stringify({ cdkey: CDKey }) },
+            { method: 'POST', body: JSON.stringify({ cdkey: CDKey.trim() }) },
             token,
             refreshToken
         );
@@ -89,7 +89,7 @@ const RedeemModal = (props: { isOpen: boolean; onClose: () => void; getSubscript
                     <Stack mt="5" direction={{ base: 'column', sm: 'row' }}>
                         <Text>{t('Enter your CDKey here:')}</Text>
                         <Input w="auto" value={CDKey} onChange={e => setCDKey(e.target.value)} />
-                        <Button colorScheme="teal" onClick={handleRedeem}>
+                        <Button colorScheme="teal" onClick={() => handleRedeem(CDKey)}>
                             {t('Redeem')}
                         </Button>
                     </Stack>
