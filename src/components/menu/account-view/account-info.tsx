@@ -19,11 +19,12 @@ import {
 import { RmgDebouncedInput } from '@railmapgen/rmg-components';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { MdDriveFileRenameOutline, MdLogout, MdPassword } from 'react-icons/md';
 import { useRootDispatch, useRootSelector } from '../../../redux';
 import { logout, setToken, updateName } from '../../../redux/account/account-slice';
 import { API_ENDPOINT, API_URL } from '../../../util/constants';
+import { notifyRMPTokenUpdate } from '../../../util/local-storage-save';
 import { apiFetch } from '../../../util/utils';
-import { MdDriveFileRenameOutline, MdLogout, MdPassword } from 'react-icons/md';
 
 const style: SystemStyleObject = {
     alignItems: 'center',
@@ -52,6 +53,7 @@ const AccountInfo = () => {
             body: JSON.stringify({ refreshToken }),
         });
         dispatch(logout());
+        notifyRMPTokenUpdate();
     };
 
     return (
