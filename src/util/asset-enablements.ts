@@ -24,7 +24,11 @@ const getTauriUrl = () => {
     const tag = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}01`;
     const ver = `${String(d.getFullYear()).slice(-2)}.${d.getMonth() + 1}.1`;
     const platform = navigator.platform;
-    const suffix = platform.includes('Linux') ? 'amd64.deb' : platform.includes('Mac') ? 'x64.dmg' : 'x64-setup.exe';
+    const suffix = platform.includes('Linux')
+        ? 'amd64.deb'
+        : platform.includes('Mac')
+          ? 'aarch64.dmg'
+          : 'x64-setup.exe';
     return baseUrl + `/tauri-${tag}/railmapgen_${ver}_${suffix}`;
 };
 
