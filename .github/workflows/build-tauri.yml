@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [macos-latest, ubuntu-20.04, windows-latest]
+        platform: [macos-latest, macos-13, ubuntu-latest, windows-latest]
 
     runs-on: ${{ matrix.platform }}
     steps:
@@ -41,10 +41,11 @@ jobs:
           git clone -b gh-pages --depth 1 https://github.com/railmapgen/rmg-templates.git
           git clone -b gh-pages --depth 1 https://github.com/railmapgen/rmp.git
           git clone -b gh-pages --depth 1 https://github.com/railmapgen/rmp-gallery.git
+          git clone -b gh-pages --depth 1 https://github.com/railmapgen/rmp-designer.git
       - name: Setup python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.10'
+          python-version: '3.13'
       - name: Get date
         run: python -c "from datetime import date;import os;f=open(os.getenv('GITHUB_ENV'), 'a');f.write('date='+date.today().strftime('%Y%m%d'));f.close()"
       - name: Use date as version in tauri's package
@@ -61,12 +62,13 @@ jobs:
       - name: Update instance in info.json
         run: |
           python -c "import json;
-          f=open('ui/info.json', 'r+');info=json.load(f);info['instance']='Tauri';f.seek(0);json.dump(info,f,indent=2);f.truncate();f.close()
-          f=open('ui/rmg/info.json', 'r+');info=json.load(f);info['instance']='Tauri';f.seek(0);json.dump(info,f,indent=2);f.truncate();f.close()
-          f=open('ui/rmg-palette/info.json', 'r+');info=json.load(f);info['instance']='Tauri';f.seek(0);json.dump(info,f,indent=2);f.truncate();f.close()
-          f=open('ui/rmg-templates/info.json', 'r+');info=json.load(f);info['instance']='Tauri';f.seek(0);json.dump(info,f,indent=2);f.truncate();f.close()
-          f=open('ui/rmp/info.json', 'r+');info=json.load(f);info['instance']='Tauri';f.seek(0);json.dump(info,f,indent=2);f.truncate();f.close()
-          f=open('ui/rmp-gallery/info.json', 'r+');info=json.load(f);info['instance']='Tauri';f.seek(0);json.dump(info,f,indent=2);f.truncate();f.close()"
+          f=open('ui/info.json', 'r+');info=json.load(f);info['instance']='Tauri';f.seek(0);json.dump(info,f,indent=2);f.truncate();f.close();
+          f=open('ui/rmg/info.json', 'r+');info=json.load(f);info['instance']='Tauri';f.seek(0);json.dump(info,f,indent=2);f.truncate();f.close();
+          f=open('ui/rmg-palette/info.json', 'r+');info=json.load(f);info['instance']='Tauri';f.seek(0);json.dump(info,f,indent=2);f.truncate();f.close();
+          f=open('ui/rmg-templates/info.json', 'r+');info=json.load(f);info['instance']='Tauri';f.seek(0);json.dump(info,f,indent=2);f.truncate();f.close();
+          f=open('ui/rmp/info.json', 'r+');info=json.load(f);info['instance']='Tauri';f.seek(0);json.dump(info,f,indent=2);f.truncate();f.close();
+          f=open('ui/rmp-gallery/info.json', 'r+');info=json.load(f);info['instance']='Tauri';f.seek(0);json.dump(info,f,indent=2);f.truncate();f.close();
+          f=open('ui/rmp-designer/info.json', 'r+');info=json.load(f);info['instance']='Tauri';f.seek(0);json.dump(info,f,indent=2);f.truncate();f.close();"
       - name: Get versions of each project
         run: |
           python3 -c "import urllib.request;import json;import os;
@@ -76,6 +78,7 @@ jobs:
           rmg_templates=json.loads(urllib.request.urlopen('https://railmapgen.github.io/rmg-templates/info.json').read())['version'];
           rmp=json.loads(urllib.request.urlopen('https://railmapgen.github.io/rmp/info.json').read())['version'];
           rmp_gallery=json.loads(urllib.request.urlopen('https://railmapgen.github.io/rmp-gallery/info.json').read())['version'];
+          rmp_designer=json.loads(urllib.request.urlopen('https://railmapgen.github.io/rmp-designer/info.json').read())['version'];
           f=open(os.getenv('GITHUB_ENV'), 'a');
           f.write(f'railmapgen={railmapgen}\n');
           f.write(f'rmg={rmg}\n');
@@ -83,6 +86,7 @@ jobs:
           f.write(f'rmg_templates={rmg_templates}\n');
           f.write(f'rmp={rmp}\n');
           f.write(f'rmp_gallery={rmp_gallery}\n');
+          f.write(f'rmp_designer={rmp_designer}\n');
           f.close()"
       - uses: tauri-apps/tauri-action@v0
         env:
@@ -102,7 +106,8 @@ jobs:
             |rmg-templates       |`${{ env.rmg_templates }}`|
             |rmp                 |`${{ env.rmp }}`          |
             |rmp-gallery         |`${{ env.rmp_gallery }}`  |
+            |rmp-designer        |`${{ env.rmp_designer }}` |
 
-            Rail Map Toolkit is able to run offline with these packages, but we do RECOMMEND using the online [GitHub Pages](https://railmapgen.github.io/) as it provides the latest features of Rail Map Toolkit. The packages below are only suitable for extreme situations where users are behind the notorious firewall or simply offline. All resources are cached and bundled.
+            Rail Map Toolkit is able to run offline with these packages, but we do RECOMMEND using the [Official Website](https://railmapgen.org/) as it provides the latest features of Rail Map Toolkit. The packages below are only suitable for extreme situations where users are behind the notorious firewall or simply offline. All resources are cached and bundled.
           releaseDraft: false
           prerelease: false
