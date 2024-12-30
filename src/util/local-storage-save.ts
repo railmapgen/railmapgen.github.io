@@ -1,6 +1,7 @@
 import { logger } from '@railmapgen/rmg-runtime';
-import { fetchSaveList, logout, setToken } from '../redux/account/account-slice';
+import { fetchSaveList, logout, setToken, syncAfterLogin } from '../redux/account/account-slice';
 import { createStore } from '../redux/index';
+import { setLastChangedAt } from '../redux/save/save-slice';
 import { API_ENDPOINT, SAVE_KEY } from './constants';
 import { apiFetch, createHash } from './utils';
 
@@ -45,6 +46,12 @@ const SAVE_UPDATE_TIMEOUT_MS = 60 * 1000; // 1min
 
 export const registerOnRMPSaveChange = (store: ReturnType<typeof createStore>) => {
     const eventHandler = async (ev: MessageEvent<SaveManagerEvent>) => {
+        const { type, key, from } = ev.data;
+        if (type === SaveManagerEventType.SAVE_CHANGED && from === 'rmp') {
+            logger.info(`Received save changed event on key: ${key}`);
+            store.dispatch(setLastChangedAt());
+        }
+
         if (updateSaveTimeout) {
             return;
         }
@@ -55,23 +62,46 @@ export const registerOnRMPSaveChange = (store: ReturnType<typeof createStore>) =
 
             const { type, key, from } = ev.data;
             if (type === SaveManagerEventType.SAVE_CHANGED && from === 'rmp') {
-                logger.info(`Received save changed event on key: ${key}`);
-                if (isLoggedIn && currentSaveId) {
-                    logger.info(`Update remote save id: ${currentSaveId} with local key: ${key}`);
-                    // TODO: updating save won't have a isLoading button effect on the save being synced
-                    const {
-                        rep,
-                        token: updatedToken,
-                        refreshToken: updatedRefreshToken,
-                    } = await onSaveUpdate(currentSaveId, token, refreshToken, key!);
-                    if (!updatedRefreshToken || !updatedToken) {
-                        store.dispatch(logout());
-                        return;
-                    }
-                    store.dispatch(setToken({ access: updatedToken, refresh: updatedRefreshToken }));
-                    if (rep.status !== 200) return;
-                    store.dispatch(fetchSaveList());
+                logger.info(`Update save after timeout on key: ${key}`);
+
+                if (!isLoggedIn || !currentSaveId) {
+                    logger.warn('Not logged in or no current save id. No save update.');
+                    return;
                 }
+
+                const { saves: saveList } = store.getState().account;
+                const save = saveList.filter(save => save.id === currentSaveId).at(0);
+                if (!save) {
+                    logger.error(`Save id: ${currentSaveId} is not in saveList!`);
+                    // TODO: ask sever to reconstruct currentSaveId
+                    return;
+                }
+
+                const { lastChangedAt } = store.getState().save;
+                if (lastChangedAt < save.lastUpdateAt) {
+                    logger.warn(`Save id: ${currentSaveId} is newer in the cloud via local compare.`);
+                    store.dispatch(syncAfterLogin());
+                    return;
+                }
+
+                logger.info(`Update remote save id: ${currentSaveId} with local key: ${key}`);
+                const {
+                    rep,
+                    token: updatedToken,
+                    refreshToken: updatedRefreshToken,
+                } = await updateSave(currentSaveId, token, refreshToken, key!);
+                if (!updatedRefreshToken || !updatedToken) {
+                    store.dispatch(logout());
+                    return;
+                }
+                store.dispatch(setToken({ access: updatedToken, refresh: updatedRefreshToken }));
+                if (rep.status === 409) {
+                    logger.warn(`Save id: ${currentSaveId} is newer in the cloud via server response.`);
+                    store.dispatch(syncAfterLogin());
+                    return;
+                }
+                if (rep.status !== 200) return;
+                store.dispatch(fetchSaveList());
             }
 
             updateSaveTimeout = undefined;
@@ -81,7 +111,7 @@ export const registerOnRMPSaveChange = (store: ReturnType<typeof createStore>) =
     channel.addEventListener('message', eventHandler);
 };
 
-const onSaveUpdate = async (currentSaveId: number, token: string, refreshToken: string, key: SAVE_KEY) => {
+export const updateSave = async (currentSaveId: number, token: string, refreshToken: string, key: SAVE_KEY) => {
     const save = await getRMPSave(key);
     if (!save) return { rep: undefined, token: undefined, refreshToken: undefined };
     const { data, hash } = save;
@@ -96,7 +126,7 @@ const onSaveUpdate = async (currentSaveId: number, token: string, refreshToken: 
     );
 };
 
-// This should triggger RMP to refetch subscription info.
+// This should trigger RMP to refetch subscription info.
 export const notifyRMPTokenUpdate = (token?: string) => {
     channel.postMessage({
         type: SaveManagerEventType.TOKEN_REQUEST,

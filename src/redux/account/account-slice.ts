@@ -1,8 +1,11 @@
+import { logger } from '@railmapgen/rmg-runtime';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import i18n from '../../i18n/config';
 import { RootState } from '../../redux/index';
-import { API_ENDPOINT, API_URL, APILoginResponse, APISaveInfo, APISaveList } from '../../util/constants';
-import { notifyRMPTokenUpdate } from '../../util/local-storage-save';
+import { API_ENDPOINT, API_URL, APILoginResponse, APISaveInfo, APISaveList, SAVE_KEY } from '../../util/constants';
+import { getRMPSave, notifyRMPSaveChange, notifyRMPTokenUpdate, setRMPSave } from '../../util/local-storage-save';
 import { apiFetch } from '../../util/utils';
+import { setLastChangedAt, setResolveConflictModal } from '../save/save-slice';
 
 export interface ActiveSubscriptions {
     RMP_CLOUD: boolean;
@@ -56,7 +59,7 @@ export const fetchSaveList = createAsyncThunk<APISaveList, undefined>(
     'account/getSaveList',
     async (_, { getState, dispatch, rejectWithValue }) => {
         const { token, refreshToken } = (getState() as RootState).account;
-        if (!token) rejectWithValue('No token.');
+        if (!token) return rejectWithValue('No token.');
         const {
             rep,
             token: updatedToken,
@@ -64,11 +67,11 @@ export const fetchSaveList = createAsyncThunk<APISaveList, undefined>(
         } = await apiFetch(API_ENDPOINT.SAVES, {}, token, refreshToken);
         if (!updatedToken || !updatedRefreshToken) {
             dispatch(logout());
-            rejectWithValue('Can not recover from expired refresh token.');
+            return rejectWithValue('Can not recover from expired refresh token.');
         }
         dispatch(setToken({ access: updatedToken!, refresh: updatedRefreshToken! }));
         if (rep.status !== 200) {
-            rejectWithValue(rep.text);
+            return rejectWithValue(rep.text);
         }
         return (await rep.json()) as APISaveList;
     }
@@ -99,7 +102,57 @@ export const fetchLogin = createAsyncThunk<{ error?: string; username?: string }
         dispatch(login({ id: userId, name: username, email, token, expires, refreshToken, refreshExpires }));
         dispatch(fetchSaveList());
         notifyRMPTokenUpdate(token);
+
+        dispatch(syncAfterLogin());
+
         return { error: undefined, username };
+    }
+);
+
+export const syncAfterLogin = createAsyncThunk<undefined, undefined>(
+    'account/syncAfterLogin',
+    async (_, { getState, dispatch, rejectWithValue }) => {
+        // check if local save is newer
+        const state = getState() as RootState;
+        const {
+            account: { token, refreshToken, currentSaveId, saves },
+            save: { lastChangedAt },
+        } = state;
+        const save = saves.filter(save => save.id === currentSaveId).at(0);
+        if (!save) {
+            // TODO: ask sever to reconstruct currentSaveId
+            return rejectWithValue(`Save id: ${currentSaveId} is not in saveList!`);
+        }
+        const {
+            rep,
+            token: updatedToken,
+            refreshToken: updatedRefreshToken,
+        } = await apiFetch(API_ENDPOINT.SAVES + '/' + currentSaveId, {}, token, refreshToken);
+        if (!updatedRefreshToken || !updatedToken) {
+            return rejectWithValue(i18n.t('Login status expired.'));
+        }
+        dispatch(setToken({ access: updatedToken, refresh: updatedRefreshToken }));
+        if (rep.status !== 200) {
+            return rejectWithValue(await rep.text());
+        }
+        const cloudData = await rep.text();
+        const localData = await getRMPSave(SAVE_KEY.RMP);
+        if (lastChangedAt <= save.lastUpdateAt || !localData) {
+            // update newer cloud to local (lastChangedAt <= saves[currentSaveId].lastUpdateAt)
+            logger.info(`Set ${SAVE_KEY.RMP} with save id: ${currentSaveId}`);
+            setRMPSave(SAVE_KEY.RMP, cloudData);
+            dispatch(setLastChangedAt(new Date()));
+            notifyRMPSaveChange();
+        } else {
+            // prompt user to choose between local and cloud (lastChangedAt > saves[currentSaveId].lastUpdateAt)
+            dispatch(
+                setResolveConflictModal({
+                    lastChangedAt,
+                    lastUpdatedAt: save.lastUpdateAt,
+                    cloudData: cloudData,
+                })
+            );
+        }
     }
 );
 

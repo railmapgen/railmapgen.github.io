@@ -180,6 +180,16 @@ export default function initStore(store: RootStore) {
         },
     });
 
+    startRootListening({
+        predicate: (_action, currentState, previousState) => {
+            return currentState.save.lastChangedAt !== previousState.save.lastChangedAt;
+        },
+        effect: (_action, listenerApi) => {
+            const { lastChangedAt } = listenerApi.getState().save;
+            window.localStorage.setItem(LocalStorageKey.SAVE, JSON.stringify({ lastChangedAt }));
+        },
+    });
+
     openSearchedApp(store);
 
     checkInstance().then(isPrimary => {
