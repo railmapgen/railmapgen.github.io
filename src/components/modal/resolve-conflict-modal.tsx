@@ -5,7 +5,6 @@ import {
     CardFooter,
     Modal,
     ModalBody,
-    ModalCloseButton,
     ModalContent,
     ModalFooter,
     ModalHeader,
@@ -13,10 +12,12 @@ import {
     Stack,
     Text,
 } from '@chakra-ui/react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { MdCloudCircle, MdComputer } from "react-icons/md";
 import { useRootDispatch, useRootSelector } from '../../redux';
 import { fetchSaveList, logout, setToken, syncAfterLogin } from '../../redux/account/account-slice';
-import { clearResolveConflictModal, setLastChangedAt } from '../../redux/save/save-slice';
+import { clearResolveConflictModal, setLastChangedAtTimeStamp } from '../../redux/save/save-slice';
 import { SAVE_KEY } from '../../util/constants';
 import { downloadAs } from '../../util/download';
 import { getRMPSave, notifyRMPSaveChange, setRMPSave, updateSave } from '../../util/local-storage-save';
@@ -25,22 +26,25 @@ const ResolveConflictModal = () => {
     const { t } = useTranslation();
     const { token, refreshToken, currentSaveId } = useRootSelector(state => state.account);
     const {
-        resolveConflictModal: { isOpen, lastChangedAt, lastUpdatedAt, cloudData },
+        resolveConflictModal: { isOpen, lastChangedAtTimeStamp, lastUpdatedAtTimeStamp, cloudData },
     } = useRootSelector(state => state.save);
     const dispatch = useRootDispatch();
+
+    const [replaceCloudWithLocalLoading, setReplaceCloudWithLocalLoading] = React.useState(false);
 
     const onClose = () => dispatch(clearResolveConflictModal());
     const replaceLocalWithCloud = () => {
         setRMPSave(SAVE_KEY.RMP, cloudData);
         notifyRMPSaveChange();
-        dispatch(setLastChangedAt(new Date()));
+        dispatch(setLastChangedAtTimeStamp(new Date().valueOf()));
         onClose();
     };
     const downloadCloud = () => {
-        downloadAs(`RMP_${lastUpdatedAt.valueOf()}.json`, 'application/json', cloudData);
+        downloadAs(`RMP_${lastUpdatedAtTimeStamp}.json`, 'application/json', cloudData);
     };
     const replaceCloudWithLocal = async () => {
         if (!currentSaveId || !token || !refreshToken) return;
+        setReplaceCloudWithLocalLoading(true);
         const {
             rep,
             token: updatedToken,
@@ -48,21 +52,24 @@ const ResolveConflictModal = () => {
         } = await updateSave(currentSaveId, token, refreshToken, SAVE_KEY.RMP);
         if (!updatedRefreshToken || !updatedToken) {
             dispatch(logout());
+            setReplaceCloudWithLocalLoading(false);
             return;
         }
         dispatch(setToken({ access: updatedToken, refresh: updatedRefreshToken }));
         if (rep.status === 409) {
             dispatch(syncAfterLogin());
+            setReplaceCloudWithLocalLoading(false);
             return;
         }
         if (rep.status !== 200) return;
         dispatch(fetchSaveList());
+        setReplaceCloudWithLocalLoading(false);
         onClose();
     };
     const downloadLocal = async () => {
         // fetchLogin will handle local save does not exist
         const { data: localData } = (await getRMPSave(SAVE_KEY.RMP))!;
-        downloadAs(`RMP_${lastChangedAt.valueOf()}.json`, 'application/json', localData);
+        downloadAs(`RMP_${lastChangedAtTimeStamp}.json`, 'application/json', localData);
     };
 
     return (
@@ -77,24 +84,29 @@ const ResolveConflictModal = () => {
             <ModalOverlay />
             <ModalContent>
                 <ModalHeader>{t('Oops! There is some conflict')}</ModalHeader>
-                <ModalCloseButton />
 
                 <ModalBody>
                     <Text>{t('Local work is newer than the cloud. Which one would you like to preserve?')}</Text>
 
-                    <Card overflow="hidden" variant="outline" mb="3">
-                        <Stack direction={{ base: 'column', sm: 'row' }}>
+                    <Stack direction={{ base: 'column', sm: 'row' }} mt="5">
+                        <Card overflow="hidden" variant="outline" mb="3">
                             <CardBody>
+                                <MdComputer size="md" />
                                 <Text py="2" as="b">
                                     {t('Local save')}
                                 </Text>
                                 <Text py="2">
-                                    {t('Update at:')} {lastChangedAt.toLocaleString()}
+                                    {t('Update at:')} {new Date(lastChangedAtTimeStamp).toLocaleString()}
                                 </Text>
                             </CardBody>
                             <CardFooter>
                                 <Stack>
-                                    <Button variant="solid" colorScheme="red" onClick={() => replaceCloudWithLocal()}>
+                                    <Button
+                                        variant="solid"
+                                        colorScheme="red"
+                                        isLoading={replaceCloudWithLocalLoading}
+                                        onClick={() => replaceCloudWithLocal()}
+                                    >
                                         {t('Replace cloud with local')}
                                     </Button>
                                     <Button variant="solid" colorScheme="primary" onClick={() => downloadLocal()}>
@@ -102,16 +114,15 @@ const ResolveConflictModal = () => {
                                     </Button>
                                 </Stack>
                             </CardFooter>
-                        </Stack>
-                    </Card>
-                    <Card overflow="hidden" variant="outline" mb="3">
-                        <Stack direction={{ base: 'column', sm: 'row' }}>
+                        </Card>
+                        <Card overflow="hidden" variant="outline" mb="3">
                             <CardBody>
+                                <MdCloudCircle size="md" />
                                 <Text py="2" as="b">
                                     {t('Cloud save')}
                                 </Text>
                                 <Text py="2">
-                                    {t('Update at:')} {lastUpdatedAt.toLocaleString()}
+                                    {t('Update at:')} {new Date(lastUpdatedAtTimeStamp).toLocaleString()}
                                 </Text>
                             </CardBody>
                             <CardFooter>
@@ -124,8 +135,8 @@ const ResolveConflictModal = () => {
                                     </Button>
                                 </Stack>
                             </CardFooter>
-                        </Stack>
-                    </Card>
+                        </Card>
+                    </Stack>
                 </ModalBody>
 
                 <ModalFooter />

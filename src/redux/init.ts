@@ -15,6 +15,7 @@ import {
     showDevtools,
 } from './app/app-slice';
 import { RootStore, startRootListening } from './index';
+import { SaveState, setLastChangedAtTimeStamp } from './save/save-slice';
 
 export const initShowDevtools = (store: RootStore) => {
     const lastShowDevTools = Number(rmgRuntime.storage.get(LocalStorageKey.LAST_SHOW_DEVTOOLS));
@@ -81,12 +82,12 @@ export const openSearchedApp = (store: RootStore) => {
     }
 };
 
-export const initAccount = (store: RootStore) => {
+export const initAccountStore = (store: RootStore) => {
     const accountString = window.localStorage.getItem(LocalStorageKey.ACCOUNT);
 
     if (accountString) {
         const accountData = JSON.parse(accountString) as LoginInfo;
-        logger.debug(`Get account data from local storage: ${accountData}`);
+        logger.debug(`Get account data from local storage: ${JSON.stringify(accountData)}`);
         store.dispatch(login(accountData));
     }
 
@@ -120,11 +121,27 @@ export const initAccount = (store: RootStore) => {
     }, intervalMS);
 };
 
+export const initSaveStore = (store: RootStore) => {
+    const saveString = window.localStorage.getItem(LocalStorageKey.SAVE);
+
+    if (saveString) {
+        const saveData = JSON.parse(saveString) as Pick<SaveState, 'lastChangedAtTimeStamp'>;
+        logger.debug(`Get save data from local storage: ${JSON.stringify(saveData)}`);
+        store.dispatch(setLastChangedAtTimeStamp(saveData.lastChangedAtTimeStamp));
+    } else {
+        // Default to 0 on fresh start and will be overwritten on login.
+        // (cloud lastUpdateAt must be greater than lastChangedAt(0))
+        logger.warn('No save data from local storage. Setting lastChangedAtTimeStamp to 0.');
+        store.dispatch(setLastChangedAtTimeStamp(0));
+    }
+};
+
 export default function initStore(store: RootStore) {
     initShowDevtools(store);
     initOpenedTabs(store);
     initActiveTab(store);
-    initAccount(store);
+    initAccountStore(store);
+    initSaveStore(store);
 
     if (isSafari() || rmgRuntime.storage.get(LocalStorageKey.SHOW_FONT_ADVICE) === 'never') {
         store.dispatch(neverShowFontAdvice());
@@ -182,11 +199,11 @@ export default function initStore(store: RootStore) {
 
     startRootListening({
         predicate: (_action, currentState, previousState) => {
-            return currentState.save.lastChangedAt !== previousState.save.lastChangedAt;
+            return currentState.save.lastChangedAtTimeStamp !== previousState.save.lastChangedAtTimeStamp;
         },
         effect: (_action, listenerApi) => {
-            const { lastChangedAt } = listenerApi.getState().save;
-            window.localStorage.setItem(LocalStorageKey.SAVE, JSON.stringify({ lastChangedAt }));
+            const { lastChangedAtTimeStamp } = listenerApi.getState().save;
+            window.localStorage.setItem(LocalStorageKey.SAVE, JSON.stringify({ lastChangedAtTimeStamp }));
         },
     });
 

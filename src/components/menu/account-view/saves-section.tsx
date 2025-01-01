@@ -5,7 +5,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRootDispatch, useRootSelector } from '../../../redux';
 import { fetchSaveList, setToken } from '../../../redux/account/account-slice';
-import { setLastChangedAt } from '../../../redux/save/save-slice';
+import { setLastChangedAtTimeStamp } from '../../../redux/save/save-slice';
 import { API_ENDPOINT, SAVE_KEY } from '../../../util/constants';
 import { getRMPSave, notifyRMPSaveChange, setRMPSave } from '../../../util/local-storage-save';
 import { apiFetch } from '../../../util/utils';
@@ -140,7 +140,7 @@ const SavesSection = () => {
             }
             logger.info(`Set ${SAVE_KEY.RMP} with save id: ${saveId}`);
             setRMPSave(SAVE_KEY.RMP, await rep.text());
-            dispatch(setLastChangedAt(new Date()));
+            dispatch(setLastChangedAtTimeStamp(new Date().valueOf()));
             notifyRMPSaveChange();
             setSyncButtonIsLoading(undefined);
         }

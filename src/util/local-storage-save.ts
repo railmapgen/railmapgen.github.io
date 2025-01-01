@@ -1,7 +1,7 @@
 import { logger } from '@railmapgen/rmg-runtime';
 import { fetchSaveList, logout, setToken, syncAfterLogin } from '../redux/account/account-slice';
 import { createStore } from '../redux/index';
-import { setLastChangedAt } from '../redux/save/save-slice';
+import { setLastChangedAtTimeStamp } from '../redux/save/save-slice';
 import { API_ENDPOINT, SAVE_KEY } from './constants';
 import { apiFetch, createHash } from './utils';
 
@@ -49,7 +49,7 @@ export const registerOnRMPSaveChange = (store: ReturnType<typeof createStore>) =
         const { type, key, from } = ev.data;
         if (type === SaveManagerEventType.SAVE_CHANGED && from === 'rmp') {
             logger.info(`Received save changed event on key: ${key}`);
-            store.dispatch(setLastChangedAt());
+            store.dispatch(setLastChangedAtTimeStamp(new Date().valueOf()));
         }
 
         if (updateSaveTimeout) {
@@ -57,6 +57,8 @@ export const registerOnRMPSaveChange = (store: ReturnType<typeof createStore>) =
         }
 
         updateSaveTimeout = window.setTimeout(async () => {
+            updateSaveTimeout = undefined;
+
             const { isLoggedIn, currentSaveId, token, refreshToken } = store.getState().account;
             if (!isLoggedIn || !currentSaveId || !token || !refreshToken) return;
 
@@ -77,8 +79,10 @@ export const registerOnRMPSaveChange = (store: ReturnType<typeof createStore>) =
                     return;
                 }
 
-                const { lastChangedAt } = store.getState().save;
-                if (lastChangedAt < save.lastUpdateAt) {
+                const lastUpdateAt = new Date(save.lastUpdateAt);
+                const { lastChangedAtTimeStamp } = store.getState().save;
+                const lastChangedAt = new Date(lastChangedAtTimeStamp);
+                if (lastChangedAt < lastUpdateAt) {
                     logger.warn(`Save id: ${currentSaveId} is newer in the cloud via local compare.`);
                     store.dispatch(syncAfterLogin());
                     return;
@@ -103,8 +107,6 @@ export const registerOnRMPSaveChange = (store: ReturnType<typeof createStore>) =
                 if (rep.status !== 200) return;
                 store.dispatch(fetchSaveList());
             }
-
-            updateSaveTimeout = undefined;
         }, SAVE_UPDATE_TIMEOUT_MS);
     };
 
