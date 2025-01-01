@@ -58,8 +58,8 @@ export interface LoginInfo {
 export const fetchSaveList = createAsyncThunk<APISaveList, undefined>(
     'account/getSaveList',
     async (_, { getState, dispatch, rejectWithValue }) => {
-        const { token, refreshToken } = (getState() as RootState).account;
-        if (!token) return rejectWithValue('No token.');
+        const { isLoggedIn, token, refreshToken } = (getState() as RootState).account;
+        if (!isLoggedIn || !token) return rejectWithValue('No token.');
         const {
             rep,
             token: updatedToken,
@@ -103,7 +103,7 @@ export const fetchLogin = createAsyncThunk<{ error?: string; username?: string }
         await dispatch(fetchSaveList()); // make sure saves are set before syncAfterLogin
         notifyRMPTokenUpdate(token);
 
-        dispatch(syncAfterLogin());
+        await dispatch(syncAfterLogin());
 
         return { error: undefined, username };
     }
@@ -115,12 +115,12 @@ export const syncAfterLogin = createAsyncThunk<undefined, undefined>(
         logger.debug('Sync after login - check if local save is newer');
         const state = getState() as RootState;
         const {
-            account: { token, refreshToken, currentSaveId, saves },
+            account: { isLoggedIn, token, refreshToken, currentSaveId, saves },
             save: { lastChangedAtTimeStamp },
         } = state;
         const lastChangedAt = new Date(lastChangedAtTimeStamp);
         const save = saves.filter(save => save.id === currentSaveId).at(0);
-        if (!save) {
+        if (!isLoggedIn || !save) {
             // TODO: ask sever to reconstruct currentSaveId
             return rejectWithValue(`Save id: ${currentSaveId} is not in saveList!`);
         }
@@ -131,6 +131,7 @@ export const syncAfterLogin = createAsyncThunk<undefined, undefined>(
             refreshToken: updatedRefreshToken,
         } = await apiFetch(API_ENDPOINT.SAVES + '/' + currentSaveId, {}, token, refreshToken);
         if (!updatedRefreshToken || !updatedToken) {
+            dispatch(logout());
             return rejectWithValue(i18n.t('Login status expired.'));
         }
         dispatch(setToken({ access: updatedToken, refresh: updatedRefreshToken }));

@@ -9,7 +9,6 @@ import { setLastChangedAtTimeStamp } from '../../../redux/save/save-slice';
 import { API_ENDPOINT, SAVE_KEY } from '../../../util/constants';
 import { getRMPSave, notifyRMPSaveChange, setRMPSave } from '../../../util/local-storage-save';
 import { apiFetch } from '../../../util/utils';
-import ResolveConflictModal from '../../modal/resolve-conflict-modal';
 
 const MAXIMUM_FREE_SAVE = 1;
 const MAXIMUM_SAVE = 10;
@@ -221,8 +220,6 @@ const SavesSection = () => {
                         </Card>
                     ))}
             </Stack>
-
-            <ResolveConflictModal />
         </RmgSection>
     );
 };
