@@ -14,7 +14,7 @@ import {
 } from '@chakra-ui/react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { MdCloudCircle, MdComputer } from "react-icons/md";
+import { MdCloudCircle, MdComputer } from 'react-icons/md';
 import { useRootDispatch, useRootSelector } from '../../redux';
 import { fetchSaveList, logout, setToken, syncAfterLogin } from '../../redux/account/account-slice';
 import { clearResolveConflictModal, setLastChangedAtTimeStamp } from '../../redux/save/save-slice';
