@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import { useRootSelector } from '../../redux';
 import { isShowDevtools } from '../../redux/app/app-slice';
+import ResolveConflictModal from '../modal/resolve-conflict-modal';
 import AccountStatus from './account-view/account-status';
 import AccountView from './account-view/account-view';
 import AppsSection from './main-view/apps-section';
@@ -136,6 +137,8 @@ export default function NavMenu() {
 
                 {/* menu-footer */}
                 <NavMenuFooter />
+
+                <ResolveConflictModal />
             </Flex>
         </Flex>
     );
