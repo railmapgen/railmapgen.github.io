@@ -17,7 +17,7 @@ import { useTranslation } from 'react-i18next';
 import { MdCloudCircle, MdComputer } from 'react-icons/md';
 import { useRootDispatch, useRootSelector } from '../../redux';
 import { fetchSaveList, logout, setToken, syncAfterLogin } from '../../redux/account/account-slice';
-import { clearResolveConflictModal, setLastChangedAtTimeStamp } from '../../redux/save/save-slice';
+import { clearResolveConflictModal, setLastChangedAtTimeStamp } from '../../redux/rmp-save/rmp-save-slice';
 import { SAVE_KEY } from '../../util/constants';
 import { downloadAs } from '../../util/download';
 import { getRMPSave, notifyRMPSaveChange, setRMPSave, updateSave } from '../../util/local-storage-save';

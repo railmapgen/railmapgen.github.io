@@ -5,7 +5,7 @@ import { RootState } from '../../redux/index';
 import { API_ENDPOINT, API_URL, APILoginResponse, APISaveInfo, APISaveList, SAVE_KEY } from '../../util/constants';
 import { getRMPSave, notifyRMPSaveChange, notifyRMPTokenUpdate, setRMPSave } from '../../util/local-storage-save';
 import { apiFetch } from '../../util/utils';
-import { setLastChangedAtTimeStamp, setResolveConflictModal } from '../save/save-slice';
+import { setLastChangedAtTimeStamp, setResolveConflictModal } from '../rmp-save/rmp-save-slice';
 
 export interface ActiveSubscriptions {
     RMP_CLOUD: boolean;

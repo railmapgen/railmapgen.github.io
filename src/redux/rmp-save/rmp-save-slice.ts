@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-export interface SaveState {
+export interface RMPSaveState {
     /**
      * The last time the user made a change to the save.
      * Will be compared with the lastUpdateAt from the cloud to determine if there is a conflict on login.
@@ -15,7 +15,7 @@ export interface SaveState {
     };
 }
 
-const initialState: SaveState = {
+const initialState: RMPSaveState = {
     lastChangedAtTimeStamp: 0,
     resolveConflictModal: {
         isOpen: false,
@@ -25,7 +25,7 @@ const initialState: SaveState = {
     },
 };
 
-const saveSlice = createSlice({
+const rmpSaveSlice = createSlice({
     name: 'save',
     initialState,
     reducers: {
@@ -54,5 +54,5 @@ const saveSlice = createSlice({
     },
 });
 
-export const { setLastChangedAtTimeStamp, setResolveConflictModal, clearResolveConflictModal } = saveSlice.actions;
-export default saveSlice.reducer;
+export const { setLastChangedAtTimeStamp, setResolveConflictModal, clearResolveConflictModal } = rmpSaveSlice.actions;
+export default rmpSaveSlice.reducer;

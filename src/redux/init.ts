@@ -15,7 +15,7 @@ import {
     showDevtools,
 } from './app/app-slice';
 import { RootStore, startRootListening } from './index';
-import { SaveState, setLastChangedAtTimeStamp } from './save/save-slice';
+import { RMPSaveState, setLastChangedAtTimeStamp } from './rmp-save/rmp-save-slice';
 
 export const initShowDevtools = (store: RootStore) => {
     const lastShowDevTools = Number(rmgRuntime.storage.get(LocalStorageKey.LAST_SHOW_DEVTOOLS));
@@ -125,7 +125,7 @@ export const initSaveStore = (store: RootStore) => {
     const saveString = window.localStorage.getItem(LocalStorageKey.SAVE);
 
     if (saveString) {
-        const saveData = JSON.parse(saveString) as Pick<SaveState, 'lastChangedAtTimeStamp'>;
+        const saveData = JSON.parse(saveString) as Pick<RMPSaveState, 'lastChangedAtTimeStamp'>;
         logger.debug(`Get save data from local storage: ${JSON.stringify(saveData)}`);
         store.dispatch(setLastChangedAtTimeStamp(saveData.lastChangedAtTimeStamp));
     } else {

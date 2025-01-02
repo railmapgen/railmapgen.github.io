@@ -5,7 +5,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRootDispatch, useRootSelector } from '../../../redux';
 import { fetchSaveList, setToken, syncAfterLogin } from '../../../redux/account/account-slice';
-import { setLastChangedAtTimeStamp } from '../../../redux/save/save-slice';
+import { setLastChangedAtTimeStamp } from '../../../redux/rmp-save/rmp-save-slice';
 import { API_ENDPOINT, APISaveList, SAVE_KEY } from '../../../util/constants';
 import { getRMPSave, notifyRMPSaveChange, setRMPSave } from '../../../util/local-storage-save';
 import { apiFetch } from '../../../util/utils';
