@@ -109,6 +109,11 @@ export const fetchLogin = createAsyncThunk<{ error?: string; username?: string }
     }
 );
 
+/**
+ * Fetch the cloud save and see which one is newer.
+ * If the cloud save is newer, update the local save with the cloud save.
+ * If the local save is newer, prompt the user to choose between local and cloud.
+ */
 export const syncAfterLogin = createAsyncThunk<undefined, undefined>(
     'account/syncAfterLogin',
     async (_, { getState, dispatch, rejectWithValue }) => {

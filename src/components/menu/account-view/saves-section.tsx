@@ -4,9 +4,9 @@ import { logger } from '@railmapgen/rmg-runtime';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRootDispatch, useRootSelector } from '../../../redux';
-import { fetchSaveList, setToken } from '../../../redux/account/account-slice';
+import { fetchSaveList, setToken, syncAfterLogin } from '../../../redux/account/account-slice';
 import { setLastChangedAtTimeStamp } from '../../../redux/save/save-slice';
-import { API_ENDPOINT, SAVE_KEY } from '../../../util/constants';
+import { API_ENDPOINT, APISaveList, SAVE_KEY } from '../../../util/constants';
 import { getRMPSave, notifyRMPSaveChange, setRMPSave } from '../../../util/local-storage-save';
 import { apiFetch } from '../../../util/utils';
 
@@ -25,6 +25,7 @@ const SavesSection = () => {
         currentSaveId,
         saves: saveList,
     } = useRootSelector(state => state.account);
+    const { lastChangedAtTimeStamp } = useRootSelector(state => state.save);
 
     const canCreateNewSave =
         isLoggedIn &&
@@ -80,12 +81,42 @@ const SavesSection = () => {
     const handleSync = async (saveId: number) => {
         if (!isLoggedIn || !token) return;
         if (saveId === currentSaveId) {
+            // current sync, either fetch cloud (a) or update cloud (b)
             setSyncButtonIsLoading(currentSaveId);
             if (!currentSaveId || isUpdateDisabled(currentSaveId)) {
                 showErrorToast(t('Can not sync this save!'));
                 setSyncButtonIsLoading(undefined);
                 return;
             }
+
+            // fetch cloud save metadata
+            const savesRep = await dispatch(fetchSaveList());
+            if (savesRep.meta.requestStatus !== 'fulfilled') {
+                showErrorToast(t('Login status expired')); // TODO: also might be !200 response
+                setSyncButtonIsLoading(undefined);
+                return;
+            }
+            const savesList = savesRep.payload as APISaveList;
+            const cloudSave = savesList.saves.filter(save => save.id === currentSaveId).at(0);
+            if (!cloudSave) {
+                showErrorToast(t(`Current save id is not in saveList!`));
+                // TODO: ask sever to reconstruct currentSaveId
+                setSyncButtonIsLoading(undefined);
+                return;
+            }
+            const lastUpdateAt = new Date(cloudSave.lastUpdateAt);
+            const lastChangedAt = new Date(lastChangedAtTimeStamp);
+            // a. if cloud save is newer, fetch and set the cloud save to local
+            if (lastChangedAt < lastUpdateAt) {
+                logger.warn(`Save id: ${currentSaveId} is newer in the cloud via local compare.`);
+                // TODO: There is no compare just fetch and set the cloud save to local
+                // might be better to have a dedicated thunk action for this
+                dispatch(syncAfterLogin());
+                setSyncButtonIsLoading(undefined);
+                return;
+            }
+
+            // b. local save is newer, update the cloud save
             const save = await getRMPSave(SAVE_KEY.RMP);
             if (!save) {
                 showErrorToast(t('Failed to get the RMP save!'));
