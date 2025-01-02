@@ -1,7 +1,7 @@
 import { logger } from '@railmapgen/rmg-runtime';
 import { fetchSaveList, logout, setToken, syncAfterLogin } from '../redux/account/account-slice';
 import { createStore } from '../redux/index';
-import { setLastChangedAtTimeStamp } from '../redux/save/save-slice';
+import { setLastChangedAtTimeStamp } from '../redux/rmp-save/rmp-save-slice';
 import { API_ENDPOINT, SAVE_KEY } from './constants';
 import { apiFetch, createHash } from './utils';
 
