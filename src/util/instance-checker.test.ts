@@ -15,7 +15,7 @@ describe('InstanceChecker', () => {
         messagesReceived = [];
     });
 
-    it.skip('Can emit PONG event if instance is primary', async () => {
+    it('Can emit PONG event if instance is primary', async () => {
         const { checkInstance, closeChannel } = await import('./instance-checker');
 
         // assert isPrimary
@@ -31,7 +31,7 @@ describe('InstanceChecker', () => {
         closeChannel();
     });
 
-    it.skip('Can check current instance is secondary when received PONG', async () => {
+    it('Can check current instance is secondary when received PONG', async () => {
         // start test channel
         testChannel.onmessage = ev => {
             messagesReceived.push(ev.data);
