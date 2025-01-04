@@ -121,7 +121,7 @@ export const syncAfterLogin = createAsyncThunk<undefined, undefined>(
         const state = getState() as RootState;
         const {
             account: { isLoggedIn, token, refreshToken, currentSaveId, saves },
-            save: { lastChangedAtTimeStamp },
+            rmpSave: { lastChangedAtTimeStamp },
         } = state;
         const lastChangedAt = new Date(lastChangedAtTimeStamp);
         const save = saves.filter(save => save.id === currentSaveId).at(0);

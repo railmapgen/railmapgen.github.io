@@ -25,7 +25,7 @@ const SavesSection = () => {
         currentSaveId,
         saves: saveList,
     } = useRootSelector(state => state.account);
-    const { lastChangedAtTimeStamp } = useRootSelector(state => state.save);
+    const { lastChangedAtTimeStamp } = useRootSelector(state => state.rmpSave);
 
     const canCreateNewSave =
         isLoggedIn &&

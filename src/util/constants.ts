@@ -12,7 +12,7 @@ export enum LocalStorageKey {
     LAST_SHOW_DEVTOOLS = 'lastShowDevtools',
     SHOW_FONT_ADVICE = 'showFontAdvice',
     ACCOUNT = 'rmg-home__account',
-    SAVE = 'rmg-home__save',
+    RMP_SAVE = 'rmg-home__rmp-save',
 }
 
 export enum Events {

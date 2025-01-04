@@ -121,17 +121,17 @@ export const initAccountStore = (store: RootStore) => {
     }, intervalMS);
 };
 
-export const initSaveStore = (store: RootStore) => {
-    const saveString = window.localStorage.getItem(LocalStorageKey.SAVE);
+export const initRMPSaveStore = (store: RootStore) => {
+    const rmpSaveString = window.localStorage.getItem(LocalStorageKey.RMP_SAVE);
 
-    if (saveString) {
-        const saveData = JSON.parse(saveString) as Pick<RMPSaveState, 'lastChangedAtTimeStamp'>;
-        logger.debug(`Get save data from local storage: ${JSON.stringify(saveData)}`);
-        store.dispatch(setLastChangedAtTimeStamp(saveData.lastChangedAtTimeStamp));
+    if (rmpSaveString) {
+        const rmpSaveData = JSON.parse(rmpSaveString) as Pick<RMPSaveState, 'lastChangedAtTimeStamp'>;
+        logger.debug(`Get RMP save data from local storage: ${JSON.stringify(rmpSaveData)}`);
+        store.dispatch(setLastChangedAtTimeStamp(rmpSaveData.lastChangedAtTimeStamp));
     } else {
         // Default to 0 on fresh start and will be overwritten on login.
         // (cloud lastUpdateAt must be greater than lastChangedAt(0))
-        logger.warn('No save data from local storage. Setting lastChangedAtTimeStamp to 0.');
+        logger.warn('No RMP save data from local storage. Setting lastChangedAtTimeStamp to 0.');
         store.dispatch(setLastChangedAtTimeStamp(0));
     }
 };
@@ -141,7 +141,7 @@ export default function initStore(store: RootStore) {
     initOpenedTabs(store);
     initActiveTab(store);
     initAccountStore(store);
-    initSaveStore(store);
+    initRMPSaveStore(store);
 
     if (isSafari() || rmgRuntime.storage.get(LocalStorageKey.SHOW_FONT_ADVICE) === 'never') {
         store.dispatch(neverShowFontAdvice());
@@ -199,11 +199,11 @@ export default function initStore(store: RootStore) {
 
     startRootListening({
         predicate: (_action, currentState, previousState) => {
-            return currentState.save.lastChangedAtTimeStamp !== previousState.save.lastChangedAtTimeStamp;
+            return currentState.rmpSave.lastChangedAtTimeStamp !== previousState.rmpSave.lastChangedAtTimeStamp;
         },
         effect: (_action, listenerApi) => {
-            const { lastChangedAtTimeStamp } = listenerApi.getState().save;
-            window.localStorage.setItem(LocalStorageKey.SAVE, JSON.stringify({ lastChangedAtTimeStamp }));
+            const { lastChangedAtTimeStamp } = listenerApi.getState().rmpSave;
+            window.localStorage.setItem(LocalStorageKey.RMP_SAVE, JSON.stringify({ lastChangedAtTimeStamp }));
         },
     });
 

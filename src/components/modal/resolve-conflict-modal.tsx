@@ -27,7 +27,7 @@ const ResolveConflictModal = () => {
     const { token, refreshToken, currentSaveId } = useRootSelector(state => state.account);
     const {
         resolveConflictModal: { isOpen, lastChangedAtTimeStamp, lastUpdatedAtTimeStamp, cloudData },
-    } = useRootSelector(state => state.save);
+    } = useRootSelector(state => state.rmpSave);
     const dispatch = useRootDispatch();
 
     const [replaceCloudWithLocalLoading, setReplaceCloudWithLocalLoading] = React.useState(false);

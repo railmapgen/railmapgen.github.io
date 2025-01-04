@@ -80,7 +80,7 @@ export const registerOnRMPSaveChange = (store: ReturnType<typeof createStore>) =
                 }
 
                 const lastUpdateAt = new Date(save.lastUpdateAt);
-                const { lastChangedAtTimeStamp } = store.getState().save;
+                const { lastChangedAtTimeStamp } = store.getState().rmpSave;
                 const lastChangedAt = new Date(lastChangedAtTimeStamp);
                 if (lastChangedAt < lastUpdateAt) {
                     logger.warn(`Save id: ${currentSaveId} is newer in the cloud via local compare.`);
