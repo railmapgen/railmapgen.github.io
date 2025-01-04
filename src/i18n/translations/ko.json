@@ -125,5 +125,13 @@
     "Renew": "갱신",
     "Redeem your subscription": "구독을 교환하세요",
     "CDKey could be purchased in the following sites:": "CDKey는 다음 사이트에서 구매할 수 있습니다:",
-    "Enter your CDKey here:": "여기에 CDKey를 입력하세요:"
+    "Enter your CDKey here:": "여기에 CDKey를 입력하세요:",
+
+    "Oops! It seems there's a conflict": "이런! 충돌이 발생한 것 같습니다",
+    "The local save is newer than the cloud one. Which one would you like to keep?": "로컬 저장이 클라우드 저장보다 최신입니다. 어느 것을 유지하시겠습니까?",
+    "Local save": "로컬 저장",
+    "Replace cloud with local": "클라우드를 로컬로 교체",
+    "Download Local save": "로컬 저장 다운로드",
+    "Replace local with cloud": "로컬을 클라우드로 교체",
+    "Download Cloud save": "클라우드 저장 다운로드"
 }

@@ -67,7 +67,7 @@ const ResolveConflictModal = () => {
         onClose();
     };
     const downloadLocal = async () => {
-        // fetchLogin will handle local save does not exist
+        // fetchLogin will handle local save that does not exist
         const { data: localData } = (await getRMPSave(SAVE_KEY.RMP))!;
         downloadAs(`RMP_${lastChangedAtTimeStamp}.json`, 'application/json', localData);
     };
@@ -83,10 +83,10 @@ const ResolveConflictModal = () => {
         >
             <ModalOverlay />
             <ModalContent>
-                <ModalHeader>{t('Oops! There is some conflict')}</ModalHeader>
+                <ModalHeader>{t("Oops! It seems there's a conflict")}</ModalHeader>
 
                 <ModalBody>
-                    <Text>{t('Local work is newer than the cloud. Which one would you like to preserve?')}</Text>
+                    <Text>{t('The local save is newer than the cloud one. Which one would you like to keep?')}</Text>
 
                     <Stack direction={{ base: 'column', sm: 'row' }} mt="5">
                         <Card overflow="hidden" variant="outline" mb="3">
@@ -110,7 +110,7 @@ const ResolveConflictModal = () => {
                                         {t('Replace cloud with local')}
                                     </Button>
                                     <Button variant="solid" colorScheme="primary" onClick={() => downloadLocal()}>
-                                        {t('Download local save')}
+                                        {t('Download Local save')}
                                     </Button>
                                 </Stack>
                             </CardFooter>
@@ -131,7 +131,7 @@ const ResolveConflictModal = () => {
                                         {t('Replace local with cloud')}
                                     </Button>
                                     <Button variant="solid" colorScheme="primary" onClick={() => downloadCloud()}>
-                                        {t('Download cloud save')}
+                                        {t('Download Cloud save')}
                                     </Button>
                                 </Stack>
                             </CardFooter>
