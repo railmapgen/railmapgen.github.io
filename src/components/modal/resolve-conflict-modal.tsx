@@ -3,6 +3,7 @@ import {
     Card,
     CardBody,
     CardFooter,
+    Flex,
     Icon,
     Modal,
     ModalBody,
@@ -92,10 +93,12 @@ const ResolveConflictModal = () => {
                     <Stack direction={{ base: 'column', sm: 'row' }} mt="5">
                         <Card overflow="hidden" variant="outline" mb="3">
                             <CardBody>
-                                <Icon as={MdComputer} />
-                                <Text py="2" as="b">
-                                    {t('Local save')}
-                                </Text>
+                                <Flex align="center">
+                                    <Icon as={MdComputer} mr="2" />
+                                    <Text py="2" as="b">
+                                        {t('Local save')}
+                                    </Text>
+                                </Flex>
                                 <Text py="2">
                                     {t('Update at:')} {new Date(lastChangedAtTimeStamp).toLocaleString()}
                                 </Text>
@@ -118,10 +121,12 @@ const ResolveConflictModal = () => {
                         </Card>
                         <Card overflow="hidden" variant="outline" mb="3">
                             <CardBody>
-                                <Icon as={MdCloudCircle} />
-                                <Text py="2" as="b">
-                                    {t('Cloud save')}
-                                </Text>
+                                <Flex align="center">
+                                    <Icon as={MdCloudCircle} mr="2" />
+                                    <Text py="2" as="b">
+                                        {t('Cloud save')}
+                                    </Text>
+                                </Flex>
                                 <Text py="2">
                                     {t('Update at:')} {new Date(lastUpdatedAtTimeStamp).toLocaleString()}
                                 </Text>
