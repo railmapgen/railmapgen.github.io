@@ -15,6 +15,7 @@ import {
     showDevtools,
 } from './app/app-slice';
 import { RootStore, startRootListening } from './index';
+import { RMPSaveState, setLastChangedAtTimeStamp } from './rmp-save/rmp-save-slice';
 
 export const initShowDevtools = (store: RootStore) => {
     const lastShowDevTools = Number(rmgRuntime.storage.get(LocalStorageKey.LAST_SHOW_DEVTOOLS));
@@ -81,12 +82,12 @@ export const openSearchedApp = (store: RootStore) => {
     }
 };
 
-export const initAccount = (store: RootStore) => {
+export const initAccountStore = (store: RootStore) => {
     const accountString = window.localStorage.getItem(LocalStorageKey.ACCOUNT);
 
     if (accountString) {
         const accountData = JSON.parse(accountString) as LoginInfo;
-        logger.debug(`Get account data from local storage: ${accountData}`);
+        logger.debug(`Get account data from local storage: ${JSON.stringify(accountData)}`);
         store.dispatch(login(accountData));
     }
 
@@ -120,11 +121,27 @@ export const initAccount = (store: RootStore) => {
     }, intervalMS);
 };
 
+export const initRMPSaveStore = (store: RootStore) => {
+    const rmpSaveString = window.localStorage.getItem(LocalStorageKey.RMP_SAVE);
+
+    if (rmpSaveString) {
+        const rmpSaveData = JSON.parse(rmpSaveString) as Pick<RMPSaveState, 'lastChangedAtTimeStamp'>;
+        logger.debug(`Get RMP save data from local storage: ${JSON.stringify(rmpSaveData)}`);
+        store.dispatch(setLastChangedAtTimeStamp(rmpSaveData.lastChangedAtTimeStamp));
+    } else {
+        // Default to 0 on fresh start and will be overwritten on login.
+        // (cloud lastUpdateAt must be greater than lastChangedAt(0))
+        logger.warn('No RMP save data from local storage. Setting lastChangedAtTimeStamp to 0.');
+        store.dispatch(setLastChangedAtTimeStamp(0));
+    }
+};
+
 export default function initStore(store: RootStore) {
     initShowDevtools(store);
     initOpenedTabs(store);
     initActiveTab(store);
-    initAccount(store);
+    initAccountStore(store);
+    initRMPSaveStore(store);
 
     if (isSafari() || rmgRuntime.storage.get(LocalStorageKey.SHOW_FONT_ADVICE) === 'never') {
         store.dispatch(neverShowFontAdvice());
@@ -177,6 +194,16 @@ export default function initStore(store: RootStore) {
                 logger.debug(`Remove account from local storage due to logout.`);
                 window.localStorage.removeItem(LocalStorageKey.ACCOUNT);
             }
+        },
+    });
+
+    startRootListening({
+        predicate: (_action, currentState, previousState) => {
+            return currentState.rmpSave.lastChangedAtTimeStamp !== previousState.rmpSave.lastChangedAtTimeStamp;
+        },
+        effect: (_action, listenerApi) => {
+            const { lastChangedAtTimeStamp } = listenerApi.getState().rmpSave;
+            window.localStorage.setItem(LocalStorageKey.RMP_SAVE, JSON.stringify({ lastChangedAtTimeStamp }));
         },
     });
 

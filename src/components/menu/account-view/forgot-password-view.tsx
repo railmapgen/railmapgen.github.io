@@ -173,7 +173,7 @@ const ForgotPasswordView = (props: { setLoginState: (_: 'login' | 'register' | '
                             onChange: setPassword,
                             debouncedDelay: 0,
                             validator: passwordValidator,
-                            helper: t('Mininum 8 characters. Contain at least 1 letter and 1 number.'),
+                            helper: t('Minimum 8 characters. Contain at least 1 letter and 1 number.'),
                         },
                     ]}
                     minW="full"
