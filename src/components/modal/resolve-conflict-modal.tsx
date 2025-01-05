@@ -3,6 +3,7 @@ import {
     Card,
     CardBody,
     CardFooter,
+    Icon,
     Modal,
     ModalBody,
     ModalContent,
@@ -91,7 +92,7 @@ const ResolveConflictModal = () => {
                     <Stack direction={{ base: 'column', sm: 'row' }} mt="5">
                         <Card overflow="hidden" variant="outline" mb="3">
                             <CardBody>
-                                <MdComputer size="md" />
+                                <Icon as={MdComputer} />
                                 <Text py="2" as="b">
                                     {t('Local save')}
                                 </Text>
@@ -117,7 +118,7 @@ const ResolveConflictModal = () => {
                         </Card>
                         <Card overflow="hidden" variant="outline" mb="3">
                             <CardBody>
-                                <MdCloudCircle size="md" />
+                                <Icon as={MdCloudCircle} />
                                 <Text py="2" as="b">
                                     {t('Cloud save')}
                                 </Text>
