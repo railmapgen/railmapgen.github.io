@@ -38,7 +38,7 @@ const ResolveConflictModal = () => {
     const replaceLocalWithCloud = () => {
         setRMPSave(SAVE_KEY.RMP, cloudData);
         notifyRMPSaveChange();
-        dispatch(setLastChangedAtTimeStamp(new Date().valueOf()));
+        dispatch(setLastChangedAtTimeStamp(lastUpdatedAtTimeStamp));
         onClose();
     };
     const downloadCloud = () => {
