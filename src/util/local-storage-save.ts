@@ -149,7 +149,7 @@ export const registerOnTokenRequest = (store: ReturnType<typeof createStore>) =>
                 return;
             }
 
-            store.dispatch(fetchSaveList());
+            await store.dispatch(fetchSaveList());
 
             const {
                 isLoggedIn: isLoggedInAfterFetch,
