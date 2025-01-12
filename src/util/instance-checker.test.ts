@@ -3,20 +3,14 @@ import { waitFor } from '@testing-library/react';
 let testChannel: BroadcastChannel;
 let messagesReceived: unknown[] = [];
 
-describe('InstanceChecker', () => {
-    beforeAll(() => {
-        testChannel = new BroadcastChannel('rmt-instance-checker');
-    });
-
+describe.sequential('InstanceChecker', () => {
     beforeEach(() => {
         vi.resetModules();
+        testChannel = new BroadcastChannel('rmt-instance-checker');
     });
 
     afterEach(() => {
         messagesReceived = [];
-    });
-
-    afterAll(() => {
         testChannel.close();
     });
 
