@@ -3,7 +3,9 @@ import { waitFor } from '@testing-library/react';
 let testChannel: BroadcastChannel;
 let messagesReceived: unknown[] = [];
 
-describe.sequential('InstanceChecker', () => {
+const INSTANCE_ID = 'test-instance';
+
+describe('InstanceChecker', () => {
     beforeEach(() => {
         vi.resetModules();
         testChannel = new BroadcastChannel('rmt-instance-checker');
@@ -24,10 +26,10 @@ describe.sequential('InstanceChecker', () => {
         expect(isPrimary).toBeTruthy();
 
         // test channel is not primary
-        testChannel.postMessage('ping');
+        testChannel.postMessage({ event: 'ping', instance: INSTANCE_ID });
         await Promise.resolve();
-        await waitFor(() => expect(messagesReceived).toHaveLength(1));
-        expect(messagesReceived).toContain('pong');
+        await waitFor(() => expect(messagesReceived).toHaveLength(2));
+        expect(messagesReceived).toContainEqual({ event: 'pong', instance: expect.any(String) });
 
         closeChannel();
     });
@@ -37,8 +39,8 @@ describe.sequential('InstanceChecker', () => {
         testChannel.onmessage = ev => {
             messagesReceived.push(ev.data);
 
-            if (ev.data === 'ping') {
-                testChannel.postMessage('pong');
+            if (ev.data.event === 'ping') {
+                testChannel.postMessage({ event: 'pong', instance: INSTANCE_ID });
             }
         };
 
@@ -49,7 +51,7 @@ describe.sequential('InstanceChecker', () => {
 
         // test channel received ping
         await waitFor(() => expect(messagesReceived).toHaveLength(1));
-        expect(messagesReceived).toContain('ping');
+        expect(messagesReceived).toContainEqual({ event: 'ping', instance: expect.any(String) });
 
         closeChannel();
     });
@@ -65,7 +67,7 @@ describe.sequential('InstanceChecker', () => {
         expect(isPrimary).toBeTruthy();
 
         // test channel is not primary
-        testChannel.postMessage('restart');
+        testChannel.postMessage({ event: 'restart', instance: INSTANCE_ID });
 
         // session is terminated
         await waitFor(() => expect(store.getState().app.isTerminated).toBeTruthy());
