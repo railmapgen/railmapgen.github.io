@@ -4,18 +4,25 @@ let testChannel: BroadcastChannel;
 let messagesReceived: unknown[] = [];
 
 describe('InstanceChecker', () => {
+    beforeAll(() => {
+        testChannel = new BroadcastChannel('rmt-instance-checker');
+    });
+
     beforeEach(() => {
         vi.resetModules();
-        testChannel = new BroadcastChannel('rmt-instance-checker');
-        testChannel.onmessage = ev => messagesReceived.push(ev.data);
     });
 
     afterEach(() => {
-        testChannel.close();
         messagesReceived = [];
     });
 
+    afterAll(() => {
+        testChannel.close();
+    });
+
     it('Can emit PONG event if instance is primary', async () => {
+        testChannel.onmessage = ev => messagesReceived.push(ev.data);
+
         const { checkInstance, closeChannel } = await import('./instance-checker');
 
         // assert isPrimary
@@ -54,6 +61,8 @@ describe('InstanceChecker', () => {
     });
 
     it('Can terminate current session when received RESTART', async () => {
+        testChannel.onmessage = ev => messagesReceived.push(ev.data);
+
         const { default: store } = await import('./../redux');
         const { checkInstance, closeChannel } = await import('./instance-checker');
 

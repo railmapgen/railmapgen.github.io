@@ -12,16 +12,24 @@ const mockCallbacks = {
 };
 
 let testMessagesReceived: unknown[] = [];
-const testChannel = new BroadcastChannel('rmg-runtime-channel');
-testChannel.onmessage = ev => testMessagesReceived.push(ev.data);
+let testChannel: BroadcastChannel;
 
 describe('AppItemButton', () => {
+    beforeAll(() => {
+        testChannel = new BroadcastChannel('rmg-runtime-channel');
+        testChannel.onmessage = ev => testMessagesReceived.push(ev.data);
+    });
+
     beforeEach(async () => {
         mockStore = createTestStore();
     });
 
     afterEach(() => {
         testMessagesReceived = [];
+    });
+
+    afterAll(() => {
+        testChannel.close();
     });
 
     it('Can toggle off nav menu in small screen when open app', async () => {

@@ -37,7 +37,7 @@
         "eslint": "^9.16.0",
         "eslint-plugin-prettier": "^5.2.1",
         "eslint-plugin-react": "^7.37.2",
-        "jsdom": "^25.0.1",
+        "jsdom": "^26.0.0",
         "prettier": "^3.4.1",
         "terser": "^5.36.0",
         "typescript": "^5.7.2",
