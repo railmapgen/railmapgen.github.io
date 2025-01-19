@@ -30,9 +30,11 @@ export const apiFetch = async (
     const defaultHeaders = {
         accept: 'application/json',
         'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache',
     } as {
         accept: string;
         'Content-Type': string;
+        'Cache-Control': string;
         Authorization?: string;
     };
     const headers = structuredClone(defaultHeaders);

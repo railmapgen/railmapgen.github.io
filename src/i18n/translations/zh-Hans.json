@@ -41,6 +41,7 @@
     "Happy Chinese New Year!": "新年快乐！",
     "Help & support": "帮助与支持",
     "Join us on Slack": "加入我们的 Slack 群组",
+    "Follow us on Bilibili": "在哔哩哔哩关注我们",
     "Light": "浅色",
     "Main languages": "主要语言",
     "More": "更多",
@@ -105,7 +106,7 @@
     "Send verification code":"发送验证码",
     "Verification code sent": "验证码已发送",
     "Verification code":"验证码",
-    "Mininum 8 characters. Contain at least 1 letter and 1 number.": "8个字符以上，包含至少1个字母和1个数字。",
+    "Minimum 8 characters. Contain at least 1 letter and 1 number.": "8个字符以上，包含至少1个字母和1个数字。",
     "Failed to get the RMP save!":"无法获取RMP存档",
     "Can not sync this save!":"无法同步此存档",
     "Synced saves":"同步的存档",
@@ -129,5 +130,13 @@
     "Renew":"续期",
     "Redeem your subscription":"兑换您的订阅",
     "CDKey could be purchased in the following sites:":"兑换码可在以下网站获取：",
-    "Enter your CDKey here:":"输入您的兑换码："
+    "Enter your CDKey here:":"输入您的兑换码：",
+
+    "Oops! It seems there's a conflict": "哎呀！好像有冲突",
+    "The local save is newer than the cloud one. Which one would you like to keep?": "本地存档比云端的新。您想保留哪个版本？",
+    "Local save": "本地存档",
+    "Replace cloud with local": "用本地存档替换云端",
+    "Download Local save": "下载本地存档",
+    "Replace local with cloud": "用云端存档替换本地",
+    "Download Cloud save": "下载云端存档"
 }

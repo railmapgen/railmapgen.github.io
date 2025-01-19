@@ -1,10 +1,10 @@
-import { Button, Heading, SystemStyleObject, VStack } from '@chakra-ui/react';
+import { Button, Heading, Image, SystemStyleObject, VStack } from '@chakra-ui/react';
 import { RmgSection, RmgSectionHeader } from '@railmapgen/rmg-components';
-import { useTranslation } from 'react-i18next';
-import { MdOpenInNew } from 'react-icons/md';
-import { IoLogoGithub, IoLogoSlack } from 'react-icons/io5';
-import { Events } from '../../../util/constants';
 import rmgRuntime from '@railmapgen/rmg-runtime';
+import { useTranslation } from 'react-i18next';
+import { IoLogoGithub, IoLogoSlack } from 'react-icons/io5';
+import { MdOpenInNew } from 'react-icons/md';
+import { Events } from '../../../util/constants';
 
 const stackStyles: SystemStyleObject = {
     px: 2,
@@ -50,6 +50,17 @@ export default function SupportSection() {
                     }}
                 >
                     {t('Join us on Slack')}
+                </Button>
+                <Button
+                    size="md"
+                    leftIcon={<Image src="images/bilibili.svg" boxSize="20px" />}
+                    rightIcon={<MdOpenInNew />}
+                    onClick={() => {
+                        window.open('https://space.bilibili.com/10124055', '_blank');
+                        rmgRuntime.event(Events.FOLLOW_BILIBILI);
+                    }}
+                >
+                    {t('Follow us on Bilibili')}
                 </Button>
             </VStack>
         </RmgSection>

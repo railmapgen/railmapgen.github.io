@@ -2,10 +2,12 @@ import { combineReducers, configureStore, createListenerMiddleware, TypedStartLi
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import accountReducer from './account/account-slice';
 import appReducer from './app/app-slice';
+import rmpSaveReducer from './rmp-save/rmp-save-slice';
 
 const rootReducer = combineReducers({
     app: appReducer,
     account: accountReducer,
+    rmpSave: rmpSaveReducer,
 });
 export type RootState = ReturnType<typeof rootReducer>;
 

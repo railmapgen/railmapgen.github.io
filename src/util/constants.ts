@@ -12,6 +12,7 @@ export enum LocalStorageKey {
     LAST_SHOW_DEVTOOLS = 'lastShowDevtools',
     SHOW_FONT_ADVICE = 'showFontAdvice',
     ACCOUNT = 'rmg-home__account',
+    RMP_SAVE = 'rmg-home__rmp-save',
 }
 
 export enum Events {
@@ -26,6 +27,7 @@ export enum Events {
 
     RAISE_ISSUE = 'RAISE_ISSUE',
     JOIN_SLACK = 'JOIN_SLACK',
+    FOLLOW_BILIBILI = 'FOLLOW_BILIBILI',
     DOWNLOAD_FONT = 'DOWNLOAD_FONT',
 }
 
@@ -52,6 +54,7 @@ export enum API_ENDPOINT {
 }
 
 export const API_URL = 'https://railmapgen.org/v1';
+// export const API_URL = 'http://localhost:3000/v1';
 
 export interface APILoginResponse {
     user: { id: number; name: string };
@@ -62,7 +65,7 @@ export interface APISaveInfo {
     index: string;
     id: number;
     hash: string;
-    lastUpdateAt: Date;
+    lastUpdateAt: string;
 }
 
 export interface APISaveList {

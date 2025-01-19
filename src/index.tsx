@@ -20,6 +20,7 @@ import initStore from './redux/init';
 import { getAllowedAssetTypes, getAvailableAsset } from './util/asset-enablements';
 import { Events, FRAME_ID_PREFIX } from './util/constants';
 import { registerOnRMPSaveChange, registerOnTokenRequest } from './util/local-storage-save';
+import { fetchSaveList, syncAfterLogin } from './redux/account/account-slice';
 
 let root: Root;
 const AppRoot = lazy(() => import('./components/app-root'));
@@ -41,8 +42,14 @@ const renderApp = () => {
     );
 };
 
-rmgRuntime.ready().then(() => {
+rmgRuntime.ready().then(async () => {
     initStore(store);
+
+    // If user is logged in previously, fetch and sync the save (resolve conflicts might be needed).
+    // Otherwise this is a no-op.
+    await store.dispatch(fetchSaveList());
+    await store.dispatch(syncAfterLogin());
+
     renderApp();
 
     rmgRuntime.onAppOpen(app => {

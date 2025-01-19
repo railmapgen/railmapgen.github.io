@@ -206,7 +206,7 @@ const RegisterView = (props: { setLoginState: (_: 'login' | 'register') => void 
                             onChange: setPassword,
                             debouncedDelay: 0,
                             validator: passwordValidator,
-                            helper: t('Mininum 8 characters. Contain at least 1 letter and 1 number.'),
+                            helper: t('Minimum 8 characters. Contain at least 1 letter and 1 number.'),
                         },
                     ]}
                     minW="full"

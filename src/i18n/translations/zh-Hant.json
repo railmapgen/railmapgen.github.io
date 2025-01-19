@@ -41,6 +41,7 @@
     "Happy Chinese New Year!": "新年快樂！",
     "Help & support": "幫助及支援",
     "Join us on Slack": "加入我們的 Slack 羣組",
+    "Follow us on Bilibili": "在嗶哩嗶哩關注我們",
     "Light": "淺色",
     "Main languages": "主要語言",
     "More": "更多",
@@ -129,5 +130,13 @@
     "Renew": "續期",
     "Redeem your subscription": "兌換您的訂閱",
     "CDKey could be purchased in the following sites:": "CDKey可在以下網站購買：",
-    "Enter your CDKey here:": "在此輸入您的CDKey："
+    "Enter your CDKey here:": "在此輸入您的CDKey：",
+
+    "Oops! It seems there's a conflict": "哎呀！好像有衝突",
+    "The local save is newer than the cloud one. Which one would you like to keep?": "本地存檔比雲端的新。您想保留哪個版本？",
+    "Local save": "本地存檔",
+    "Replace cloud with local": "用本地存檔替換雲端",
+    "Download Local save": "下載本地存檔",
+    "Replace local with cloud": "用雲端存檔替換本地",
+    "Download Cloud save": "下載雲端存檔"
 }
