@@ -10,7 +10,8 @@ interface AppContainerProps {
 export default function AppContainer(props: AppContainerProps) {
     const { tab, isActive } = props;
 
-    const frameUrl = useMemo(() => tab.url ?? '/' + tab.app + '/', [tab.url, tab.app]);
+    // This should not be changed after iframe has been rendered.
+    const frameUrl = useMemo(() => tab.url ?? '/' + tab.app + '/', [tab.app]);
 
     return (
         <Box display={isActive ? 'block' : 'none'} flex={1}>
@@ -21,6 +22,8 @@ export default function AppContainer(props: AppContainerProps) {
                 title={tab.app}
                 width="100%"
                 height="100%"
+                data-persisted-url={tab.url}
+                data-testid="app-container-iframe"
             />
         </Box>
     );
