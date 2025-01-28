@@ -113,6 +113,10 @@ export default function NavMenu() {
 
                 {menuView === 'main' && <AccountStatus />}
 
+                <Alert status="error">
+                    <AlertDescription>🎇 {t('Happy Chinese New Year!')}</AlertDescription>
+                </Alert>
+
                 {/* menu-body */}
                 <Flex className="nav-menu__body">
                     {menuView === 'main' ? (
