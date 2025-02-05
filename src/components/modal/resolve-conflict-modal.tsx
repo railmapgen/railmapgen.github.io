@@ -18,7 +18,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { MdCloudCircle, MdComputer } from 'react-icons/md';
 import { useRootDispatch, useRootSelector } from '../../redux';
-import { fetchSaveList, logout, setToken, syncAfterLogin } from '../../redux/account/account-slice';
+import { fetchSaveList, logout, syncAfterLogin } from '../../redux/account/account-slice';
 import { clearResolveConflictModal, setLastChangedAtTimeStamp } from '../../redux/rmp-save/rmp-save-slice';
 import { SAVE_KEY } from '../../util/constants';
 import { downloadAs } from '../../util/download';
@@ -47,17 +47,12 @@ const ResolveConflictModal = () => {
     const replaceCloudWithLocal = async () => {
         if (!currentSaveId || !token || !refreshToken) return;
         setReplaceCloudWithLocalLoading(true);
-        const {
-            rep,
-            token: updatedToken,
-            refreshToken: updatedRefreshToken,
-        } = await updateSave(currentSaveId, token, refreshToken, SAVE_KEY.RMP);
-        if (!updatedRefreshToken || !updatedToken) {
+        const rep = await updateSave(currentSaveId, token, refreshToken, SAVE_KEY.RMP);
+        if (!rep) {
             dispatch(logout());
             setReplaceCloudWithLocalLoading(false);
             return;
         }
-        dispatch(setToken({ access: updatedToken, refresh: updatedRefreshToken }));
         if (rep.status === 409) {
             dispatch(syncAfterLogin());
             setReplaceCloudWithLocalLoading(false);

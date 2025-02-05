@@ -18,11 +18,11 @@ import { useRootDispatch, useRootSelector } from '../../../redux';
 import {
     ActiveSubscriptions,
     defaultActiveSubscriptions,
+    logout,
     setActiveSubscriptions,
-    setToken,
 } from '../../../redux/account/account-slice';
+import { apiFetch } from '../../../util/api';
 import { API_ENDPOINT } from '../../../util/constants';
-import { apiFetch } from '../../../util/utils';
 import RedeemModal from '../../modal/redeem-modal';
 
 interface APISubscription {
@@ -33,7 +33,7 @@ interface APISubscription {
 const SubscriptionSection = () => {
     const toast = useToast();
     const { t } = useTranslation();
-    const { isLoggedIn, token, refreshToken } = useRootSelector(state => state.account);
+    const { isLoggedIn, token } = useRootSelector(state => state.account);
     const dispatch = useRootDispatch();
 
     const [subscriptions, setSubscriptions] = React.useState([] as APISubscription[]);
@@ -49,16 +49,12 @@ const SubscriptionSection = () => {
 
     const getSubscriptions = async () => {
         if (!isLoggedIn) return;
-        const {
-            rep,
-            token: updatedToken,
-            refreshToken: updatedRefreshToken,
-        } = await apiFetch(API_ENDPOINT.SUBSCRIPTION, {}, token, refreshToken);
-        if (!updatedRefreshToken || !updatedToken) {
+        const rep = await apiFetch(API_ENDPOINT.SUBSCRIPTION, {}, token);
+        if (!rep) {
             showErrorToast(t('Login status expired'));
+            dispatch(logout());
             return;
         }
-        dispatch(setToken({ access: updatedToken, refresh: updatedRefreshToken }));
         if (rep.status !== 200) {
             showErrorToast(await rep.text());
             return;

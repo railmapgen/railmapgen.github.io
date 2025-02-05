@@ -4,11 +4,11 @@ import { logger } from '@railmapgen/rmg-runtime';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRootDispatch, useRootSelector } from '../../../redux';
-import { fetchSaveList, setToken, syncAfterLogin } from '../../../redux/account/account-slice';
+import { fetchSaveList, logout, syncAfterLogin } from '../../../redux/account/account-slice';
 import { setLastChangedAtTimeStamp } from '../../../redux/rmp-save/rmp-save-slice';
+import { apiFetch } from '../../../util/api';
 import { API_ENDPOINT, APISaveList, SAVE_KEY } from '../../../util/constants';
 import { getRMPSave, notifyRMPSaveChange, setRMPSave } from '../../../util/local-storage-save';
-import { apiFetch } from '../../../util/utils';
 
 const MAXIMUM_FREE_SAVE = 1;
 const MAXIMUM_SAVE = 10;
@@ -20,7 +20,6 @@ const SavesSection = () => {
     const {
         isLoggedIn,
         token,
-        refreshToken,
         activeSubscriptions,
         currentSaveId,
         saves: saveList,
@@ -54,24 +53,19 @@ const SavesSection = () => {
         }
         const { data, hash } = save;
         const index = crypto.randomUUID();
-        const {
-            rep,
-            token: updatedToken,
-            refreshToken: updatedRefreshToken,
-        } = await apiFetch(
+        const rep = await apiFetch(
             API_ENDPOINT.SAVES,
             {
                 method: 'POST',
                 body: JSON.stringify({ index, data, hash }),
             },
-            token,
-            refreshToken
+            token
         );
-        if (!updatedRefreshToken || !updatedToken) {
+        if (!rep) {
             showErrorToast(t('Login status expired'));
+            dispatch(logout());
             return;
         }
-        dispatch(setToken({ access: updatedToken, refresh: updatedRefreshToken }));
         if (rep.status !== 200) {
             showErrorToast(await rep.text());
             return;
@@ -124,25 +118,20 @@ const SavesSection = () => {
                 return;
             }
             const { data, hash } = save;
-            const {
-                rep,
-                token: updatedToken,
-                refreshToken: updatedRefreshToken,
-            } = await apiFetch(
+            const rep = await apiFetch(
                 API_ENDPOINT.SAVES + '/' + currentSaveId,
                 {
                     method: 'PATCH',
                     body: JSON.stringify({ data, hash }),
                 },
-                token,
-                refreshToken
+                token
             );
-            if (!updatedRefreshToken || !updatedToken) {
+            if (!rep) {
                 showErrorToast(t('Login status expired'));
                 setSyncButtonIsLoading(undefined);
+                dispatch(logout());
                 return;
             }
-            dispatch(setToken({ access: updatedToken, refresh: updatedRefreshToken }));
             if (rep.status !== 200) {
                 showErrorToast(await rep.text());
                 setSyncButtonIsLoading(undefined);
@@ -152,17 +141,13 @@ const SavesSection = () => {
         } else {
             // sync another save slot
             setSyncButtonIsLoading(saveId);
-            const {
-                rep,
-                token: updatedToken,
-                refreshToken: updatedRefreshToken,
-            } = await apiFetch(API_ENDPOINT.SAVES + '/' + saveId, {}, token, refreshToken);
-            if (!updatedRefreshToken || !updatedToken) {
+            const rep = await apiFetch(API_ENDPOINT.SAVES + '/' + saveId, {}, token);
+            if (!rep) {
                 showErrorToast(t('Login status expired'));
                 setSyncButtonIsLoading(undefined);
+                dispatch(logout());
                 return;
             }
-            dispatch(setToken({ access: updatedToken, refresh: updatedRefreshToken }));
             if (rep.status !== 200) {
                 showErrorToast(await rep.text());
                 setSyncButtonIsLoading(undefined);
@@ -179,17 +164,13 @@ const SavesSection = () => {
     const handleDeleteSave = async (saveId: number) => {
         if (!isLoggedIn || !saveId || !token) return;
         setDeleteButtonIsLoading(saveId);
-        const {
-            rep,
-            token: updatedToken,
-            refreshToken: updatedRefreshToken,
-        } = await apiFetch(API_ENDPOINT.SAVES + '/' + currentSaveId, { method: 'DELETE' }, token, refreshToken);
-        if (!updatedRefreshToken || !updatedToken) {
+        const rep = await apiFetch(API_ENDPOINT.SAVES + '/' + currentSaveId, { method: 'DELETE' }, token);
+        if (!rep) {
             showErrorToast(t('Login status expired'));
             setDeleteButtonIsLoading(undefined);
+            dispatch(logout());
             return;
         }
-        dispatch(setToken({ access: updatedToken, refresh: updatedRefreshToken }));
         if (rep.status !== 200) {
             showErrorToast(await rep.text());
             setDeleteButtonIsLoading(undefined);

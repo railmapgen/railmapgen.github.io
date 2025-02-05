@@ -21,35 +21,40 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { MdOpenInNew } from 'react-icons/md';
 import { useRootDispatch, useRootSelector } from '../../redux';
-import { setToken } from '../../redux/account/account-slice';
+import { logout } from '../../redux/account/account-slice';
+import { apiFetch } from '../../util/api';
 import { API_ENDPOINT } from '../../util/constants';
-import { notifyRMPTokenUpdate } from '../../util/local-storage-save';
-import { apiFetch } from '../../util/utils';
 
 const RedeemModal = (props: { isOpen: boolean; onClose: () => void; getSubscriptions: () => Promise<void> }) => {
     const toast = useToast();
     const { t } = useTranslation();
     const { isOpen, onClose, getSubscriptions } = props;
-    const { isLoggedIn, token, refreshToken } = useRootSelector(state => state.account);
+    const { isLoggedIn, token } = useRootSelector(state => state.account);
     const dispatch = useRootDispatch();
 
     const linkColour = useColorModeValue('primary.500', 'primary.300');
     const [CDKey, setCDKey] = React.useState('');
 
+    const showErrorToast = (msg: string) =>
+        toast({
+            title: msg,
+            status: 'error' as const,
+            duration: 9000,
+            isClosable: true,
+        });
+
     const handleRedeem = async (CDKey: string) => {
         if (!isLoggedIn) return;
-        const {
-            rep,
-            token: updatedToken,
-            refreshToken: updatedRefreshToken,
-        } = await apiFetch(
+        const rep = await apiFetch(
             API_ENDPOINT.SUBSCRIPTION_REDEEM,
             { method: 'POST', body: JSON.stringify({ cdkey: CDKey.trim() }) },
-            token,
-            refreshToken
+            token
         );
-        if (!updatedRefreshToken || !updatedToken) return;
-        dispatch(setToken({ access: updatedToken, refresh: updatedRefreshToken }));
+        if (!rep) {
+            showErrorToast(t('Login status expired'));
+            dispatch(logout());
+            return;
+        }
         if (rep.status !== 202) {
             const msg = (await rep.json()).message;
             toast({
@@ -61,7 +66,7 @@ const RedeemModal = (props: { isOpen: boolean; onClose: () => void; getSubscript
             return;
         }
         await getSubscriptions();
-        notifyRMPTokenUpdate(updatedToken);
+        // TODO: let RMP refresh its subscription status
         onClose();
     };
 

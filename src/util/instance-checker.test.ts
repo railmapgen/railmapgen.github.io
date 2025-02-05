@@ -59,7 +59,7 @@ describe('InstanceChecker', () => {
     it('Can terminate current session when received RESTART', async () => {
         testChannel.onmessage = ev => messagesReceived.push(ev.data);
 
-        const { default: store } = await import('./../redux');
+        const { default: store } = await import('../redux');
         const { checkInstance, closeChannel } = await import('./instance-checker');
 
         // assert isPrimary

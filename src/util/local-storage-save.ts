@@ -1,9 +1,10 @@
 import { logger } from '@railmapgen/rmg-runtime';
-import { fetchSaveList, logout, setToken, syncAfterLogin } from '../redux/account/account-slice';
+import { fetchSaveList, logout, syncAfterLogin } from '../redux/account/account-slice';
 import { createStore } from '../redux/index';
 import { setLastChangedAtTimeStamp } from '../redux/rmp-save/rmp-save-slice';
 import { API_ENDPOINT, SAVE_KEY } from './constants';
-import { apiFetch, createHash } from './utils';
+import { apiFetch } from './api';
+import { createHash } from './utils';
 
 export const getRMPSave = async (key: SAVE_KEY) => {
     const data = localStorage.getItem(key);
@@ -18,7 +19,6 @@ export const setRMPSave = (key: SAVE_KEY, data: string) => {
 export const SAVE_MANAGER_CHANNEL_NAME = 'rmt-save-manager';
 export enum SaveManagerEventType {
     SAVE_CHANGED = 'SAVE_CHANGED',
-    TOKEN_REQUEST = 'TOKEN_REQUEST',
 }
 export interface SaveManagerEvent {
     type: SaveManagerEventType;
@@ -89,16 +89,11 @@ export const registerOnRMPSaveChange = (store: ReturnType<typeof createStore>) =
                 }
 
                 logger.info(`Update remote save id: ${currentSaveId} with local key: ${key}`);
-                const {
-                    rep,
-                    token: updatedToken,
-                    refreshToken: updatedRefreshToken,
-                } = await updateSave(currentSaveId, token, refreshToken, key!);
-                if (!updatedRefreshToken || !updatedToken) {
+                const rep = await updateSave(currentSaveId, token, refreshToken, key!);
+                if (!rep) {
                     store.dispatch(logout());
                     return;
                 }
-                store.dispatch(setToken({ access: updatedToken, refresh: updatedRefreshToken }));
                 if (rep.status === 409) {
                     logger.warn(`Save id: ${currentSaveId} is newer in the cloud via server response.`);
                     store.dispatch(syncAfterLogin());
@@ -115,7 +110,7 @@ export const registerOnRMPSaveChange = (store: ReturnType<typeof createStore>) =
 
 export const updateSave = async (currentSaveId: number, token: string, refreshToken: string, key: SAVE_KEY) => {
     const save = await getRMPSave(key);
-    if (!save) return { rep: undefined, token: undefined, refreshToken: undefined };
+    if (!save) return undefined;
     const { data, hash } = save;
     return await apiFetch(
         API_ENDPOINT.SAVES + '/' + currentSaveId,
@@ -123,47 +118,6 @@ export const updateSave = async (currentSaveId: number, token: string, refreshTo
             method: 'PATCH',
             body: JSON.stringify({ data, hash }),
         },
-        token,
-        refreshToken
+        token
     );
-};
-
-// This should trigger RMP to refetch subscription info.
-export const notifyRMPTokenUpdate = (token?: string) => {
-    channel.postMessage({
-        type: SaveManagerEventType.TOKEN_REQUEST,
-        token: token,
-        from: 'rmt',
-    } as SaveManagerEvent);
-};
-
-export const registerOnTokenRequest = (store: ReturnType<typeof createStore>) => {
-    const eventHandler = async (ev: MessageEvent<SaveManagerEvent>) => {
-        const { type, from } = ev.data;
-        if (type === SaveManagerEventType.TOKEN_REQUEST && from === 'rmp') {
-            logger.info(`Received token request event from: ${from}`);
-
-            const { isLoggedIn, token, refreshToken } = store.getState().account;
-            if (!isLoggedIn || !token || !refreshToken) {
-                notifyRMPTokenUpdate();
-                return;
-            }
-
-            await store.dispatch(fetchSaveList());
-
-            const {
-                isLoggedIn: isLoggedInAfterFetch,
-                token: tokenAfterFetch,
-                refreshToken: refreshTokenAfterFetch,
-            } = store.getState().account;
-            if (!isLoggedInAfterFetch || !tokenAfterFetch || !refreshTokenAfterFetch) {
-                notifyRMPTokenUpdate();
-                return;
-            }
-
-            notifyRMPTokenUpdate(tokenAfterFetch);
-        }
-    };
-
-    channel.addEventListener('message', eventHandler);
 };

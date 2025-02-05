@@ -8,6 +8,7 @@ import i18n from './i18n/config';
 import './index.css';
 import './inject-seo';
 import store from './redux';
+import { syncAfterLogin } from './redux/account/account-slice';
 import {
     addRemoteFont,
     closeApp,
@@ -17,10 +18,10 @@ import {
     updateTabUrl,
 } from './redux/app/app-slice';
 import initStore from './redux/init';
+import { checkTokenAndRefreshStore } from './util/api';
 import { getAllowedAssetTypes, getAvailableAsset } from './util/asset-enablements';
 import { Events, FRAME_ID_PREFIX } from './util/constants';
-import { registerOnRMPSaveChange, registerOnTokenRequest } from './util/local-storage-save';
-import { fetchSaveList, syncAfterLogin } from './redux/account/account-slice';
+import { registerOnRMPSaveChange } from './util/local-storage-save';
 
 let root: Root;
 const AppRoot = lazy(() => import('./components/app-root'));
@@ -47,7 +48,7 @@ rmgRuntime.ready().then(async () => {
 
     // If user is logged in previously, fetch and sync the save (resolve conflicts might be needed).
     // Otherwise this is a no-op.
-    await store.dispatch(fetchSaveList());
+    await checkTokenAndRefreshStore(store);
     await store.dispatch(syncAfterLogin());
 
     renderApp();
@@ -89,5 +90,4 @@ rmgRuntime.ready().then(async () => {
     rmgRuntime.event(Events.APP_LOAD, { openedApps: store.getState().app.openedTabs.map(tab => tab.app) });
 
     registerOnRMPSaveChange(store);
-    registerOnTokenRequest(store);
 });

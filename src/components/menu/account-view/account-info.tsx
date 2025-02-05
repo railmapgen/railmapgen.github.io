@@ -21,10 +21,9 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { MdDriveFileRenameOutline, MdLogout, MdPassword } from 'react-icons/md';
 import { useRootDispatch, useRootSelector } from '../../../redux';
-import { logout, setToken, updateName } from '../../../redux/account/account-slice';
+import { logout, updateName } from '../../../redux/account/account-slice';
+import { apiFetch } from '../../../util/api';
 import { API_ENDPOINT, API_URL } from '../../../util/constants';
-import { notifyRMPTokenUpdate } from '../../../util/local-storage-save';
-import { apiFetch } from '../../../util/utils';
 
 const style: SystemStyleObject = {
     alignItems: 'center',
@@ -53,7 +52,6 @@ const AccountInfo = () => {
             body: JSON.stringify({ refreshToken }),
         });
         dispatch(logout());
-        notifyRMPTokenUpdate();
     };
 
     return (
@@ -104,7 +102,7 @@ export function ChangeModal(props: { infoType: 'name' | 'password' | undefined; 
     const toast = useToast();
     const dispatch = useRootDispatch();
 
-    const { isLoggedIn, id, token, refreshToken } = useRootSelector(state => state.account);
+    const { isLoggedIn, id, token } = useRootSelector(state => state.account);
     const [value, setValue] = React.useState('');
 
     const showErrorToast = (msg: string) =>
@@ -117,21 +115,16 @@ export function ChangeModal(props: { infoType: 'name' | 'password' | undefined; 
 
     const handleChange = async () => {
         if (!isLoggedIn || !infoType) return;
-        const {
-            rep,
-            token: updatedToken,
-            refreshToken: updatedRefreshToken,
-        } = await apiFetch(
+        const rep = await apiFetch(
             API_ENDPOINT.USER + '/' + id,
             { method: 'PATCH', body: JSON.stringify({ [infoType]: value }) },
-            token,
-            refreshToken
+            token
         );
-        if (!updatedRefreshToken || !updatedToken) {
+        if (!rep) {
             showErrorToast(t('Login status expired'));
+            dispatch(logout());
             return;
         }
-        dispatch(setToken({ access: updatedToken, refresh: updatedRefreshToken }));
         if (rep.status !== 200) {
             showErrorToast(await rep.text());
             return;

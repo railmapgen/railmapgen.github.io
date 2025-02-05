@@ -1,10 +1,11 @@
 import rmgRuntime, { logger } from '@railmapgen/rmg-runtime';
 import { clearAllListeners } from '@reduxjs/toolkit';
+import { checkTokenAndRefreshStore } from '../util/api';
 import { assetEnablement, getAllowedAssetTypes, getAvailableAsset } from '../util/asset-enablements';
 import { LocalStorageKey, QUERY_STRINGS, WorkspaceTab } from '../util/constants';
 import { checkInstance } from '../util/instance-checker';
-import { isSafari, refreshToken } from '../util/utils';
-import { LoginInfo, login, logout, setExpires, setToken } from './account/account-slice';
+import { isSafari } from '../util/utils';
+import { LoginInfo, login } from './account/account-slice';
 import {
     isShowDevtools,
     neverShowFontAdvice,
@@ -92,33 +93,10 @@ export const initAccountStore = (store: RootStore) => {
     }
 
     // TODO: only run when the token expires
-    const intervalMS = 5000;
-    setInterval(() => {
-        const account = store.getState().account;
-        if (!account.isLoggedIn) return;
-        const expires = new Date(account.expires!);
-        // logger.debug(`Current time: ${new Date()}, access token expires time: ${expires}`);
-        if (new Date().getTime() > expires.getTime()) {
-            logger.debug(`Token expires on ${expires} needs to be refreshed on ${new Date()}`);
-            const refreshExpires = new Date(account.refreshExpires!);
-            if (new Date().getTime() > refreshExpires.getTime()) {
-                logger.debug(`Refresh token expires on ${refreshExpires}, logout!`);
-                store.dispatch(logout());
-                return;
-            }
-            refreshToken(account.refreshToken!).then(refresh => {
-                logger.debug(`Token refreshed with ${JSON.stringify(refresh)}`);
-                if (!refresh) {
-                    store.dispatch(logout());
-                    return;
-                }
-                store.dispatch(setToken({ access: refresh.access.token, refresh: refresh.refresh.token }));
-                store.dispatch(
-                    setExpires({ expires: refresh.access.expires, refreshExpires: refresh.refresh.expires })
-                );
-            });
-        }
-    }, intervalMS);
+    const intervalMS = 60000;
+    // check token every minute
+    // first check will be done in src\index.tsx in sync
+    setInterval(() => checkTokenAndRefreshStore(store), intervalMS);
 };
 
 export const initRMPSaveStore = (store: RootStore) => {
@@ -180,7 +158,7 @@ export default function initStore(store: RootStore) {
 
     startRootListening({
         predicate: (_action, currentState, previousState) => {
-            return currentState.account.isLoggedIn !== previousState.account.isLoggedIn;
+            return JSON.stringify(currentState.account) !== JSON.stringify(previousState.account);
         },
         effect: (_action, listenerApi) => {
             const { isLoggedIn, id, name, email, token, expires, refreshToken, refreshExpires } =

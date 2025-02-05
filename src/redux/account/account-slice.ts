@@ -1,10 +1,9 @@
 import { logger } from '@railmapgen/rmg-runtime';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import i18n from '../../i18n/config';
-import { RootState } from '../../redux/index';
+import { RootState } from '../index';
 import { API_ENDPOINT, API_URL, APILoginResponse, APISaveInfo, APISaveList, SAVE_KEY } from '../../util/constants';
-import { getRMPSave, notifyRMPSaveChange, notifyRMPTokenUpdate, setRMPSave } from '../../util/local-storage-save';
-import { apiFetch } from '../../util/utils';
+import { getRMPSave, notifyRMPSaveChange, setRMPSave } from '../../util/local-storage-save';
+import { apiFetch } from '../../util/api';
 import { setLastChangedAtTimeStamp, setResolveConflictModal } from '../rmp-save/rmp-save-slice';
 
 export interface ActiveSubscriptions {
@@ -58,18 +57,13 @@ export interface LoginInfo {
 export const fetchSaveList = createAsyncThunk<APISaveList, undefined>(
     'account/getSaveList',
     async (_, { getState, dispatch, rejectWithValue }) => {
-        const { isLoggedIn, token, refreshToken } = (getState() as RootState).account;
+        const { isLoggedIn, token } = (getState() as RootState).account;
         if (!isLoggedIn || !token) return rejectWithValue('No token.');
-        const {
-            rep,
-            token: updatedToken,
-            refreshToken: updatedRefreshToken,
-        } = await apiFetch(API_ENDPOINT.SAVES, {}, token, refreshToken);
-        if (!updatedToken || !updatedRefreshToken) {
+        const rep = await apiFetch(API_ENDPOINT.SAVES, {}, token);
+        if (!rep) {
             dispatch(logout());
             return rejectWithValue('Can not recover from expired refresh token.');
         }
-        dispatch(setToken({ access: updatedToken!, refresh: updatedRefreshToken! }));
         if (rep.status !== 200) {
             return rejectWithValue(rep.text);
         }
@@ -101,7 +95,6 @@ export const fetchLogin = createAsyncThunk<{ error?: string; username?: string }
         } = (await loginRes.json()) as APILoginResponse;
         dispatch(login({ id: userId, name: username, email, token, expires, refreshToken, refreshExpires }));
         await dispatch(fetchSaveList()); // make sure saves are set before syncAfterLogin
-        notifyRMPTokenUpdate(token);
 
         await dispatch(syncAfterLogin());
 
@@ -120,7 +113,7 @@ export const syncAfterLogin = createAsyncThunk<undefined, undefined>(
         logger.debug('Sync after login - check if local save is newer');
         const state = getState() as RootState;
         const {
-            account: { isLoggedIn, token, refreshToken, currentSaveId, saves },
+            account: { isLoggedIn, token, currentSaveId, saves },
             rmpSave: { lastChangedAtTimeStamp },
         } = state;
         const lastChangedAt = new Date(lastChangedAtTimeStamp);
@@ -130,16 +123,11 @@ export const syncAfterLogin = createAsyncThunk<undefined, undefined>(
             return rejectWithValue(`Save id: ${currentSaveId} is not in saveList!`);
         }
         const lastUpdateAt = new Date(save.lastUpdateAt);
-        const {
-            rep,
-            token: updatedToken,
-            refreshToken: updatedRefreshToken,
-        } = await apiFetch(API_ENDPOINT.SAVES + '/' + currentSaveId, {}, token, refreshToken);
-        if (!updatedRefreshToken || !updatedToken) {
+        const rep = await apiFetch(API_ENDPOINT.SAVES + '/' + currentSaveId, {}, token);
+        if (!rep) {
             dispatch(logout());
-            return rejectWithValue(i18n.t('Login status expired.'));
+            return rejectWithValue('Login status expired.');
         }
-        dispatch(setToken({ access: updatedToken, refresh: updatedRefreshToken }));
         if (rep.status !== 200) {
             return rejectWithValue(await rep.text());
         }
