@@ -81,14 +81,17 @@ export default function SettingsView() {
                     {t('Settings')}
                 </Heading>
             </RmgSectionHeader>
-
             <Box px={2}>
                 <RmgFields fields={fields} minW="full" />
-                <Button width="100%" onClick={() => setIsLocalStorageOpen(true)}>
-                    {t('Export Local Storage')}
-                </Button>
+                {isShowDevtools(lastShowDevtools) && (
+                    <>
+                        <Button width="100%" onClick={() => setIsLocalStorageOpen(true)}>
+                            {t('Export Local Storage')}
+                        </Button>
+                        <LocalStorageModal isOpen={isLocalStorageOpen} onClose={() => setIsLocalStorageOpen(false)} />
+                    </>
+                )}
             </Box>
-            <LocalStorageModal isOpen={isLocalStorageOpen} onClose={() => setIsLocalStorageOpen(false)} />
         </RmgSection>
     );
 }
