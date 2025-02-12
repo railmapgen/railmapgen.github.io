@@ -84,7 +84,7 @@ export const openSearchedApp = (store: RootStore) => {
 };
 
 export const initAccountStore = (store: RootStore) => {
-    const accountString = window.localStorage.getItem(LocalStorageKey.ACCOUNT);
+    const accountString = rmgRuntime.storage.get(LocalStorageKey.ACCOUNT);
 
     if (accountString) {
         const accountData = JSON.parse(accountString) as LoginInfo;
@@ -100,7 +100,7 @@ export const initAccountStore = (store: RootStore) => {
 };
 
 export const initRMPSaveStore = (store: RootStore) => {
-    const rmpSaveString = window.localStorage.getItem(LocalStorageKey.RMP_SAVE);
+    const rmpSaveString = rmgRuntime.storage.get(LocalStorageKey.RMP_SAVE);
 
     if (rmpSaveString) {
         const rmpSaveData = JSON.parse(rmpSaveString) as Pick<RMPSaveState, 'lastChangedAtTimeStamp'>;
@@ -164,13 +164,13 @@ export default function initStore(store: RootStore) {
             const { isLoggedIn, id, name, email, token, expires, refreshToken, refreshExpires } =
                 listenerApi.getState().account;
             if (isLoggedIn) {
-                window.localStorage.setItem(
+                rmgRuntime.storage.set(
                     LocalStorageKey.ACCOUNT,
                     JSON.stringify({ id, name, email, token, expires, refreshToken, refreshExpires })
                 );
             } else {
                 logger.debug(`Remove account from local storage due to logout.`);
-                window.localStorage.removeItem(LocalStorageKey.ACCOUNT);
+                rmgRuntime.storage.remove(LocalStorageKey.ACCOUNT);
             }
         },
     });
@@ -181,7 +181,7 @@ export default function initStore(store: RootStore) {
         },
         effect: (_action, listenerApi) => {
             const { lastChangedAtTimeStamp } = listenerApi.getState().rmpSave;
-            window.localStorage.setItem(LocalStorageKey.RMP_SAVE, JSON.stringify({ lastChangedAtTimeStamp }));
+            rmgRuntime.storage.set(LocalStorageKey.RMP_SAVE, JSON.stringify({ lastChangedAtTimeStamp }));
         },
     });
 
