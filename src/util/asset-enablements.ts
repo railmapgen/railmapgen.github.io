@@ -44,6 +44,11 @@ export const assetEnablement: Record<string, AssetDetail> = {
         url: '/rmp/',
         assetType: 'app',
     },
+    rma: {
+        name: 'Rail Map Announcer',
+        url: '/rma/',
+        assetType: 'app',
+    },
     'rmg-palette': {
         name: 'Palette',
         url: '/rmg-palette/',
