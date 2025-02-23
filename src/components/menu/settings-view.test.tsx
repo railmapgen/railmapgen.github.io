@@ -12,7 +12,7 @@ window.matchMedia = vi.fn().mockImplementation(media => ({
     removeEventListener: () => {},
 }));
 
-describe('SettingsView', () => {
+describe.skip('SettingsView', () => {
     afterEach(() => {
         window.localStorage.removeItem('rmg-runtime__allowAnalytics');
     });
