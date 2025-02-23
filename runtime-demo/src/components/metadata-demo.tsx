@@ -1,7 +1,7 @@
-import { RmgSection, RmgSectionHeader } from '@railmapgen/rmg-components';
-import { Button, Heading, HStack, Text } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import rmgRuntime from '@railmapgen/rmg-runtime';
+import { RMSection, RMSectionHeader } from '@railmapgen/mantine-components';
+import { Button, Group, Text, Title } from '@mantine/core';
 
 const getRandomInt = () => {
     return Math.ceil(Math.random() * 100);
@@ -54,32 +54,22 @@ export default function MetadataDemo() {
     };
 
     return (
-        <RmgSection>
-            <RmgSectionHeader>
-                <Heading as="h5" size="sm">
+        <RMSection>
+            <RMSectionHeader>
+                <Title order={2} size="h4">
                     Metadata
-                </Heading>
-            </RmgSectionHeader>
-            <HStack wrap="wrap" px={1}>
+                </Title>
+            </RMSectionHeader>
+            <Group>
                 <Text w="100%">iframe src: {frameSrc}</Text>
                 <Text w="100%">Document location: {documentLocation}</Text>
                 <Text w="100%">Persisted URL: {persistedUrl}</Text>
-                <Button size="sm" onClick={handleUpdateTitle}>
-                    Update title
-                </Button>
-                <Button size="sm" onClick={handleUpdateSearch}>
-                    Update search
-                </Button>
-                <Button size="sm" onClick={handleResetSearch}>
-                    Reset search
-                </Button>
-                <Button size="sm" onClick={handleUpdateHash}>
-                    Update hash
-                </Button>
-                <Button size="sm" onClick={handleResetHash}>
-                    Reset hash
-                </Button>
-            </HStack>
-        </RmgSection>
+                <Button onClick={handleUpdateTitle}>Update title</Button>
+                <Button onClick={handleUpdateSearch}>Update search</Button>
+                <Button onClick={handleResetSearch}>Reset search</Button>
+                <Button onClick={handleUpdateHash}>Update hash</Button>
+                <Button onClick={handleResetHash}>Reset hash</Button>
+            </Group>
+        </RMSection>
     );
 }

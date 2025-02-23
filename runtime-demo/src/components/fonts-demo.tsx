@@ -1,8 +1,8 @@
-import { RmgFields, RmgFieldsField, RmgSection, RmgSectionHeader } from '@railmapgen/rmg-components';
-import { chakra, Heading } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import rmgRuntime from '@railmapgen/rmg-runtime';
 import FontPreview from './font-preview';
+import { RMSection, RMSectionHeader } from '@railmapgen/mantine-components';
+import { NativeSelect, Stack, Title } from '@mantine/core';
 
 export default function FontsDemo() {
     const [allFonts, setAllFonts] = useState<Awaited<ReturnType<typeof rmgRuntime.getAllFonts>>>({});
@@ -12,13 +12,13 @@ export default function FontsDemo() {
         rmgRuntime.getAllFonts().then(setAllFonts);
     }, []);
 
-    const fontOptions = Object.entries(allFonts).reduce<Record<string, string>>(
-        (acc, cur) => ({
-            ...acc,
-            [cur[0]]: cur[1].displayName ?? cur[0],
-        }),
-        { '': 'Default' }
-    );
+    const fontOptions = [
+        { value: '', label: 'Default' },
+        ...Object.entries(allFonts).map(cur => ({
+            value: cur[0],
+            label: cur[1].displayName ?? cur[0],
+        })),
+    ];
 
     const handleSelectFont = async (font: string) => {
         if (font) {
@@ -27,31 +27,22 @@ export default function FontsDemo() {
         setSelectedFont(font);
     };
 
-    const fields: RmgFieldsField[] = [
-        {
-            type: 'select',
-            label: 'Display font',
-            options: fontOptions,
-            value: selectedFont,
-            onChange: value => handleSelectFont(value as string),
-        },
-        {
-            type: 'output',
-            label: 'Preview',
-            value: <FontPreview fontFamily={selectedFont || undefined} />,
-        },
-    ];
-
     return (
-        <RmgSection>
-            <RmgSectionHeader>
-                <Heading as="h5" size="sm">
+        <RMSection>
+            <RMSectionHeader>
+                <Title order={2} size="h4">
                     Fonts
-                </Heading>
-            </RmgSectionHeader>
-            <chakra.div px={1}>
-                <RmgFields fields={fields} minW="full" />
-            </chakra.div>
-        </RmgSection>
+                </Title>
+            </RMSectionHeader>
+            <Stack py="xs" gap="xs">
+                <NativeSelect
+                    label="Display font"
+                    value={selectedFont}
+                    onChange={({ currentTarget: { value } }) => handleSelectFont(value)}
+                    data={fontOptions}
+                />
+                <FontPreview style={{ fontFamily: selectedFont || undefined }} />
+            </Stack>
+        </RMSection>
     );
 }
