@@ -12,9 +12,8 @@ import SettingsView from './settings-view';
 import FontsSection from './support-view/fonts-section';
 import SupportSection from './support-view/support-section';
 import { RMEnvBadge, RMWindowHeader } from '@railmapgen/mantine-components';
-import { ActionIcon, Alert, Anchor, Divider, Title } from '@mantine/core';
+import { ActionIcon, Alert, Anchor, Avatar, Divider, Title, Tooltip } from '@mantine/core';
 import {
-    MdOutlineAccountCircle,
     MdOutlineApps,
     MdOutlineBuild,
     MdOutlineHelpOutline,
@@ -24,21 +23,21 @@ import {
     MdWarning,
 } from 'react-icons/md';
 import clsx from 'clsx';
-import { IconType } from 'react-icons';
 import ContributorModal from '../modal/contributor-modal/contributor-modal';
-import { ComponentProps, useState } from 'react';
+import { ComponentProps, ReactNode, useState } from 'react';
 
 type AsideButton = {
     key: MenuView;
-    Icon: IconType;
+    label: ReactNode;
+    Icon: ReactNode;
     ActionIconProps?: ComponentProps<typeof ActionIcon>;
-    IconProps?: IconType;
 };
 
 export default function NavMenu() {
     const { t } = useTranslation();
 
     const { isShowMenu, menuView, lastShowDevtools } = useRootSelector(state => state.app);
+    const { isLoggedIn, name } = useRootSelector(state => state.account);
     const dispatch = useRootDispatch();
 
     const [isContributorModalOpen, setIsContributorModalOpen] = useState(false);
@@ -50,21 +49,35 @@ export default function NavMenu() {
         searchParams.toString();
 
     const asideButtons: AsideButton[] = [
-        { key: 'apps', Icon: MdOutlineApps },
-        { key: 'links', Icon: MdOutlineLink },
+        { key: 'apps', label: t('Apps'), Icon: <MdOutlineApps size={22} /> },
+        { key: 'links', label: t('Useful links'), Icon: <MdOutlineLink size={22} /> },
         {
             key: 'devtools',
-            Icon: MdOutlineBuild,
+            label: t('Devtools'),
+            Icon: <MdOutlineBuild size={22} />,
             ActionIconProps: { style: { display: isShowDevtools(lastShowDevtools) ? 'inline-flex' : 'none' } },
         },
-        { key: 'account', Icon: MdOutlineAccountCircle, ActionIconProps: { mt: 'auto' } },
+        {
+            key: 'account',
+            label: t('Account'),
+            Icon: (
+                <Avatar
+                    variant="light"
+                    name={isLoggedIn ? name : undefined}
+                    // src="https://github.com/thekingofcity.png?size=100"
+                    size="sm"
+                />
+            ),
+            ActionIconProps: { mt: 'auto' },
+        },
         {
             key: 'contributors',
-            Icon: MdOutlinePeopleOutline,
+            label: t('Contributors'),
+            Icon: <MdOutlinePeopleOutline size={22} />,
             ActionIconProps: { onClick: () => setIsContributorModalOpen(true) },
         },
-        { key: 'support', Icon: MdOutlineHelpOutline },
-        { key: 'settings', Icon: MdOutlineSettings },
+        { key: 'support', label: t('Help & support'), Icon: <MdOutlineHelpOutline size={22} /> },
+        { key: 'settings', label: t('Settings'), Icon: <MdOutlineSettings size={22} /> },
     ];
 
     return (
@@ -88,17 +101,18 @@ export default function NavMenu() {
 
                 <div className={classes.body}>
                     <div className={classes.aside}>
-                        {asideButtons.map(({ key, Icon, ActionIconProps, IconProps }) => (
-                            <ActionIcon
-                                key={key}
-                                variant={menuView === key ? 'light' : 'subtle'}
-                                color={menuView === key ? undefined : 'gray'}
-                                size="lg"
-                                onClick={() => dispatch(setMenuView(key))}
-                                {...ActionIconProps}
-                            >
-                                <Icon size={22} {...IconProps} />
-                            </ActionIcon>
+                        {asideButtons.map(({ key, label, Icon, ActionIconProps }) => (
+                            <Tooltip key={key} label={label} position="right" withArrow>
+                                <ActionIcon
+                                    variant={menuView === key ? 'light' : 'subtle'}
+                                    color={menuView === key ? undefined : 'gray'}
+                                    size="lg"
+                                    onClick={() => dispatch(setMenuView(key))}
+                                    {...ActionIconProps}
+                                >
+                                    {Icon}
+                                </ActionIcon>
+                            </Tooltip>
                         ))}
                     </div>
                     <Divider orientation="vertical" />

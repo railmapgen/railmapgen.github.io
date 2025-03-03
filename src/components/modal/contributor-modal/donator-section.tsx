@@ -1,8 +1,9 @@
 import { useTranslation } from 'react-i18next';
 import useDonators from '../../hook/use-donators';
-import { RMSection, RMSectionHeader } from '@railmapgen/mantine-components';
-import { Title } from '@mantine/core';
-import AvatarWall from './avatar-wall';
+import { RMSection, RMSectionBody, RMSectionHeader } from '@railmapgen/mantine-components';
+import { Alert, Group, LoadingOverlay, Title } from '@mantine/core';
+import { MdWarning } from 'react-icons/md';
+import GithubAvatar from './github-avatar';
 
 export default function DonatorSection() {
     const { t } = useTranslation();
@@ -17,7 +18,19 @@ export default function DonatorSection() {
                 </Title>
             </RMSectionHeader>
 
-            <AvatarWall contributors={donators} isLoading={isLoading} isError={isError} />
+            <RMSectionBody>
+                <LoadingOverlay visible={isLoading} />
+
+                {isError && (
+                    <Alert color="yellow" icon={<MdWarning />} title={t('Unable to load donators')} flex={1}></Alert>
+                )}
+
+                {!isError && donators && (
+                    <Group gap="xs">
+                        {donators?.map(contributor => <GithubAvatar key={contributor} login={contributor} />)}
+                    </Group>
+                )}
+            </RMSectionBody>
         </RMSection>
     );
 }

@@ -1,24 +1,14 @@
-import {
-    Alert,
-    AlertDescription,
-    AlertIcon,
-    Button,
-    Flex,
-    Heading,
-    InputGroup,
-    InputRightElement,
-    Stack,
-    Text,
-    useToast,
-} from '@chakra-ui/react';
-import { RmgDebouncedInput, RmgFields, RmgSection, RmgSectionHeader } from '@railmapgen/rmg-components';
+import { Button, Flex, InputGroup, InputRightElement, Stack, Text, useToast } from '@chakra-ui/react';
+import { RmgDebouncedInput, RmgFields } from '@railmapgen/rmg-components';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRootDispatch } from '../../../redux';
 import { fetchLogin } from '../../../redux/account/account-slice';
 import { API_ENDPOINT, API_URL } from '../../../util/constants';
 import { emailValidator, passwordValidator } from './account-utils';
-import { MdCheck } from 'react-icons/md';
+import { MdCheck, MdOutlineErrorOutline, MdOutlineInfo } from 'react-icons/md';
+import { RMSection, RMSectionBody, RMSectionHeader } from '@railmapgen/mantine-components';
+import { Alert, Title } from '@mantine/core';
 
 const ForgotPasswordView = (props: { setLoginState: (_: 'login' | 'register' | 'forgot-password') => void }) => {
     const toast = useToast();
@@ -104,23 +94,25 @@ const ForgotPasswordView = (props: { setLoginState: (_: 'login' | 'register' | '
     };
 
     return (
-        <RmgSection>
-            <RmgSectionHeader>
-                <Heading as="h4" size="md" my={1}>
+        <RMSection>
+            <RMSectionHeader>
+                <Title order={3} size="h5">
                     {t('Forgot password')}
-                </Heading>
-            </RmgSectionHeader>
+                </Title>
+            </RMSectionHeader>
 
-            {emailResetPasswordSent && (
-                <Alert status={emailResetPasswordSent === 'error' ? 'error' : 'info'}>
-                    <AlertIcon />
-                    <AlertDescription>
-                        {emailResetPasswordSent === 'error'
-                            ? t('Check your email again!')
-                            : t('Email with reset link is sent to: ') + emailResetPasswordSent}
-                    </AlertDescription>
-                </Alert>
-            )}
+            <RMSectionBody direction="column" gap="xs">
+                {emailResetPasswordSent === 'error' && (
+                    <Alert color="red" icon={<MdOutlineErrorOutline />} title={t('Check your email again!')} />
+                )}
+                {emailResetPasswordSent && emailResetPasswordSent !== 'error' && (
+                    <Alert
+                        color="blue"
+                        icon={<MdOutlineInfo />}
+                        title={t('Email with reset link is sent to') + ' ' + emailResetPasswordSent}
+                    />
+                )}
+            </RMSectionBody>
 
             <Flex p={2} flexDirection="column">
                 <RmgFields
@@ -193,7 +185,7 @@ const ForgotPasswordView = (props: { setLoginState: (_: 'login' | 'register' | '
                     </Button>
                 </Stack>
             </Flex>
-        </RmgSection>
+        </RMSection>
     );
 };
 

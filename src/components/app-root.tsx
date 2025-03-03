@@ -1,7 +1,6 @@
 import classes from './app-root.module.css';
 import { useEffect, useState } from 'react';
 import Workspace from './workspace/workspace';
-import { RmgWindow } from '@railmapgen/rmg-components';
 import { MdMenu } from 'react-icons/md';
 import { toggleMenu } from '../redux/app/app-slice';
 import { useTranslation } from 'react-i18next';
@@ -35,15 +34,7 @@ export default function AppRoot() {
         rmgRuntime.event(Events.TOGGLE_NAV_MENU);
     };
 
-    return isTerminated ? (
-        <RmgWindow>
-            <TerminationModal />
-        </RmgWindow>
-    ) : isPrimary === false ? (
-        <RmgWindow>
-            <MultiInstanceModal />
-        </RmgWindow>
-    ) : (
+    return (
         <BrowserRouter basename={import.meta.env.BASE_URL}>
             <RMWindow className={isShowMenu ? 'show-menu' : ''}>
                 <ActionIcon
@@ -58,9 +49,11 @@ export default function AppRoot() {
                 </ActionIcon>
                 <RMPage direction="row">
                     <NavMenu />
-                    <Workspace />
+                    <Workspace alwaysShowWelcome={isTerminated || isPrimary === false} />
                 </RMPage>
 
+                {isTerminated && <TerminationModal />}
+                {isPrimary === false && <MultiInstanceModal />}
                 <CookiesModal isOpen={isCookiesModalOpen} onClose={() => setIsCookiesModalOpen(false)} />
             </RMWindow>
         </BrowserRouter>

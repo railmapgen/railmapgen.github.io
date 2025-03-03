@@ -28,7 +28,7 @@ export default function FontsSection() {
                 {Object.entries(remoteFonts).map(([family, config]) => (
                     <Button
                         key={family}
-                        variant="light"
+                        variant="default"
                         rightSection={config.url ? <MdOpenInNew /> : undefined}
                         disabled={!config.url}
                         onClick={() => {

@@ -5,7 +5,11 @@ import Welcome from './welcome';
 import AppContainer from './app-container';
 import { useSearchParams } from 'react-router-dom';
 
-export default function Workspace() {
+type WorkspaceProps = {
+    alwaysShowWelcome?: boolean;
+};
+
+export default function Workspace({ alwaysShowWelcome }: WorkspaceProps) {
     const { openedTabs, activeTab } = useRootSelector(state => state.app);
 
     const [, setSearchParams] = useSearchParams();
@@ -25,7 +29,7 @@ export default function Workspace() {
 
     return (
         <div className={classes.workspace}>
-            {openedTabs.length === 0 ? (
+            {alwaysShowWelcome || openedTabs.length === 0 ? (
                 <Welcome />
             ) : (
                 openedTabs.map(tab => <AppContainer key={tab.id} tab={tab} isActive={activeTab === tab.id} />)

@@ -1,7 +1,7 @@
-import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 import { restartRMT } from '../../util/instance-checker';
 import { useState } from 'react';
+import { Button, Group, Modal, Text } from '@mantine/core';
 
 const emptyCallback = () => {
     // do nothing
@@ -21,19 +21,20 @@ export default function MultiInstanceModal() {
     };
 
     return (
-        <Modal isOpen={true} onClose={emptyCallback}>
-            <ModalContent>
-                <ModalHeader>{t('Rail Map Toolkit is opened in another window')}</ModalHeader>
-                <ModalBody>
-                    {t('You cannot open multiple Rail Map Toolkit at the same time. Please close this window.')}
-                </ModalBody>
-
-                <ModalFooter>
-                    <Button colorScheme="primary" onClick={handleRestart} isLoading={isLoading}>
-                        {t('Restart RMT in this window')}
-                    </Button>
-                </ModalFooter>
-            </ModalContent>
+        <Modal
+            opened={true}
+            onClose={emptyCallback}
+            title={t('Rail Map Toolkit is opened in another window')}
+            withCloseButton={false}
+            closeOnEscape={false}
+            closeOnClickOutside={false}
+        >
+            <Text>{t('You cannot open multiple Rail Map Toolkit at the same time. Please close this window.')}</Text>
+            <Group mt="xs">
+                <Button variant="default" onClick={handleRestart} loading={isLoading} disabled={isLoading}>
+                    {t('Restart RMT in this window')}
+                </Button>
+            </Group>
         </Modal>
     );
 }

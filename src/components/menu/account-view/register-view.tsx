@@ -1,24 +1,14 @@
-import {
-    Alert,
-    AlertDescription,
-    AlertIcon,
-    Button,
-    Flex,
-    Heading,
-    InputGroup,
-    InputRightElement,
-    Stack,
-    Text,
-    useToast,
-} from '@chakra-ui/react';
-import { RmgDebouncedInput, RmgFields, RmgSection, RmgSectionHeader } from '@railmapgen/rmg-components';
+import { useToast } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { MdCheck } from 'react-icons/md';
+import { MdCheck, MdOutlineErrorOutline, MdOutlineInfo } from 'react-icons/md';
 import { useRootDispatch } from '../../../redux';
 import { fetchLogin } from '../../../redux/account/account-slice';
 import { API_ENDPOINT, API_URL } from '../../../util/constants';
 import { emailValidator, passwordValidator } from './account-utils';
+import { RMSection, RMSectionBody, RMSectionHeader } from '@railmapgen/mantine-components';
+import { Alert, Button, TextInput, Title } from '@mantine/core';
+import PasswordSetup from './password-setup';
 
 const sendEmailVerificationInterval = 60;
 
@@ -125,108 +115,72 @@ const RegisterView = (props: { setLoginState: (_: 'login' | 'register') => void 
     };
 
     return (
-        <RmgSection>
-            <RmgSectionHeader>
-                <Heading as="h4" size="md" my={1}>
+        <RMSection>
+            <RMSectionHeader>
+                <Title order={3} size="h5">
                     {t('Create an account')}
-                </Heading>
-            </RmgSectionHeader>
+                </Title>
+            </RMSectionHeader>
 
-            {emailVerificationSent && (
-                <Alert status={emailVerificationSent === 'error' ? 'error' : 'info'}>
-                    <AlertIcon />
-                    <AlertDescription>
-                        {emailVerificationSent === 'error'
-                            ? t('The email is not valid!')
-                            : t('Verification email is sent to: ') + emailVerificationSent}
-                    </AlertDescription>
-                </Alert>
-            )}
+            <RMSectionBody direction="column" gap="xs">
+                {emailVerificationSent === 'error' && (
+                    <Alert color="red" icon={<MdOutlineErrorOutline />} title={t('The email is not valid!')} />
+                )}
+                {emailVerificationSent && emailVerificationSent !== 'error' && (
+                    <Alert
+                        color="blue"
+                        icon={<MdOutlineInfo />}
+                        title={t('Verification email is sent to') + ' ' + emailVerificationSent}
+                    />
+                )}
 
-            <Flex px={2} flexDirection="column">
-                <RmgFields
-                    fields={[
-                        {
-                            label: t('Name'),
-                            type: 'input',
-                            value: name,
-                            onChange: setName,
-                            debouncedDelay: 0,
-                            helper: t('You may always change it later.'),
-                        },
-                        {
-                            label: t('Email'),
-                            type: 'custom',
-                            component: (
-                                <InputGroup size="sm">
-                                    <RmgDebouncedInput
-                                        type="email"
-                                        value={email}
-                                        onDebouncedChange={setEmail}
-                                        delay={0}
-                                        validator={emailValidator}
-                                    />
-                                    <InputRightElement width="auto" bottom={0} top="unset">
-                                        {emailVerificationSent ? (
-                                            <>
-                                                <MdCheck />
-                                                <Text fontSize="xs" ml={1}>
-                                                    {t('Verification code sent')}
-                                                </Text>
-                                            </>
-                                        ) : (
-                                            <Button
-                                                size="xs"
-                                                onClick={handleVerifyEmail}
-                                                isDisabled={!isEmailValid || isSendEmailVerificationDisabled}
-                                            >
-                                                {isSendEmailVerificationDisabled
-                                                    ? `${sendEmailVerificationDisabledseconds}s`
-                                                    : t('Send verification code')}
-                                            </Button>
-                                        )}
-                                    </InputRightElement>
-                                </InputGroup>
-                            ),
-                            helper: t("We'll never share your email."),
-                        },
-                        {
-                            label: t('Verification code'),
-                            type: 'input',
-                            variant: 'number',
-                            value: emailVerificationToken,
-                            onChange: setEmailVerificationToken,
-                            debouncedDelay: 0,
-                        },
-                        {
-                            label: t('Password'),
-                            type: 'input',
-                            variant: 'password',
-                            value: password,
-                            onChange: setPassword,
-                            debouncedDelay: 0,
-                            validator: passwordValidator,
-                            helper: t('Minimum 8 characters. Contain at least 1 letter and 1 number.'),
-                        },
-                    ]}
-                    minW="full"
+                <TextInput
+                    label={t('Name')}
+                    description={t('You may always change it later.')}
+                    value={name}
+                    onChange={({ currentTarget: { value } }) => setName(value)}
                 />
+                <TextInput
+                    label={t('Email')}
+                    description={t("We'll never share your email.")}
+                    value={email}
+                    onChange={({ currentTarget: { value } }) => setEmail(value)}
+                    error={email && !emailValidator(email)}
+                    rightSection={
+                        emailVerificationSent ? (
+                            <Button variant="transparent" size="xs" leftSection={<MdCheck />} disabled>
+                                {t('Verification code sent')}
+                            </Button>
+                        ) : (
+                            <Button
+                                variant="subtle"
+                                size="xs"
+                                onClick={handleVerifyEmail}
+                                disabled={!isEmailValid || isSendEmailVerificationDisabled}
+                            >
+                                {isSendEmailVerificationDisabled
+                                    ? `${sendEmailVerificationDisabledseconds}s`
+                                    : t('Send verification code')}
+                            </Button>
+                        )
+                    }
+                    rightSectionWidth="fit-content"
+                />
+                <TextInput
+                    label={t('Verification code')}
+                    value={emailVerificationToken}
+                    onChange={({ currentTarget: { value } }) => setEmailVerificationToken(value)}
+                />
+                <PasswordSetup value={password} onChange={setPassword} />
 
-                <Stack mt={1}>
-                    <Button
-                        colorScheme="primary"
-                        onClick={handleRegister}
-                        isLoading={isLoading}
-                        isDisabled={!areFieldsValid || isLoading}
-                    >
-                        {t('Sign up')}
-                    </Button>
-                    <Button onClick={() => props.setLoginState('login')} isDisabled={isLoading}>
-                        {t('Back to log in')}
-                    </Button>
-                </Stack>
-            </Flex>
-        </RmgSection>
+                <Button onClick={handleRegister} loading={isLoading} disabled={!areFieldsValid || isLoading}>
+                    {t('Sign up')}
+                </Button>
+                <Button variant="default" onClick={() => props.setLoginState('login')} disabled={isLoading}>
+                    {t('Back to log in')}
+                </Button>
+            </RMSectionBody>
+        </RMSection>
     );
 };
 

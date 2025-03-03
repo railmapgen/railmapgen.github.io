@@ -1,9 +1,10 @@
-import { Button, Flex, Heading, Link, Stack, useToast } from '@chakra-ui/react';
-import { RmgFields, RmgSection, RmgSectionHeader } from '@railmapgen/rmg-components';
+import { useToast } from '@chakra-ui/react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRootDispatch } from '../../../redux';
 import { fetchLogin } from '../../../redux/account/account-slice';
+import { RMSection, RMSectionBody, RMSectionHeader } from '@railmapgen/mantine-components';
+import { Anchor, Button, PasswordInput, TextInput, Title } from '@mantine/core';
 
 const EMAIL_REGEX = /^\S+@\S+\.\S+$/;
 const emailValidator = (value: string) => !!value.match(EMAIL_REGEX);
@@ -47,55 +48,37 @@ const LoginView = (props: { setLoginState: (_: 'login' | 'register' | 'forgot-pa
     };
 
     return (
-        <RmgSection>
-            <RmgSectionHeader>
-                <Heading as="h4" size="md" my={1}>
+        <RMSection>
+            <RMSectionHeader>
+                <Title order={3} size="h5">
                     {t('Log in')}
-                </Heading>
-            </RmgSectionHeader>
+                </Title>
+            </RMSectionHeader>
 
-            <Flex px={2} flexDirection="column">
-                <RmgFields
-                    fields={[
-                        {
-                            label: t('Email'),
-                            type: 'input',
-                            variant: 'email',
-                            value: email,
-                            onChange: setEmail,
-                            validator: emailValidator,
-                            debouncedDelay: 0,
-                        },
-                        {
-                            label: t('Password'),
-                            type: 'input',
-                            variant: 'password',
-                            value: password,
-                            onChange: setPassword,
-                            debouncedDelay: 0,
-                        },
-                    ]}
-                    minW="full"
+            <RMSectionBody direction="column" gap="xs">
+                <TextInput
+                    label={t('Email')}
+                    value={email}
+                    onChange={({ currentTarget: { value } }) => setEmail(value)}
+                    error={email && !emailValidator(email)}
                 />
-                <Link as="button" fontSize="sm" onClick={() => props.setLoginState('forgot-password')} ml="auto">
+                <PasswordInput
+                    label={t('Password')}
+                    value={password}
+                    onChange={({ currentTarget: { value } }) => setPassword(value)}
+                />
+                <Anchor component="button" ml="auto" onClick={() => props.setLoginState('forgot-password')}>
                     {t('Forgot password') + '?'}
-                </Link>
+                </Anchor>
 
-                <Stack mt={1}>
-                    <Button
-                        colorScheme="primary"
-                        onClick={handleLogIn}
-                        isLoading={isLoading}
-                        isDisabled={!areFieldsValid || isLoading}
-                    >
-                        {t('Log in')}
-                    </Button>
-                    <Button onClick={() => props.setLoginState('register')} isDisabled={isLoading}>
-                        {t('Create an account')}
-                    </Button>
-                </Stack>
-            </Flex>
-        </RmgSection>
+                <Button onClick={handleLogIn} loading={isLoading} disabled={!areFieldsValid || isLoading}>
+                    {t('Log in')}
+                </Button>
+                <Button variant="default" onClick={() => props.setLoginState('register')} disabled={isLoading}>
+                    {t('Create an account')}
+                </Button>
+            </RMSectionBody>
+        </RMSection>
     );
 };
 

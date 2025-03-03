@@ -1,6 +1,5 @@
-import { Divider, Flex, Heading } from '@chakra-ui/react';
-import { RmgSection, RmgSectionHeader } from '@railmapgen/rmg-components';
-import React from 'react';
+import { Divider, Flex } from '@chakra-ui/react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRootSelector } from '../../../redux';
 import AccountInfo from './account-info';
@@ -9,20 +8,22 @@ import LoginView from './login-view';
 import RegisterView from './register-view';
 import SavesSection from './saves-section';
 import SubscriptionSection from './subscription-section';
+import { RMSection, RMSectionHeader } from '@railmapgen/mantine-components';
+import { Title } from '@mantine/core';
 
 const AccountView = () => {
     const { t } = useTranslation();
     const { isLoggedIn } = useRootSelector(state => state.account);
 
-    const [loginState, setLoginState] = React.useState('login' as 'login' | 'register' | 'forgot-password');
+    const [loginState, setLoginState] = useState<'login' | 'register' | 'forgot-password'>('login');
 
     return (
-        <RmgSection display="flex" flexDirection="column" h="100%" overflow="hidden">
-            <RmgSectionHeader>
-                <Heading as="h4" size="md" my={1}>
+        <RMSection>
+            <RMSectionHeader>
+                <Title order={2} size="h4">
                     {t('Account')}
-                </Heading>
-            </RmgSectionHeader>
+                </Title>
+            </RMSectionHeader>
 
             {!isLoggedIn ? (
                 loginState === 'login' ? (
@@ -43,7 +44,7 @@ const AccountView = () => {
                     </Flex>
                 </Flex>
             )}
-        </RmgSection>
+        </RMSection>
     );
 };
 
