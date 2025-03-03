@@ -3,7 +3,7 @@ import { assetEnablement } from '../../util/asset-enablements';
 import { WorkspaceTab } from '../../util/constants';
 import { constructUrl } from '../../util/utils';
 
-type MenuView = 'main' | 'settings' | 'support' | 'account';
+export type MenuView = 'apps' | 'links' | 'devtools' | 'settings' | 'support' | 'account' | 'contributors';
 type FontConfig = {
     displayName?: string;
     url?: string;
@@ -26,7 +26,7 @@ export interface AppState {
 
 const initialState: AppState = {
     isShowMenu: true,
-    menuView: 'main',
+    menuView: 'apps',
     refreshRequired: false,
     lastShowDevtools: 0,
     openedTabs: [],

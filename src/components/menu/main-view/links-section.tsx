@@ -1,24 +1,11 @@
+import classes from './app-item-button.module.css';
 import { Events } from '../../../util/constants';
-import { Box, Button, Flex, Heading, SystemStyleObject } from '@chakra-ui/react';
 import rmgRuntime from '@railmapgen/rmg-runtime';
 import { useTranslation } from 'react-i18next';
 import { MdOpenInNew } from 'react-icons/md';
-import { RmgSection, RmgSectionHeader } from '@railmapgen/rmg-components';
 import { assetEnablement, getAvailableAsset } from '../../../util/asset-enablements';
-
-const style: SystemStyleObject = {
-    '& button': {
-        w: '100%',
-        overflow: 'hidden',
-        justifyContent: 'flex-start',
-        textOverflow: 'ellipsis',
-        textAlign: 'start',
-
-        '& span.chakra-button__icon:last-of-type': {
-            ml: 'auto',
-        },
-    },
-};
+import { RMSection, RMSectionHeader } from '@railmapgen/mantine-components';
+import { Flex, NavLink, Title } from '@mantine/core';
 
 export default function LinksSection() {
     const { t } = useTranslation();
@@ -27,30 +14,29 @@ export default function LinksSection() {
 
     const handleOpenLink = (id: string) => {
         rmgRuntime.event(Events.OPEN_LINK, { id });
-        window.open(assetEnablement[id].url, '_blank');
     };
 
     return (
-        <RmgSection sx={style}>
-            <RmgSectionHeader>
-                <Heading as="h4" size="md" my={1}>
+        <RMSection>
+            <RMSectionHeader>
+                <Title order={2} size="h4">
                     {t('Useful links')}
-                </Heading>
-            </RmgSectionHeader>
+                </Title>
+            </RMSectionHeader>
             <Flex direction="column">
                 {availableLinks.map(id => (
-                    <Button
+                    <NavLink
                         key={id}
-                        variant="ghost"
-                        size="md"
-                        leftIcon={<Box w={4} />}
-                        rightIcon={<MdOpenInNew />}
+                        variant="filled"
+                        label={t(assetEnablement[id].name)}
+                        classNames={{ root: classes.button, label: classes.label }}
+                        rightSection={<MdOpenInNew />}
+                        href={assetEnablement[id].url}
+                        target="_blank"
                         onClick={() => handleOpenLink(id)}
-                    >
-                        {t(assetEnablement[id].name)}
-                    </Button>
+                    ></NavLink>
                 ))}
             </Flex>
-        </RmgSection>
+        </RMSection>
     );
 }

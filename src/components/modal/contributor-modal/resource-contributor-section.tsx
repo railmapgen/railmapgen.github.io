@@ -1,45 +1,36 @@
-import { RmgSection, RmgSectionHeader } from '@railmapgen/rmg-components';
-import { Heading, SystemStyleObject, Text } from '@chakra-ui/react';
 import { assetEnablement } from '../../../util/asset-enablements';
-import { Fragment } from 'react';
 import ContributorAvatarWall from './contributor-avatar-wall';
 import { useTranslation } from 'react-i18next';
-
-const styles: SystemStyleObject = {
-    '& > *:not(.rmg-section__header)': {
-        px: 2,
-    },
-
-    '& h6': {
-        my: 2,
-    },
-};
+import { RMSection, RMSectionBody, RMSectionHeader } from '@railmapgen/mantine-components';
+import { Text, Title } from '@mantine/core';
 
 export default function ResourceContributorSection() {
     const { t } = useTranslation();
 
     return (
-        <RmgSection sx={styles}>
-            <RmgSectionHeader>
-                <Heading as="h5" size="sm">
+        <RMSection>
+            <RMSectionHeader>
+                <Title order={2} size="h4">
                     {t('Resource contributors')}
-                </Heading>
-            </RmgSectionHeader>
+                </Title>
+            </RMSectionHeader>
 
-            {Object.entries(assetEnablement)
-                .filter(([, detail]) => detail.showContributors)
-                .map(([appId, detail]) => (
-                    <Fragment key={appId}>
-                        <Heading as="h6" size="xs">
-                            {t(detail.name)}
-                        </Heading>
-                        <ContributorAvatarWall key={appId} appId={appId} />
-                    </Fragment>
-                ))}
+            <RMSectionBody direction="column" gap="xs">
+                {Object.entries(assetEnablement)
+                    .filter(([, detail]) => detail.showContributors)
+                    .map(([appId, detail]) => (
+                        <RMSection key={appId}>
+                            <RMSectionHeader>
+                                <Title order={3} size="h5">
+                                    {t(detail.name)}
+                                </Title>
+                            </RMSectionHeader>
+                            <ContributorAvatarWall key={appId} appId={appId} />
+                        </RMSection>
+                    ))}
 
-            <Text as="i" fontSize="xs" mt={3}>
-                {t('Notes: Contributors are sorted by number of commits and commit time.')}
-            </Text>
-        </RmgSection>
+                <Text fs="italic">{t('Notes: Contributors are sorted by number of commits and commit time.')}</Text>
+            </RMSectionBody>
+        </RMSection>
     );
 }

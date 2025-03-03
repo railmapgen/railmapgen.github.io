@@ -4,15 +4,7 @@ import { userEvent } from '@testing-library/user-event';
 import { screen } from '@testing-library/react';
 import rmgRuntime from '@railmapgen/rmg-runtime';
 
-window.matchMedia = vi.fn().mockImplementation(media => ({
-    media,
-    matches: false,
-    addListener: () => {},
-    addEventListener: () => {},
-    removeEventListener: () => {},
-}));
-
-describe.skip('SettingsView', () => {
+describe('SettingsView', () => {
     afterEach(() => {
         window.localStorage.removeItem('rmg-runtime__allowAnalytics');
     });
@@ -22,7 +14,7 @@ describe.skip('SettingsView', () => {
         render(<SettingsView />);
 
         // default - unchecked
-        const cookiesCheckbox = screen.getByRole('checkbox', { name: 'Allow cookies to help improve our website' });
+        const cookiesCheckbox = screen.getByRole('switch', { name: 'Allow cookies to help improve our website' });
         expect(cookiesCheckbox).not.toBeChecked();
 
         // click to check

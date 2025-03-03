@@ -1,3 +1,4 @@
+import classes from './workspace.module.css';
 import { useEffect } from 'react';
 import { useRootSelector } from '../../redux';
 import Welcome from './welcome';
@@ -22,15 +23,13 @@ export default function Workspace() {
         }
     }, [activeTab]);
 
-    if (openedTabs.length === 0) {
-        return <Welcome />;
-    }
-
     return (
-        <>
-            {openedTabs.map(tab => (
-                <AppContainer key={tab.id} tab={tab} isActive={activeTab === tab.id} />
-            ))}
-        </>
+        <div className={classes.workspace}>
+            {openedTabs.length === 0 ? (
+                <Welcome />
+            ) : (
+                openedTabs.map(tab => <AppContainer key={tab.id} tab={tab} isActive={activeTab === tab.id} />)
+            )}
+        </div>
     );
 }

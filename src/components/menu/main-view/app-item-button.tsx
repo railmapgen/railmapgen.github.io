@@ -1,57 +1,13 @@
+import classes from './app-item-button.module.css';
 import { closeApp, closeTab, openApp, openAppInNew, setActiveTab, toggleMenu } from '../../../redux/app/app-slice';
 import { Events } from '../../../util/constants';
-import {
-    Badge,
-    Box,
-    Button,
-    ButtonGroup,
-    IconButton,
-    Menu,
-    MenuButton,
-    MenuItem,
-    MenuList,
-    SystemStyleObject,
-    theme,
-    useMediaQuery,
-} from '@chakra-ui/react';
 import { useRootDispatch, useRootSelector } from '../../../redux';
 import { useTranslation } from 'react-i18next';
 import rmgRuntime from '@railmapgen/rmg-runtime';
 import { MdAdd, MdClose, MdInfoOutline, MdModeStandby, MdMoreHoriz } from 'react-icons/md';
 import { assetEnablement } from '../../../util/asset-enablements';
-
-const style: SystemStyleObject = {
-    '& button:first-of-type': {
-        w: '100%',
-        overflow: 'hidden',
-        justifyContent: 'flex-start',
-        textOverflow: 'ellipsis',
-        textAlign: 'start',
-
-        '& span.chakra-button__icon': {
-            ml: -1,
-            color: 'orange.300',
-
-            '[data-theme="dark"] &': {
-                color: 'orange.200',
-            },
-        },
-    },
-
-    '&[aria-current="true"] > button': {
-        bg: 'primary.50',
-        _hover: { bg: 'primary.100' },
-
-        '[data-theme="dark"] &': {
-            bg: 'primary.700',
-            _hover: { bg: 'primary.600' },
-        },
-    },
-
-    '& > div': {
-        zIndex: 6,
-    },
-};
+import { ActionIcon, Badge, Menu, NavLink } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
 
 interface AppItemProps {
     appId: string;
@@ -63,7 +19,7 @@ export default function AppItemButton(props: AppItemProps) {
     const { t } = useTranslation();
     const dispatch = useRootDispatch();
 
-    const smMediaQuery = useMediaQuery(`(min-width: ${theme.breakpoints.sm})`);
+    const smMediaQuery = useMediaQuery(`(min-width: 36em)`);
 
     const { activeTab, openedTabs } = useRootSelector(state => state.app);
 
@@ -88,7 +44,7 @@ export default function AppItemButton(props: AppItemProps) {
             dispatch(openApp({ appId }));
         }
 
-        if (!smMediaQuery[0]) {
+        if (!smMediaQuery) {
             dispatch(toggleMenu());
             rmgRuntime.toggleNavMenu(false);
         }
@@ -96,7 +52,7 @@ export default function AppItemButton(props: AppItemProps) {
 
     const handleSelectTab = (tabId: string) => {
         dispatch(setActiveTab(tabId));
-        if (!smMediaQuery[0]) {
+        if (!smMediaQuery) {
             dispatch(toggleMenu());
             rmgRuntime.toggleNavMenu(false);
         }
@@ -113,72 +69,107 @@ export default function AppItemButton(props: AppItemProps) {
     };
 
     return (
-        <>
-            <ButtonGroup
-                variant={isAppActive ? 'solid' : 'ghost'}
-                size="md"
-                isAttached
-                aria-current={isAppActive}
-                sx={style}
-            >
-                <Button
-                    onClick={() => handleOpenApp(false)}
-                    leftIcon={isAppRunning ? <MdModeStandby title={t('Running')} /> : <Box w={4} />}
-                >
-                    {displayName}
-                </Button>
-                {appDetail.allowMultiInstances && (
-                    <IconButton
-                        aria-label={t('New tab')}
-                        title={t('New tab')}
-                        icon={<MdAdd />}
-                        onClick={() => handleOpenApp(true)}
-                    />
-                )}
-                <Menu>
-                    <MenuButton as={IconButton} icon={<MdMoreHoriz />} aria-label={t('More')} title={t('More')} />
-                    <MenuList>
-                        {isAppRunning && (
-                            <MenuItem icon={<MdClose />} onClick={() => handleCloseApp(appId)}>
-                                {appDetail.allowMultiInstances ? t('Close all tabs') : t('Close app')}
-                            </MenuItem>
-                        )}
-                        <MenuItem icon={<MdInfoOutline />} onClick={onAboutOpen}>
-                            {t('About')}
-                        </MenuItem>
-                    </MenuList>
-                </Menu>
-            </ButtonGroup>
-
+        <NavLink
+            component="button"
+            variant="filled"
+            label={displayName}
+            active={isAppActive}
+            classNames={{ root: classes.button, label: classes.label }}
+            leftSection={isAppRunning ? <MdModeStandby title={t('Running')} /> : undefined}
+            rightSection={
+                <>
+                    {appDetail.allowMultiInstances && (
+                        <ActionIcon
+                            aria-label={t('New tab')}
+                            title={t('New tab')}
+                            variant="subtle"
+                            color={isAppActive ? 'white' : 'gray'}
+                            mr={4}
+                            onClick={event => {
+                                event.stopPropagation();
+                                handleOpenApp(true);
+                            }}
+                        >
+                            <MdAdd />
+                        </ActionIcon>
+                    )}
+                    <Menu>
+                        <Menu.Target>
+                            <ActionIcon
+                                variant="subtle"
+                                color={isAppActive ? 'white' : 'gray'}
+                                onClick={event => event.stopPropagation()}
+                            >
+                                <MdMoreHoriz />
+                            </ActionIcon>
+                        </Menu.Target>
+                        <Menu.Dropdown>
+                            {isAppRunning && (
+                                <Menu.Item
+                                    leftSection={<MdClose />}
+                                    onClick={event => {
+                                        event.stopPropagation();
+                                        handleCloseApp(appId);
+                                    }}
+                                >
+                                    {appDetail.allowMultiInstances ? t('Close all tabs') : t('Close app')}
+                                </Menu.Item>
+                            )}
+                            <Menu.Item
+                                leftSection={<MdInfoOutline />}
+                                onClick={event => {
+                                    event.stopPropagation();
+                                    onAboutOpen();
+                                }}
+                            >
+                                {t('About')}
+                            </Menu.Item>
+                        </Menu.Dropdown>
+                    </Menu>
+                </>
+            }
+            disableRightSectionRotation
+            opened
+            onClick={() => handleOpenApp(false)}
+        >
             {appDetail.allowMultiInstances &&
                 openedTabs
                     .filter(tab => tab.app === appId)
                     .map((tab, i) => {
                         const isTabActive = tab.id === activeTab;
                         return (
-                            <ButtonGroup
-                                variant={isTabActive ? 'solid' : 'ghost'}
+                            <NavLink
                                 key={tab.id}
-                                size="sm"
-                                ml={8}
-                                mr={1}
-                                isAttached
-                                aria-current={isTabActive}
-                                sx={style}
-                            >
-                                <Button onClick={() => handleSelectTab(tab.id)}>
-                                    <Badge mr={2}>{i + 1}</Badge>
-                                    {tab.title ?? t('Tab') + ' ' + (i + 1).toString() + ' - ' + displayName}
-                                </Button>
-                                <IconButton
-                                    aria-label={t('Close tab')}
-                                    title={t('Close tab')}
-                                    icon={<MdClose />}
-                                    onClick={() => handleCloseTab(tab.id)}
-                                />
-                            </ButtonGroup>
+                                component="button"
+                                variant="filled"
+                                active={isTabActive}
+                                label={
+                                    <>
+                                        <Badge color="lightgray" c="black" mr="xs" circle display="inline-flex">
+                                            {i + 1}
+                                        </Badge>
+                                        {tab.title ?? t('Tab') + ' ' + (i + 1).toString() + ' - ' + displayName}
+                                    </>
+                                }
+                                classNames={{ root: classes.button, label: classes['sub-label'] }}
+                                rightSection={
+                                    <ActionIcon
+                                        variant="subtle"
+                                        color={isAppActive ? 'white' : 'gray'}
+                                        aria-label={t('Close tab')}
+                                        title={t('Close tab')}
+                                        onClick={event => {
+                                            event.stopPropagation();
+                                            handleCloseTab(tab.id);
+                                        }}
+                                    >
+                                        <MdClose />
+                                    </ActionIcon>
+                                }
+                                onClick={() => handleSelectTab(tab.id)}
+                            />
                         );
                     })}
-        </>
+        </NavLink>
     );
 }

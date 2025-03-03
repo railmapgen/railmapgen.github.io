@@ -6,6 +6,7 @@ import i18n from './i18n/config';
 import { Provider } from 'react-redux';
 import { Store } from '@reduxjs/toolkit';
 import { createStore } from './redux';
+import { RMMantineProvider } from '@railmapgen/mantine-components';
 
 export const createTestStore = createStore;
 
@@ -27,7 +28,9 @@ export const TestingProvider = (props: TestingProviderProps) => {
 
     return (
         <I18nextProvider i18n={i18n}>
-            <Provider store={store}>{children}</Provider>
+            <Provider store={store}>
+                <RMMantineProvider>{children}</RMMantineProvider>
+            </Provider>
         </I18nextProvider>
     );
 };

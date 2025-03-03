@@ -1,7 +1,7 @@
-import { IconButton } from '@chakra-ui/react';
+import classes from './app-root.module.css';
 import { useEffect, useState } from 'react';
 import Workspace from './workspace/workspace';
-import { RmgPage, RmgWindow } from '@railmapgen/rmg-components';
+import { RmgWindow } from '@railmapgen/rmg-components';
 import { MdMenu } from 'react-icons/md';
 import { toggleMenu } from '../redux/app/app-slice';
 import { useTranslation } from 'react-i18next';
@@ -13,6 +13,8 @@ import CookiesModal from './modal/cookies-modal';
 import { BrowserRouter } from 'react-router-dom';
 import MultiInstanceModal from './modal/multi-instance-modal';
 import TerminationModal from './modal/termination-modal';
+import { RMPage, RMWindow } from '@railmapgen/mantine-components';
+import { ActionIcon } from '@mantine/core';
 
 export default function AppRoot() {
     const { t } = useTranslation();
@@ -43,26 +45,24 @@ export default function AppRoot() {
         </RmgWindow>
     ) : (
         <BrowserRouter basename={import.meta.env.BASE_URL}>
-            <RmgWindow className={isShowMenu ? 'show-menu' : ''}>
-                <IconButton
-                    variant={isShowMenu ? 'ghost' : 'solid'}
-                    colorScheme={isShowMenu ? undefined : 'primary'}
-                    size="md"
+            <RMWindow className={isShowMenu ? 'show-menu' : ''}>
+                <ActionIcon
+                    className={classes.burger}
+                    variant={isShowMenu ? 'subtle' : 'filled'}
+                    color={isShowMenu ? 'gray' : undefined}
                     aria-label={t('Toggle menu')}
                     title={t('Toggle menu')}
-                    icon={<MdMenu />}
-                    position="absolute"
-                    zIndex={110}
-                    borderRadius={0}
                     onClick={handleToggle}
-                />
-                <RmgPage sx={{ flexDirection: 'row' }}>
+                >
+                    <MdMenu />
+                </ActionIcon>
+                <RMPage direction="row">
                     <NavMenu />
                     <Workspace />
-                </RmgPage>
+                </RMPage>
 
                 <CookiesModal isOpen={isCookiesModalOpen} onClose={() => setIsCookiesModalOpen(false)} />
-            </RmgWindow>
+            </RMWindow>
         </BrowserRouter>
     );
 }

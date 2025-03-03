@@ -1,4 +1,4 @@
-/// <reference types="vitest" />
+/// <reference types="vitest/config" />
 
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
@@ -35,7 +35,7 @@ export default defineConfig({
                         'react-redux',
                         'react-i18next',
                     ],
-                    chakra: ['@chakra-ui/react', '@emotion/react', '@emotion/styled', 'framer-motion', 'react-icons'],
+                    mantine: ['@mantine/core', '@mantine/hooks', '@railmapgen/mantine-components'],
                 },
             },
         },

@@ -1,7 +1,6 @@
-import { RmgErrorBoundary, RmgLoader, RmgThemeProvider } from '@railmapgen/rmg-components';
 import rmgRuntime, { logger } from '@railmapgen/rmg-runtime';
-import { StrictMode, lazy } from 'react';
-import { Root, createRoot } from 'react-dom/client';
+import { lazy, StrictMode } from 'react';
+import { createRoot, Root } from 'react-dom/client';
 import { I18nextProvider } from 'react-i18next';
 import { Provider } from 'react-redux';
 import i18n from './i18n/config';
@@ -22,21 +21,26 @@ import { checkTokenAndRefreshStore } from './util/api';
 import { getAllowedAssetTypes, getAvailableAsset } from './util/asset-enablements';
 import { Events, FRAME_ID_PREFIX } from './util/constants';
 import { registerOnRMPSaveChange } from './util/local-storage-save';
+import { RMErrorBoundary, RMMantineProvider } from '@railmapgen/mantine-components';
+import { LoadingOverlay } from '@mantine/core';
 
 let root: Root;
 const AppRoot = lazy(() => import('./components/app-root'));
 
 const renderApp = () => {
     root = createRoot(document.getElementById('root') as HTMLDivElement);
+
     root.render(
         <StrictMode>
             <Provider store={store}>
                 <I18nextProvider i18n={i18n}>
-                    <RmgThemeProvider>
-                        <RmgErrorBoundary suspenseFallback={<RmgLoader isIndeterminate={true} />} allowReset>
+                    <RMMantineProvider>
+                        {/* eslint-disable-next-line*/}
+                        {/* @ts-ignore */}
+                        <RMErrorBoundary suspenseFallback={<LoadingOverlay visible />} allowReset>
                             <AppRoot />
-                        </RmgErrorBoundary>
-                    </RmgThemeProvider>
+                        </RMErrorBoundary>
+                    </RMMantineProvider>
                 </I18nextProvider>
             </Provider>
         </StrictMode>

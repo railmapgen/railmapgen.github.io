@@ -1,6 +1,7 @@
+import classes from './workspace.module.css';
 import { useMemo } from 'react';
 import { FRAME_ID_PREFIX, WorkspaceTab } from '../../util/constants';
-import { Box } from '@chakra-ui/react';
+import clsx from 'clsx';
 
 interface AppContainerProps {
     tab: WorkspaceTab;
@@ -14,7 +15,7 @@ export default function AppContainer(props: AppContainerProps) {
     const frameUrl = useMemo(() => tab.url ?? '/' + tab.app + '/', [tab.app]);
 
     return (
-        <Box display={isActive ? 'block' : 'none'} flex={1}>
+        <div className={clsx(classes['app-container'], isActive && classes.show)}>
             <iframe
                 id={FRAME_ID_PREFIX + tab.id}
                 src={frameUrl}
@@ -25,6 +26,6 @@ export default function AppContainer(props: AppContainerProps) {
                 data-persisted-url={tab.url}
                 data-testid="app-container-iframe"
             />
-        </Box>
+        </div>
     );
 }

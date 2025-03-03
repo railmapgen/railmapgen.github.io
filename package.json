@@ -17,6 +17,7 @@
         "@railmapgen/rmg-runtime": "^11.0.0",
         "@railmapgen/rmg-translate": "^3.3.2",
         "@reduxjs/toolkit": "^2.5.1",
+        "clsx": "^2.1.1",
         "framer-motion": "^11.12.0",
         "react": "^18.3.1",
         "react-dom": "^18.3.1",
@@ -57,7 +58,7 @@
         "test": "vitest",
         "lint": "eslint ./src ./runtime-demo",
         "lint:fix": "eslint ./src ./runtime-demo --fix",
-        "preview": "vite preview"
+        "preview": "vite preview --host"
     },
     "version": "2.1.7"
 }
