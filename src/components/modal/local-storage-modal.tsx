@@ -1,6 +1,8 @@
-import { useTranslation } from 'react-i18next';
 import {
+    Box,
     Button,
+    Flex,
+    IconButton,
     Modal,
     ModalBody,
     ModalCloseButton,
@@ -8,15 +10,22 @@ import {
     ModalFooter,
     ModalHeader,
     ModalOverlay,
+    Text,
     Textarea,
     VStack,
 } from '@chakra-ui/react';
-import { RmgLabel } from '@railmapgen/rmg-components';
+import { useTranslation } from 'react-i18next';
+import { MdDeleteOutline } from 'react-icons/md';
 
 export default function LocalStorageModal(props: { isOpen: boolean; onClose: () => void }) {
     const { isOpen, onClose } = props;
     const { t } = useTranslation();
     const values = Object.entries(localStorage);
+
+    const handleClearKey = (key: string) => {
+        localStorage.removeItem(key);
+        window.location.reload();
+    };
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} size="xl" scrollBehavior="inside">
@@ -28,9 +37,20 @@ export default function LocalStorageModal(props: { isOpen: boolean; onClose: () 
                 <ModalBody>
                     <VStack p={1}>
                         {values.map(v => (
-                            <RmgLabel key={v[0]} label={v[0]} minW="full">
+                            <Box key={v[0]} width="100%">
+                                <Flex>
+                                    <Text>{v[0]}</Text>
+                                    <Flex style={{ flex: 1 }} />
+                                    <IconButton
+                                        icon={<MdDeleteOutline />}
+                                        variant="ghost"
+                                        aria-label="Clear"
+                                        size="xs"
+                                        onClick={() => handleClearKey(v[0])}
+                                    />
+                                </Flex>
                                 <Textarea value={v[1]} readOnly fontFamily="monospace" fontSize="xs" />
-                            </RmgLabel>
+                            </Box>
                         ))}
                     </VStack>
                 </ModalBody>
