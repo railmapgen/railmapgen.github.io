@@ -16,6 +16,7 @@ export default function TerminationModal() {
             withCloseButton={false}
             closeOnEscape={false}
             closeOnClickOutside={false}
+            centered
         >
             <Text>{t('Current session has been terminated. Please close this window.')}</Text>
         </Modal>

@@ -14,6 +14,7 @@ import MultiInstanceModal from './modal/multi-instance-modal';
 import TerminationModal from './modal/termination-modal';
 import { RMPage, RMWindow } from '@railmapgen/mantine-components';
 import { ActionIcon } from '@mantine/core';
+import Notifications from './notifications/notifications';
 
 export default function AppRoot() {
     const { t } = useTranslation();
@@ -52,9 +53,10 @@ export default function AppRoot() {
                     <Workspace alwaysShowWelcome={isTerminated || isPrimary === false} />
                 </RMPage>
 
+                <Notifications />
                 {isTerminated && <TerminationModal />}
                 {isPrimary === false && <MultiInstanceModal />}
-                <CookiesModal isOpen={isCookiesModalOpen} onClose={() => setIsCookiesModalOpen(false)} />
+                <CookiesModal opened={isCookiesModalOpen} onClose={() => setIsCookiesModalOpen(false)} />
             </RMWindow>
         </BrowserRouter>
     );

@@ -1,4 +1,4 @@
-import { Divider, Flex } from '@chakra-ui/react';
+import classes from './account-view.module.css';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRootSelector } from '../../../redux';
@@ -8,8 +8,8 @@ import LoginView from './login-view';
 import RegisterView from './register-view';
 import SavesSection from './saves-section';
 import SubscriptionSection from './subscription-section';
-import { RMSection, RMSectionHeader } from '@railmapgen/mantine-components';
-import { Title } from '@mantine/core';
+import { RMSection, RMSectionBody, RMSectionHeader } from '@railmapgen/mantine-components';
+import { Divider, Title } from '@mantine/core';
 
 const AccountView = () => {
     const { t } = useTranslation();
@@ -34,15 +34,12 @@ const AccountView = () => {
                     <ForgotPasswordView setLoginState={setLoginState} />
                 )
             ) : (
-                <Flex flexDirection="column" h="100%" overflow="hidden" bg="inherit">
+                <RMSectionBody className={classes.body}>
                     <AccountInfo />
                     <Divider />
-                    <Flex flexDirection="column" overflowY="auto" bg="inherit">
-                        <SubscriptionSection />
-                        <Divider />
-                        <SavesSection />
-                    </Flex>
-                </Flex>
+                    <SubscriptionSection />
+                    <SavesSection />
+                </RMSectionBody>
             )}
         </RMSection>
     );

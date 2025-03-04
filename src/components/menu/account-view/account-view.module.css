@@ -1,0 +1,7 @@
+.body {
+    flex-direction: column;
+
+    > :global(.rm-section):not(:first-of-type) {
+        margin-top: var(--mantine-spacing-xs);
+    }
+}

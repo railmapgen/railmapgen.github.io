@@ -28,6 +28,7 @@ export default function MultiInstanceModal() {
             withCloseButton={false}
             closeOnEscape={false}
             closeOnClickOutside={false}
+            centered
         >
             <Text>{t('You cannot open multiple Rail Map Toolkit at the same time. Please close this window.')}</Text>
             <Group mt="xs">

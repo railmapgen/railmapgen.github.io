@@ -69,6 +69,7 @@
 .main {
     width: 100%;
     padding: 0 var(--mantine-spacing-xs) var(--mantine-spacing-xs) var(--mantine-spacing-xs);
+    overflow-x: hidden;
     overflow-y: auto;
     background: var(--mantine-color-white);
 

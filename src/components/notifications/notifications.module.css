@@ -1,0 +1,7 @@
+.root {
+    position: fixed;
+    top: var(--mantine-spacing-md);
+    right: var(--mantine-spacing-xs);
+    z-index: var(--mantine-z-index-popover);
+    margin-left: var(--mantine-spacing-md);
+}

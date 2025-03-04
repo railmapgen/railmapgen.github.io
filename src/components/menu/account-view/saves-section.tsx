@@ -1,5 +1,4 @@
-import { Button, Card, CardBody, CardFooter, Heading, Stack, Text, useToast } from '@chakra-ui/react';
-import { RmgSection, RmgSectionHeader } from '@railmapgen/rmg-components';
+import { useToast } from '@chakra-ui/react';
 import { logger } from '@railmapgen/rmg-runtime';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -9,6 +8,8 @@ import { setLastChangedAtTimeStamp } from '../../../redux/rmp-save/rmp-save-slic
 import { apiFetch } from '../../../util/api';
 import { API_ENDPOINT, APISaveList, SAVE_KEY } from '../../../util/constants';
 import { getRMPSave, notifyRMPSaveChange, setRMPSave } from '../../../util/local-storage-save';
+import { RMSection, RMSectionBody, RMSectionHeader } from '@railmapgen/mantine-components';
+import { Button, Card, Stack, Text, Title } from '@mantine/core';
 
 const MAXIMUM_FREE_SAVE = 1;
 const MAXIMUM_SAVE = 10;
@@ -181,58 +182,50 @@ const SavesSection = () => {
     };
 
     return (
-        <RmgSection>
-            <RmgSectionHeader>
-                <Heading as="h4" size="md" my={1}>
+        <RMSection>
+            <RMSectionHeader align="center">
+                <Title order={3} size="h5">
                     {t('Synced saves')}
-                </Heading>
-                <Text ml="auto">
+                </Title>
+                <Text ml="auto" size="sm">
                     {t('Maximum save count:')} {activeSubscriptions.RMP_CLOUD ? 10 : 1}
                 </Text>
-                <Button size="sm" ml={1} isDisabled={!canCreateNewSave} onClick={handleCreateNewSave}>
+                <Button variant="subtle" size="xs" ml="xs" disabled={!canCreateNewSave} onClick={handleCreateNewSave}>
                     {t('Create')}
                 </Button>
-            </RmgSectionHeader>
+            </RMSectionHeader>
 
-            <Stack p={2}>
-                {saveList &&
-                    saveList.map(_ => (
-                        <Card key={_.id} overflow="hidden" variant="outline" mb="3">
-                            <Stack direction={{ base: 'column', sm: 'row' }}>
-                                <CardBody>
-                                    <Text py="2" as="b">
-                                        {_.id === currentSaveId ? t('Current save') : t('Cloud save')}
-                                    </Text>
-                                    <Text py="2">
-                                        {t('Last update at:')} {new Date(_.lastUpdateAt).toLocaleString()}
-                                    </Text>
-                                </CardBody>
-                                <CardFooter>
-                                    <Stack>
-                                        <Button
-                                            variant="solid"
-                                            colorScheme="red"
-                                            isLoading={deleteButtonIsLoading === _.id}
-                                            onClick={() => handleDeleteSave(_.id)}
-                                        >
-                                            {t('Delete this save')}
-                                        </Button>
-                                        <Button
-                                            variant="solid"
-                                            colorScheme="primary"
-                                            isDisabled={isUpdateDisabled(_.id)}
-                                            isLoading={syncButtonIsLoading === _.id}
-                                            onClick={() => handleSync(_.id)}
-                                        >
-                                            {_.id === currentSaveId ? t('Sync now') : t('Sync this slot')}
-                                        </Button>
-                                    </Stack>
-                                </CardFooter>
-                            </Stack>
-                        </Card>
-                    ))}
-            </Stack>
-        </RmgSection>
+            <RMSectionBody direction="column" gap="xs">
+                {saveList?.map(_ => (
+                    <Card key={_.id} withBorder shadow="sm" style={{ flexDirection: 'row' }}>
+                        <Stack gap="xs" flex={1}>
+                            <Text fw={500}>{_.id === currentSaveId ? t('Current save') : t('Cloud save')}</Text>
+                            <Text>
+                                {t('Last update at:')} {new Date(_.lastUpdateAt).toLocaleString()}
+                            </Text>
+                        </Stack>
+                        <Stack gap="xs" ml="xs">
+                            <Button
+                                variant="filled"
+                                color="red"
+                                loading={deleteButtonIsLoading === _.id}
+                                onClick={() => handleDeleteSave(_.id)}
+                            >
+                                {t('Delete this save')}
+                            </Button>
+                            <Button
+                                variant="filled"
+                                disabled={isUpdateDisabled(_.id)}
+                                loading={syncButtonIsLoading === _.id}
+                                onClick={() => handleSync(_.id)}
+                            >
+                                {_.id === currentSaveId ? t('Sync now') : t('Sync this slot')}
+                            </Button>
+                        </Stack>
+                    </Card>
+                ))}
+            </RMSectionBody>
+        </RMSection>
     );
 };
 

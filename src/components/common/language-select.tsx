@@ -1,4 +1,4 @@
-import { ComboboxData, NativeSelect } from '@mantine/core';
+import { ComboboxData, NativeSelect, NativeSelectProps } from '@mantine/core';
 import { useTranslation } from 'react-i18next';
 import rmgRuntime from '@railmapgen/rmg-runtime';
 import {
@@ -10,7 +10,7 @@ import {
 } from '@railmapgen/rmg-translate';
 import { Events } from '../../util/constants';
 
-export default function LanguageSelect() {
+export default function LanguageSelect(props: NativeSelectProps) {
     const { t } = useTranslation();
 
     const options: ComboboxData = [
@@ -38,6 +38,7 @@ export default function LanguageSelect() {
                 rmgRuntime.event(Events.CHANGE_LANGUAGE, { language });
             }}
             data={options}
+            {...props}
         />
     );
 }
