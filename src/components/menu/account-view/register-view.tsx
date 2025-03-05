@@ -1,7 +1,6 @@
-import { useToast } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { MdCheck, MdOutlineErrorOutline, MdOutlineInfo } from 'react-icons/md';
+import { MdOutlineErrorOutline, MdOutlineInfo } from 'react-icons/md';
 import { useRootDispatch } from '../../../redux';
 import { fetchLogin } from '../../../redux/account/account-slice';
 import { API_ENDPOINT, API_URL } from '../../../util/constants';
@@ -9,11 +8,10 @@ import { emailValidator, passwordValidator } from './account-utils';
 import { RMSection, RMSectionBody, RMSectionHeader } from '@railmapgen/mantine-components';
 import { Alert, Button, TextInput, Title } from '@mantine/core';
 import PasswordSetup from './password-setup';
-
-const sendEmailVerificationInterval = 60;
+import EmailInputWithOtp from './email-input-with-otp';
+import { addNotification } from '../../../redux/notification/notification-slice';
 
 const RegisterView = (props: { setLoginState: (_: 'login' | 'register') => void }) => {
-    const toast = useToast();
     const { t } = useTranslation();
     const dispatch = useRootDispatch();
 
@@ -24,53 +22,37 @@ const RegisterView = (props: { setLoginState: (_: 'login' | 'register') => void 
     const [emailVerificationSent, setEmailVerificationSent] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
-    const [isSendEmailVerificationDisabled, setIsSendEmailVerificationDisabled] = useState(false);
-    const [sendEmailVerificationDisabledseconds, setSendEmailVerificationDisabledSeconds] =
-        useState(sendEmailVerificationInterval);
-
-    useEffect(() => {
-        let timer: number;
-        if (isSendEmailVerificationDisabled && sendEmailVerificationDisabledseconds > 0) {
-            timer = window.setTimeout(() => {
-                setSendEmailVerificationDisabledSeconds(sendEmailVerificationDisabledseconds - 1);
-            }, 1000);
-        } else if (sendEmailVerificationDisabledseconds === 0) {
-            setIsSendEmailVerificationDisabled(false);
-        }
-
-        return () => clearTimeout(timer);
-    }, [isSendEmailVerificationDisabled, sendEmailVerificationDisabledseconds]);
-
     const isEmailValid = !!email && emailValidator(email);
     const areFieldsValid =
         !!name && isEmailValid && !!emailVerificationToken && !!password && passwordValidator(password);
 
     const showErrorToast = (msg: string) =>
-        toast({
-            title: msg,
-            status: 'error' as const,
-            duration: 9000,
-            isClosable: true,
-        });
+        dispatch(
+            addNotification({
+                title: t('Unable to create your account'),
+                message: msg,
+                type: 'error',
+                duration: 9000,
+            })
+        );
 
     const handleVerifyEmail = async () => {
-        setIsSendEmailVerificationDisabled(true);
-        setSendEmailVerificationDisabledSeconds(sendEmailVerificationInterval);
-        const rep = await fetch(API_URL + API_ENDPOINT.AUTH_SEND_VERIFICATION_EMAIL, {
-            method: 'POST',
-            headers: {
-                accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ email }),
-        });
-        if (rep.status === 204) {
-            setEmailVerificationSent(email);
-            return;
-        }
-        if (rep.status === 400) {
+        try {
+            const rep = await fetch(API_URL + API_ENDPOINT.AUTH_SEND_VERIFICATION_EMAIL, {
+                method: 'POST',
+                headers: {
+                    accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email }),
+            });
+            if (rep.status === 204) {
+                setEmailVerificationSent(email);
+            } else if (rep.status > 400) {
+                setEmailVerificationSent('error');
+            }
+        } catch {
             setEmailVerificationSent('error');
-            return;
         }
     };
 
@@ -95,20 +77,19 @@ const RegisterView = (props: { setLoginState: (_: 'login' | 'register') => void 
                 username?: string;
             };
             if (error) {
-                toast({
-                    title: error,
-                    status: 'error' as const,
-                    duration: 9000,
-                    isClosable: true,
-                });
+                showErrorToast(error);
             } else {
-                toast({
-                    title: t('Welcome ') + username,
-                    status: 'success' as const,
-                    duration: 5000,
-                    isClosable: true,
-                });
+                dispatch(
+                    addNotification({
+                        title: t('Welcome ') + username,
+                        message: t('Your account is created successfully.'),
+                        type: 'success',
+                        duration: 5000,
+                    })
+                );
             }
+        } catch (e) {
+            showErrorToast((e as Error).message);
         } finally {
             setIsLoading(false);
         }
@@ -140,31 +121,13 @@ const RegisterView = (props: { setLoginState: (_: 'login' | 'register') => void 
                     value={name}
                     onChange={({ currentTarget: { value } }) => setName(value)}
                 />
-                <TextInput
-                    label={t('Email')}
+                <EmailInputWithOtp
                     description={t("We'll never share your email.")}
                     value={email}
-                    onChange={({ currentTarget: { value } }) => setEmail(value)}
-                    error={email && !emailValidator(email)}
-                    rightSection={
-                        emailVerificationSent ? (
-                            <Button variant="transparent" size="xs" leftSection={<MdCheck />} disabled>
-                                {t('Verification code sent')}
-                            </Button>
-                        ) : (
-                            <Button
-                                variant="subtle"
-                                size="xs"
-                                onClick={handleVerifyEmail}
-                                disabled={!isEmailValid || isSendEmailVerificationDisabled}
-                            >
-                                {isSendEmailVerificationDisabled
-                                    ? `${sendEmailVerificationDisabledseconds}s`
-                                    : t('Send verification code')}
-                            </Button>
-                        )
-                    }
-                    rightSectionWidth="fit-content"
+                    onChange={setEmail}
+                    onVerify={handleVerifyEmail}
+                    otpSent={emailVerificationSent}
+                    allowResendOtp
                 />
                 <TextInput
                     label={t('Verification code')}

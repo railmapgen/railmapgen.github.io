@@ -1,4 +1,3 @@
-import { useToast } from '@chakra-ui/react';
 import { logger } from '@railmapgen/rmg-runtime';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -10,12 +9,12 @@ import { API_ENDPOINT, APISaveList, SAVE_KEY } from '../../../util/constants';
 import { getRMPSave, notifyRMPSaveChange, setRMPSave } from '../../../util/local-storage-save';
 import { RMSection, RMSectionBody, RMSectionHeader } from '@railmapgen/mantine-components';
 import { Button, Card, Stack, Text, Title } from '@mantine/core';
+import { addNotification } from '../../../redux/notification/notification-slice';
 
 const MAXIMUM_FREE_SAVE = 1;
 const MAXIMUM_SAVE = 10;
 
 const SavesSection = () => {
-    const toast = useToast();
     const { t } = useTranslation();
     const dispatch = useRootDispatch();
     const {
@@ -39,12 +38,14 @@ const SavesSection = () => {
     const [deleteButtonIsLoading, setDeleteButtonIsLoading] = React.useState(undefined as number | undefined);
 
     const showErrorToast = (msg: string) =>
-        toast({
-            title: msg,
-            status: 'error' as const,
-            duration: 9000,
-            isClosable: true,
-        });
+        dispatch(
+            addNotification({
+                title: t('Unable to sync your save'),
+                message: msg,
+                type: 'error',
+                duration: 9000,
+            })
+        );
 
     const handleCreateNewSave = async () => {
         const save = await getRMPSave(SAVE_KEY.RMP);
@@ -54,24 +55,28 @@ const SavesSection = () => {
         }
         const { data, hash } = save;
         const index = crypto.randomUUID();
-        const rep = await apiFetch(
-            API_ENDPOINT.SAVES,
-            {
-                method: 'POST',
-                body: JSON.stringify({ index, data, hash }),
-            },
-            token
-        );
-        if (!rep) {
-            showErrorToast(t('Login status expired'));
-            dispatch(logout());
-            return;
+        try {
+            const rep = await apiFetch(
+                API_ENDPOINT.SAVES,
+                {
+                    method: 'POST',
+                    body: JSON.stringify({ index, data, hash }),
+                },
+                token
+            );
+            if (!rep) {
+                showErrorToast(t('Login status expired'));
+                dispatch(logout());
+                return;
+            }
+            if (rep.status !== 200) {
+                showErrorToast(await rep.text());
+                return;
+            }
+            dispatch(fetchSaveList());
+        } catch (e) {
+            showErrorToast((e as Error).message);
         }
-        if (rep.status !== 200) {
-            showErrorToast(await rep.text());
-            return;
-        }
-        dispatch(fetchSaveList());
     };
     const handleSync = async (saveId: number) => {
         if (!isLoggedIn || !token) return;

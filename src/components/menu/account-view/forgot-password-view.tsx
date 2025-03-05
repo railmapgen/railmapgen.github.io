@@ -1,17 +1,17 @@
-import { Button, Flex, InputGroup, InputRightElement, Stack, Text, useToast } from '@chakra-ui/react';
-import { RmgDebouncedInput, RmgFields } from '@railmapgen/rmg-components';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRootDispatch } from '../../../redux';
 import { fetchLogin } from '../../../redux/account/account-slice';
 import { API_ENDPOINT, API_URL } from '../../../util/constants';
 import { emailValidator, passwordValidator } from './account-utils';
-import { MdCheck, MdOutlineErrorOutline, MdOutlineInfo } from 'react-icons/md';
+import { MdOutlineErrorOutline, MdOutlineInfo } from 'react-icons/md';
 import { RMSection, RMSectionBody, RMSectionHeader } from '@railmapgen/mantine-components';
-import { Alert, Title } from '@mantine/core';
+import { Alert, Button, TextInput, Title } from '@mantine/core';
+import EmailInputWithOtp from './email-input-with-otp';
+import PasswordSetup from './password-setup';
+import { addNotification } from '../../../redux/notification/notification-slice';
 
 const ForgotPasswordView = (props: { setLoginState: (_: 'login' | 'register' | 'forgot-password') => void }) => {
-    const toast = useToast();
     const { t } = useTranslation();
     const dispatch = useRootDispatch();
 
@@ -25,29 +25,32 @@ const ForgotPasswordView = (props: { setLoginState: (_: 'login' | 'register' | '
     const areFieldsValid = isEmailValid && !!resetPasswordToken && !!password && passwordValidator(password);
 
     const showErrorToast = (msg: string) =>
-        toast({
-            title: msg,
-            status: 'error' as const,
-            duration: 9000,
-            isClosable: true,
-        });
+        dispatch(
+            addNotification({
+                title: t('Unable to reset your password'),
+                message: msg,
+                type: 'error',
+                duration: 9000,
+            })
+        );
 
     const handleSendResetPasswordEmail = async () => {
-        const rep = await fetch(API_URL + API_ENDPOINT.AUTH_SEND_RESET_PASSWORD_EMAIL, {
-            method: 'POST',
-            headers: {
-                accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ email }),
-        });
-        if (rep.status === 204) {
-            setEmailResetPasswordSent(email);
-            return;
-        }
-        if (rep.status === 400) {
+        try {
+            const rep = await fetch(API_URL + API_ENDPOINT.AUTH_SEND_RESET_PASSWORD_EMAIL, {
+                method: 'POST',
+                headers: {
+                    accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email }),
+            });
+            if (rep.status === 204) {
+                setEmailResetPasswordSent(email);
+            } else if (rep.status > 400) {
+                setEmailResetPasswordSent('error');
+            }
+        } catch {
             setEmailResetPasswordSent('error');
-            return;
         }
     };
 
@@ -74,20 +77,19 @@ const ForgotPasswordView = (props: { setLoginState: (_: 'login' | 'register' | '
                 username?: string;
             };
             if (error) {
-                toast({
-                    title: error,
-                    status: 'error' as const,
-                    duration: 9000,
-                    isClosable: true,
-                });
+                showErrorToast(error);
             } else {
-                toast({
-                    title: t('Welcome ') + username,
-                    status: 'success' as const,
-                    duration: 5000,
-                    isClosable: true,
-                });
+                dispatch(
+                    addNotification({
+                        title: t('Welcome ') + username,
+                        message: t('Your password has been reset successfully.'),
+                        type: 'success',
+                        duration: 5000,
+                    })
+                );
             }
+        } catch (e) {
+            showErrorToast((e as Error).message);
         } finally {
             setIsLoading(false);
         }
@@ -112,79 +114,27 @@ const ForgotPasswordView = (props: { setLoginState: (_: 'login' | 'register' | '
                         title={t('Email with reset link is sent to') + ' ' + emailResetPasswordSent}
                     />
                 )}
-            </RMSectionBody>
 
-            <Flex p={2} flexDirection="column">
-                <RmgFields
-                    fields={[
-                        {
-                            label: t('Email'),
-                            type: 'custom',
-                            component: (
-                                <InputGroup size="sm">
-                                    <RmgDebouncedInput
-                                        type="email"
-                                        value={email}
-                                        onDebouncedChange={setEmail}
-                                        delay={0}
-                                        validator={emailValidator}
-                                    />
-                                    <InputRightElement width="auto" bottom={0} top="unset">
-                                        {emailResetPasswordSent ? (
-                                            <>
-                                                <MdCheck />
-                                                <Text fontSize="xs" ml={1}>
-                                                    {t('Reset link sent')}
-                                                </Text>
-                                            </>
-                                        ) : (
-                                            <Button
-                                                size="xs"
-                                                onClick={handleSendResetPasswordEmail}
-                                                isDisabled={!isEmailValid}
-                                            >
-                                                {t('Send reset link')}
-                                            </Button>
-                                        )}
-                                    </InputRightElement>
-                                </InputGroup>
-                            ),
-                        },
-                        {
-                            label: t('Reset password token'),
-                            type: 'input',
-                            value: resetPasswordToken,
-                            onChange: setResetPasswordToken,
-                            debouncedDelay: 0,
-                        },
-                        {
-                            label: t('Password'),
-                            type: 'input',
-                            variant: 'password',
-                            value: password,
-                            onChange: setPassword,
-                            debouncedDelay: 0,
-                            validator: passwordValidator,
-                            helper: t('Minimum 8 characters. Contain at least 1 letter and 1 number.'),
-                        },
-                    ]}
-                    minW="full"
+                <EmailInputWithOtp
+                    value={email}
+                    onChange={setEmail}
+                    onVerify={handleSendResetPasswordEmail}
+                    otpSent={emailResetPasswordSent}
                 />
+                <TextInput
+                    label={t('Reset password token')}
+                    value={resetPasswordToken}
+                    onChange={({ currentTarget: { value } }) => setResetPasswordToken(value)}
+                />
+                <PasswordSetup value={password} onChange={setPassword} />
 
-                <Stack mt={1}>
-                    <Button
-                        colorScheme="primary"
-                        onClick={handleResetPassword}
-                        isLoading={isLoading}
-                        isDisabled={!areFieldsValid || isLoading}
-                    >
-                        {t('Reset password')}
-                    </Button>
-                    <Button onClick={() => props.setLoginState('login')} isDisabled={isLoading}>
-                        {t('Back to log in')}
-                    </Button>
-                </Stack>
-            </Flex>
+                <Button onClick={handleResetPassword} loading={isLoading} disabled={!areFieldsValid || isLoading}>
+                    {t('Reset password')}
+                </Button>
+                <Button variant="default" onClick={() => props.setLoginState('login')} disabled={isLoading}>
+                    {t('Back to log in')}
+                </Button>
+            </RMSectionBody>
         </RMSection>
     );
 };

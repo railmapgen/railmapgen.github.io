@@ -1,4 +1,3 @@
-import { useToast } from '@chakra-ui/react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { MdOpenInNew } from 'react-icons/md';
@@ -7,9 +6,9 @@ import { logout } from '../../redux/account/account-slice';
 import { apiFetch } from '../../util/api';
 import { API_ENDPOINT } from '../../util/constants';
 import { Anchor, Button, Group, List, Modal, Text, TextInput } from '@mantine/core';
+import { addNotification } from '../../redux/notification/notification-slice';
 
 const RedeemModal = (props: { opened: boolean; onClose: () => void; getSubscriptions: () => Promise<void> }) => {
-    const toast = useToast();
     const { t } = useTranslation();
     const { opened, onClose, getSubscriptions } = props;
     const { isLoggedIn, token } = useRootSelector(state => state.account);
@@ -18,12 +17,14 @@ const RedeemModal = (props: { opened: boolean; onClose: () => void; getSubscript
     const [CDKey, setCDKey] = React.useState('');
 
     const showErrorToast = (msg: string) =>
-        toast({
-            title: msg,
-            status: 'error' as const,
-            duration: 9000,
-            isClosable: true,
-        });
+        dispatch(
+            addNotification({
+                title: t('Unable to redeem'),
+                message: msg,
+                type: 'error',
+                duration: 9000,
+            })
+        );
 
     const handleRedeem = async (CDKey: string) => {
         if (!isLoggedIn) return;
@@ -39,12 +40,7 @@ const RedeemModal = (props: { opened: boolean; onClose: () => void; getSubscript
         }
         if (rep.status !== 202) {
             const msg = (await rep.json()).message;
-            toast({
-                title: t(msg),
-                status: 'error' as const,
-                duration: 5000,
-                isClosable: true,
-            });
+            showErrorToast(t(msg));
             return;
         }
         await getSubscriptions();

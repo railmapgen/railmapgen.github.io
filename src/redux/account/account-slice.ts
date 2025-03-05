@@ -75,30 +75,34 @@ export const fetchLogin = createAsyncThunk<{ error?: string; username?: string }
     'account/fetchLogin',
     async (accountInfo, { dispatch }) => {
         const { email, password } = accountInfo;
-        const loginRes = await fetch(API_URL + API_ENDPOINT.AUTH_LOGIN, {
-            method: 'POST',
-            headers: {
-                accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ email, password }),
-        });
-        if (loginRes.status !== 200) {
-            return { error: await loginRes.text(), username: undefined };
+        try {
+            const loginRes = await fetch(API_URL + API_ENDPOINT.AUTH_LOGIN, {
+                method: 'POST',
+                headers: {
+                    accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, password }),
+            });
+            if (loginRes.status !== 200) {
+                return { error: await loginRes.text(), username: undefined };
+            }
+            const {
+                user: { name: username, id: userId },
+                tokens: {
+                    access: { token, expires },
+                    refresh: { token: refreshToken, expires: refreshExpires },
+                },
+            } = (await loginRes.json()) as APILoginResponse;
+            dispatch(login({ id: userId, name: username, email, token, expires, refreshToken, refreshExpires }));
+            await dispatch(fetchSaveList()); // make sure saves are set before syncAfterLogin
+
+            await dispatch(syncAfterLogin());
+
+            return { error: undefined, username };
+        } catch (e) {
+            return { error: (e as Error).message, username: undefined };
         }
-        const {
-            user: { name: username, id: userId },
-            tokens: {
-                access: { token, expires },
-                refresh: { token: refreshToken, expires: refreshExpires },
-            },
-        } = (await loginRes.json()) as APILoginResponse;
-        dispatch(login({ id: userId, name: username, email, token, expires, refreshToken, refreshExpires }));
-        await dispatch(fetchSaveList()); // make sure saves are set before syncAfterLogin
-
-        await dispatch(syncAfterLogin());
-
-        return { error: undefined, username };
     }
 );
 

@@ -1,4 +1,3 @@
-import { useToast } from '@chakra-ui/react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { MdOutlineDriveFileRenameOutline, MdOutlineLogout, MdOutlinePassword } from 'react-icons/md';
@@ -8,6 +7,7 @@ import { apiFetch } from '../../../util/api';
 import { API_ENDPOINT, API_URL } from '../../../util/constants';
 import { ActionIcon, Avatar, Button, Flex, Group, Modal, Text, TextInput } from '@mantine/core';
 import PasswordSetup from './password-setup';
+import { addNotification } from '../../../redux/notification/notification-slice';
 
 const AccountInfo = () => {
     const { t } = useTranslation();
@@ -83,45 +83,50 @@ export default AccountInfo;
 export function ChangeModal(props: { infoType: 'name' | 'password' | undefined; onClose: () => void }) {
     const { infoType, onClose } = props;
     const { t } = useTranslation();
-    const toast = useToast();
     const dispatch = useRootDispatch();
 
     const { isLoggedIn, id, token } = useRootSelector(state => state.account);
     const [value, setValue] = React.useState('');
 
     const showErrorToast = (msg: string) =>
-        toast({
-            title: msg,
-            status: 'error' as const,
-            duration: 9000,
-            isClosable: true,
-        });
+        dispatch(
+            addNotification({
+                title: t('Unable to update account info'),
+                message: msg,
+                type: 'error',
+                duration: 9000,
+            })
+        );
 
     const handleChange = async () => {
         if (!isLoggedIn || !infoType) return;
-        const rep = await apiFetch(
-            API_ENDPOINT.USER + '/' + id,
-            { method: 'PATCH', body: JSON.stringify({ [infoType]: value }) },
-            token
-        );
-        if (!rep) {
-            showErrorToast(t('Login status expired'));
-            dispatch(logout());
-            return;
-        }
-        if (rep.status !== 200) {
-            showErrorToast(await rep.text());
-            return;
-        }
-        if (infoType === 'password') {
-            dispatch(logout());
-            onClose();
-            return;
-        }
-        if (infoType === 'name') {
-            dispatch(updateName(value));
-            onClose();
-            return;
+        try {
+            const rep = await apiFetch(
+                API_ENDPOINT.USER + '/' + id,
+                { method: 'PATCH', body: JSON.stringify({ [infoType]: value }) },
+                token
+            );
+            if (!rep) {
+                showErrorToast(t('Login status expired'));
+                dispatch(logout());
+                return;
+            }
+            if (rep.status !== 200) {
+                showErrorToast(await rep.text());
+                return;
+            }
+            if (infoType === 'password') {
+                dispatch(logout());
+                onClose();
+                return;
+            }
+            if (infoType === 'name') {
+                dispatch(updateName(value));
+                onClose();
+                return;
+            }
+        } catch (e) {
+            showErrorToast((e as Error).message);
         }
     };
 

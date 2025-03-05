@@ -1,16 +1,15 @@
-import { useToast } from '@chakra-ui/react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRootDispatch } from '../../../redux';
 import { fetchLogin } from '../../../redux/account/account-slice';
 import { RMSection, RMSectionBody, RMSectionHeader } from '@railmapgen/mantine-components';
 import { Anchor, Button, PasswordInput, TextInput, Title } from '@mantine/core';
+import { addNotification } from '../../../redux/notification/notification-slice';
 
 const EMAIL_REGEX = /^\S+@\S+\.\S+$/;
 const emailValidator = (value: string) => !!value.match(EMAIL_REGEX);
 
 const LoginView = (props: { setLoginState: (_: 'login' | 'register' | 'forgot-password') => void }) => {
-    const toast = useToast();
     const { t } = useTranslation();
     const dispatch = useRootDispatch();
 
@@ -28,19 +27,23 @@ const LoginView = (props: { setLoginState: (_: 'login' | 'register' | 'forgot-pa
                 username?: string;
             };
             if (error) {
-                toast({
-                    title: error,
-                    status: 'error' as const,
-                    duration: 9000,
-                    isClosable: true,
-                });
+                dispatch(
+                    addNotification({
+                        title: t('Unable to login'),
+                        message: error,
+                        type: 'error',
+                        duration: 9000,
+                    })
+                );
             } else {
-                toast({
-                    title: t('Welcome ') + username,
-                    status: 'success' as const,
-                    duration: 5000,
-                    isClosable: true,
-                });
+                dispatch(
+                    addNotification({
+                        title: t('Welcome ') + username,
+                        message: t('Login success'),
+                        type: 'success',
+                        duration: 5000,
+                    })
+                );
             }
         } finally {
             setIsLoading(false);

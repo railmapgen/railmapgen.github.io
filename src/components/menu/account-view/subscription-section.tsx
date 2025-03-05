@@ -1,4 +1,3 @@
-import { useToast } from '@chakra-ui/react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRootDispatch, useRootSelector } from '../../../redux';
@@ -13,6 +12,7 @@ import { API_ENDPOINT } from '../../../util/constants';
 import RedeemModal from '../../modal/redeem-modal';
 import { RMSection, RMSectionBody, RMSectionHeader } from '@railmapgen/mantine-components';
 import { Button, Card, List, Stack, Text, Title } from '@mantine/core';
+import { addNotification } from '../../../redux/notification/notification-slice';
 
 interface APISubscription {
     type: 'RMP' | 'RMP_CLOUD' | 'RMP_EXPORT';
@@ -20,7 +20,6 @@ interface APISubscription {
 }
 
 const SubscriptionSection = () => {
-    const toast = useToast();
     const { t } = useTranslation();
     const { isLoggedIn, token } = useRootSelector(state => state.account);
     const dispatch = useRootDispatch();
@@ -29,12 +28,14 @@ const SubscriptionSection = () => {
     const [isRedeemModalOpen, setIsRedeemModalOpen] = React.useState(false);
 
     const showErrorToast = (msg: string) =>
-        toast({
-            title: msg,
-            status: 'error' as const,
-            duration: 9000,
-            isClosable: true,
-        });
+        dispatch(
+            addNotification({
+                title: t('Unable to retrieve your subscriptions'),
+                message: msg,
+                type: 'error',
+                duration: 9000,
+            })
+        );
 
     const getSubscriptions = async () => {
         if (!isLoggedIn) return;
