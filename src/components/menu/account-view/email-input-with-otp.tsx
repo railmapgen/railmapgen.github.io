@@ -52,6 +52,7 @@ export default function EmailInputWithOtp({
 
     return (
         <TextInput
+            type="email"
             label={t('Email')}
             value={value}
             onChange={({ currentTarget: { value } }) => onChange(value)}

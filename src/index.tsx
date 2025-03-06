@@ -8,14 +8,7 @@ import './index.css';
 import './inject-seo';
 import store from './redux';
 import { syncAfterLogin } from './redux/account/account-slice';
-import {
-    addRemoteFont,
-    closeApp,
-    isShowDevtools,
-    openApp,
-    updateTabMetadata,
-    updateTabUrl,
-} from './redux/app/app-slice';
+import { addRemoteFont, closeApp, isShowDevtools, openApp, updateTabMetadata } from './redux/app/app-slice';
 import initStore from './redux/init';
 import { checkTokenAndRefreshStore } from './util/api';
 import { getAllowedAssetTypes, getAvailableAsset } from './util/asset-enablements';
@@ -35,8 +28,6 @@ const renderApp = () => {
             <Provider store={store}>
                 <I18nextProvider i18n={i18n}>
                     <RMMantineProvider>
-                        {/* eslint-disable-next-line*/}
-                        {/* @ts-ignore */}
                         <RMErrorBoundary suspenseFallback={<LoadingOverlay visible />} allowReset>
                             <AppRoot />
                         </RMErrorBoundary>
@@ -57,6 +48,9 @@ rmgRuntime.ready().then(async () => {
 
     renderApp();
 
+    // FIXME: Broadcast current theme to chakra UI apps. Do not remove until all apps are migrated.
+    rmgRuntime.setColourMode(rmgRuntime.getColourMode());
+
     rmgRuntime.onAppOpen(app => {
         const allowedAssetTypes = getAllowedAssetTypes(isShowDevtools(store.getState().app.lastShowDevtools));
         const availableApps = allowedAssetTypes
@@ -76,14 +70,6 @@ rmgRuntime.ready().then(async () => {
             const id = frameId.slice(FRAME_ID_PREFIX.length);
             logger.info(`Received metadata update for frame=${id}, metadata is`, metadata);
             store.dispatch(updateTabMetadata({ ...metadata, id }));
-        }
-    });
-
-    rmgRuntime.onUrlUpdate((url, frameId) => {
-        if (frameId) {
-            const id = frameId.slice(FRAME_ID_PREFIX.length);
-            logger.info(`Received URL update for frame=${id}, url=${url}`);
-            store.dispatch(updateTabUrl({ id, url }));
         }
     });
 

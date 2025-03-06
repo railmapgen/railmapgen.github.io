@@ -66,6 +66,7 @@ export default function NavMenu() {
                     name={isLoggedIn ? name : undefined}
                     // src="https://github.com/thekingofcity.png?size=100"
                     size="sm"
+                    color="initials"
                 />
             ),
             ActionIconProps: { mt: 'auto' },

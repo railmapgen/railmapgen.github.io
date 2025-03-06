@@ -31,7 +31,7 @@ const AccountInfo = () => {
     return (
         <>
             <Flex py="xs" align="center" wrap="wrap">
-                <Avatar size="lg" name={name} />
+                <Avatar size="lg" name={name} color="initials" />
                 <Flex direction="column" ml="xs" flex={1}>
                     <Text span fw="bold">
                         {name}

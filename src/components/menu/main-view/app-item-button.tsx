@@ -70,7 +70,8 @@ export default function AppItemButton(props: AppItemProps) {
 
     return (
         <NavLink
-            component="button"
+            component="div"
+            role="button"
             variant="filled"
             label={displayName}
             active={isAppActive}
@@ -140,7 +141,8 @@ export default function AppItemButton(props: AppItemProps) {
                         return (
                             <NavLink
                                 key={tab.id}
-                                component="button"
+                                component="div"
+                                role="button"
                                 variant="filled"
                                 active={isTabActive}
                                 label={

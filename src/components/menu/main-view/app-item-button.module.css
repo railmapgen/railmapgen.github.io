@@ -1,5 +1,5 @@
 .button {
-    border-radius: var(--mantine-radius-sm) var(--mantine-radius-xl) var(--mantine-radius-xl) var(--mantine-radius-sm);
+    border-radius: var(--mantine-radius-sm);
 
     &:not([data-active]) {
         @mixin hover {
