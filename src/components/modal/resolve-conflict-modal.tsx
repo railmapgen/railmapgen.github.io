@@ -1,3 +1,4 @@
+import classes from './resolve-conflict-modal.module.css';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { MdOutlineCloud, MdOutlineComputer } from 'react-icons/md';
@@ -67,14 +68,12 @@ const ResolveConflictModal = () => {
         >
             <Text>{t('The local save is newer than the cloud one. Which one would you like to keep?')}</Text>
 
-            <Group my="xs" grow>
-                <Card withBorder shadow="sm">
-                    <Stack gap="xs">
-                        <Flex align="center">
+            <Group my="xs">
+                <Card withBorder className={classes.card}>
+                    <Stack>
+                        <Flex>
                             <MdOutlineComputer />
-                            <Text span fw={500} ml="xs">
-                                {t('Local save')}
-                            </Text>
+                            <Text span>{t('Local save')}</Text>
                         </Flex>
                         <Text span>
                             {t('Update at:')} {new Date(lastChangedAtTimeStamp).toLocaleString()}
@@ -89,13 +88,11 @@ const ResolveConflictModal = () => {
                         <Button onClick={() => downloadLocal()}>{t('Download Local save')}</Button>
                     </Stack>
                 </Card>
-                <Card withBorder shadow="sm">
-                    <Stack gap="xs">
-                        <Flex align="center">
+                <Card withBorder className={classes.card}>
+                    <Stack>
+                        <Flex>
                             <MdOutlineCloud />
-                            <Text span fw={500} ml="xs">
-                                {t('Cloud save')}
-                            </Text>
+                            <Text span>{t('Cloud save')}</Text>
                         </Flex>
 
                         <Text span>

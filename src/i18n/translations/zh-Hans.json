@@ -16,9 +16,17 @@
         "safari": "不适用于 Safari ☹️"
     },
 
+    "LocalStorageModal": {
+        "text1": "您即将从本地存储中删除 ",
+        "text2": " 。这个项目是由 ",
+        "text3": " 创建及使用的。删除它可能导致数据丟失而无法恢复，或使应用程序出现异常。",
+        "text4": "如果您不确定，或者不是在我们的开发者的指引下操作，请关闭这个对话框。"
+    },
+
     "About": "关于",
     "Allow cookies to help improve our website": "允许用 Cookies 帮助改进本网站",
     "Appearance": "外观",
+    "Back": "返回",
     "Back to production environment": "返回生产环境",
     "Close all tabs": "关闭所有标签页",
     "Close app": "关闭应用程序",
@@ -28,6 +36,7 @@
     "Contributors": "贡献者",
     "Current session has been terminated. Please close this window.": "当前会话已被终止，请关闭此窗口。",
     "Dark": "深色",
+    "Delete and reload": "删除及重新加载",
     "Developer team": "开发者团队",
     "Devtools": "开发者工具",
     "Export Local Storage": "导出本地存储",
@@ -56,6 +65,7 @@
     "Rail Map Toolkit is opened in another window": "线路图工具包已在另一窗口中打开",
     "Raise an Issue on GitHub": "在 GitHub 提交一个 Issue",
     "Refreshing is required for changes to take effect.": "刷新页面后变更才会生效",
+    "Remove this item": "删除此项目",
     "Resource administrators": "资源管理员",
     "Resource contributors": "资源贡献者",
     "Restart RMT in this window": "在此窗口重新启动工具包",
@@ -80,8 +90,10 @@
     "Unable to retrieve your subscriptions": "无法获取您的订阅",
     "Unable to sync your save": "无法同步您的存档",
     "Unable to update account info": "无法更新账户信息",
+    "Unknown app": "未知应用",
     "Useful links": "实用链接",
     "Visit GitHub": "访问 GitHub",
+    "Warning": "警告",
     "Web fonts": "网络字体",
     "Welcome to Rail Map Toolkit": "欢迎使用线路图工具包",
     "We'll never share your email.": "我们绝不会透露您的邮箱地址。",

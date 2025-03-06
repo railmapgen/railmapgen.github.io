@@ -14,5 +14,12 @@
         "text2": "This may cause unnecessary network traffic and slowness especially if your connection is unstable.",
         "text3": "You can download and install these open source and free fonts to get a better experience.",
         "safari": "This is not applicable to Safari users. ☹️"
+    },
+
+    "LocalStorageModal": {
+        "text1": "You're going to delete ",
+        "text2": " from local storage. This item is created and used by ",
+        "text3": ". Deleting it may cause unrecoverable data loss or unexpected behaviour to the applications.",
+        "text4": "Please close this modal unless you're certain to do so or are supervised by our developers."
     }
 }
