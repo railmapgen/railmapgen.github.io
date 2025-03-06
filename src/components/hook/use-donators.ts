@@ -9,7 +9,7 @@ export default function useDonators() {
     const [isLoading, setIsLoading] = useState(true);
     const [isError, setIsError] = useState(false);
 
-    const controllerRef = useRef<AbortController>();
+    const controllerRef = useRef<AbortController>(null);
 
     const getGitHubDonators = async () => {
         const appIds = Object.entries(assetEnablement)
