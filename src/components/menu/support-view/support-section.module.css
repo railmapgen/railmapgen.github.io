@@ -1,0 +1,8 @@
+.bilibili {
+    width: 20px;
+    height: 20px;
+
+    @mixin dark {
+        filter: invert(1);
+    }
+}

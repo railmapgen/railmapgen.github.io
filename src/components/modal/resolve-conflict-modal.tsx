@@ -1,28 +1,14 @@
-import {
-    Button,
-    Card,
-    CardBody,
-    CardFooter,
-    Flex,
-    Icon,
-    Modal,
-    ModalBody,
-    ModalContent,
-    ModalFooter,
-    ModalHeader,
-    ModalOverlay,
-    Stack,
-    Text,
-} from '@chakra-ui/react';
+import classes from './resolve-conflict-modal.module.css';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { MdCloudCircle, MdComputer } from 'react-icons/md';
+import { MdOutlineCloud, MdOutlineComputer } from 'react-icons/md';
 import { useRootDispatch, useRootSelector } from '../../redux';
 import { fetchSaveList, logout, syncAfterLogin } from '../../redux/account/account-slice';
 import { clearResolveConflictModal, setLastChangedAtTimeStamp } from '../../redux/rmp-save/rmp-save-slice';
 import { SAVE_KEY } from '../../util/constants';
 import { downloadAs } from '../../util/download';
 import { getRMPSave, notifyRMPSaveChange, setRMPSave, updateSave } from '../../util/local-storage-save';
+import { Button, Card, Flex, Group, Modal, Stack, Text } from '@mantine/core';
 
 const ResolveConflictModal = () => {
     const { t } = useTranslation();
@@ -71,77 +57,54 @@ const ResolveConflictModal = () => {
 
     return (
         <Modal
-            isOpen={isOpen}
+            opened={isOpen}
             onClose={() => {}} // do not allow user to close before resolving the conflict
-            size="xl"
-            scrollBehavior="inside"
-            closeOnOverlayClick={false}
-            closeOnEsc={false}
+            size="lg"
+            title={t("Oops! It seems there's a conflict")}
+            withCloseButton={false}
+            closeOnClickOutside={false}
+            closeOnEscape={false}
+            centered
         >
-            <ModalOverlay />
-            <ModalContent>
-                <ModalHeader>{t("Oops! It seems there's a conflict")}</ModalHeader>
+            <Text>{t('The local save is newer than the cloud one. Which one would you like to keep?')}</Text>
 
-                <ModalBody>
-                    <Text>{t('The local save is newer than the cloud one. Which one would you like to keep?')}</Text>
-
-                    <Stack direction={{ base: 'column', sm: 'row' }} mt="5">
-                        <Card overflow="hidden" variant="outline" mb="3">
-                            <CardBody>
-                                <Flex align="center">
-                                    <Icon as={MdComputer} mr="2" />
-                                    <Text py="2" as="b">
-                                        {t('Local save')}
-                                    </Text>
-                                </Flex>
-                                <Text py="2">
-                                    {t('Update at:')} {new Date(lastChangedAtTimeStamp).toLocaleString()}
-                                </Text>
-                            </CardBody>
-                            <CardFooter>
-                                <Stack>
-                                    <Button
-                                        variant="solid"
-                                        colorScheme="red"
-                                        isLoading={replaceCloudWithLocalLoading}
-                                        onClick={() => replaceCloudWithLocal()}
-                                    >
-                                        {t('Replace cloud with local')}
-                                    </Button>
-                                    <Button variant="solid" colorScheme="primary" onClick={() => downloadLocal()}>
-                                        {t('Download Local save')}
-                                    </Button>
-                                </Stack>
-                            </CardFooter>
-                        </Card>
-                        <Card overflow="hidden" variant="outline" mb="3">
-                            <CardBody>
-                                <Flex align="center">
-                                    <Icon as={MdCloudCircle} mr="2" />
-                                    <Text py="2" as="b">
-                                        {t('Cloud save')}
-                                    </Text>
-                                </Flex>
-                                <Text py="2">
-                                    {t('Update at:')} {new Date(lastUpdatedAtTimeStamp).toLocaleString()}
-                                </Text>
-                            </CardBody>
-                            <CardFooter>
-                                <Stack>
-                                    <Button variant="solid" colorScheme="red" onClick={() => replaceLocalWithCloud()}>
-                                        {t('Replace local with cloud')}
-                                    </Button>
-                                    <Button variant="solid" colorScheme="primary" onClick={() => downloadCloud()}>
-                                        {t('Download Cloud save')}
-                                    </Button>
-                                </Stack>
-                            </CardFooter>
-                        </Card>
+            <Group my="xs">
+                <Card withBorder className={classes.card}>
+                    <Stack>
+                        <Flex>
+                            <MdOutlineComputer />
+                            <Text span>{t('Local save')}</Text>
+                        </Flex>
+                        <Text span>
+                            {t('Update at:')} {new Date(lastChangedAtTimeStamp).toLocaleString()}
+                        </Text>
+                        <Button
+                            color="red"
+                            loading={replaceCloudWithLocalLoading}
+                            onClick={() => replaceCloudWithLocal()}
+                        >
+                            {t('Replace cloud with local')}
+                        </Button>
+                        <Button onClick={() => downloadLocal()}>{t('Download Local save')}</Button>
                     </Stack>
-                </ModalBody>
+                </Card>
+                <Card withBorder className={classes.card}>
+                    <Stack>
+                        <Flex>
+                            <MdOutlineCloud />
+                            <Text span>{t('Cloud save')}</Text>
+                        </Flex>
 
-                <ModalFooter />
-            </ModalContent>
+                        <Text span>
+                            {t('Update at:')} {new Date(lastUpdatedAtTimeStamp).toLocaleString()}
+                        </Text>
+                        <Button color="red" onClick={() => replaceLocalWithCloud()}>
+                            {t('Replace local with cloud')}
+                        </Button>
+                        <Button onClick={() => downloadCloud()}>{t('Download Cloud save')}</Button>
+                    </Stack>
+                </Card>
+            </Group>
         </Modal>
     );
 };

@@ -13,7 +13,7 @@ export default function useContributors(appId: string) {
     const [isLoading, setIsLoading] = useState(true);
     const [isError, setIsError] = useState(false);
 
-    const controllerRef = useRef<AbortController>();
+    const controllerRef = useRef<AbortController>(null);
 
     const getGitHubContributors = async () => {
         let page = 0;

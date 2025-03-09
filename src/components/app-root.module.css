@@ -1,0 +1,12 @@
+.burger {
+    position: absolute;
+    height: 40px;
+    width: 40px;
+    border-radius: 0;
+    z-index: 10;
+}
+
+.burger svg {
+    height: 20px;
+    width: 20px;
+}

@@ -1,8 +1,7 @@
-/// <reference types="vitest" />
+/// <reference types="vitest/config" />
 
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import legacy from '@vitejs/plugin-legacy';
 import { fileURLToPath } from 'node:url';
 import * as path from 'node:path';
 
@@ -12,13 +11,7 @@ const __dirname = path.dirname(__filename);
 // https://vitejs.dev/config
 export default defineConfig({
     base: '/',
-    plugins: [
-        react(),
-        legacy({
-            targets: ['defaults', '>0.2%', 'not dead'],
-            modernPolyfills: true,
-        }),
-    ],
+    plugins: [react()],
     build: {
         rollupOptions: {
             input: {
@@ -35,7 +28,7 @@ export default defineConfig({
                         'react-redux',
                         'react-i18next',
                     ],
-                    chakra: ['@chakra-ui/react', '@emotion/react', '@emotion/styled', 'framer-motion', 'react-icons'],
+                    mantine: ['@mantine/core', '@mantine/hooks', '@railmapgen/mantine-components'],
                 },
             },
         },

@@ -1,4 +1,4 @@
-import { Avatar, AvatarProps } from '@chakra-ui/react';
+import { Avatar, AvatarProps } from '@mantine/core';
 
 interface GithubAvatarProps extends AvatarProps {
     login: string;
@@ -14,12 +14,14 @@ export default function GithubAvatar(props: GithubAvatarProps) {
 
     return (
         <Avatar
+            component="a"
             name={login}
             title={login}
             src={`https://github.com/${login}.png`}
-            loading="lazy"
-            onClick={() => window.open(url, '_blank')}
-            cursor="pointer"
+            alt={login}
+            href={url}
+            target="_blank"
+            color="initials"
             {...others}
         />
     );

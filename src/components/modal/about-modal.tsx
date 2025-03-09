@@ -1,18 +1,8 @@
 import { useEffect, useState } from 'react';
-import {
-    Badge,
-    Button,
-    Modal,
-    ModalBody,
-    ModalCloseButton,
-    ModalContent,
-    ModalFooter,
-    ModalHeader,
-    ModalOverlay,
-} from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
 import { assetEnablement } from '../../util/asset-enablements';
 import { getVersion } from '../../service/info-service';
+import { Badge, Button, Modal } from '@mantine/core';
 
 interface AboutModalProps {
     appId?: string;
@@ -35,10 +25,12 @@ export default function AboutModal(props: AboutModalProps) {
     }, [component]);
 
     return (
-        <Modal isOpen={!!appId} onClose={onClose} size="xl" scrollBehavior="inside">
-            <ModalOverlay />
-            <ModalContent>
-                <ModalHeader>
+        <Modal
+            opened={!!appId}
+            onClose={onClose}
+            size="xl"
+            title={
+                <>
                     {t('About') +
                         ' ' +
                         (appId
@@ -47,21 +39,15 @@ export default function AboutModal(props: AboutModalProps) {
                                   .map(n => t(n))
                                   .join(' - ')
                             : '')}
-                    <Badge ml={1}>{version}</Badge>
-                </ModalHeader>
-                <ModalCloseButton />
-
-                <ModalBody />
-
-                <ModalFooter>
-                    <Button
-                        colorScheme="primary"
-                        onClick={() => window.open('https://github.com/railmapgen/' + component, '_blank')}
-                    >
-                        {t('Visit GitHub')}
-                    </Button>
-                </ModalFooter>
-            </ModalContent>
+                    <Badge color="gray" radius="sm" ml="xs">
+                        {version}
+                    </Badge>
+                </>
+            }
+        >
+            <Button component="a" href={'https://github.com/railmapgen/' + component} target="_blank">
+                {t('Visit GitHub')}
+            </Button>
         </Modal>
     );
 }

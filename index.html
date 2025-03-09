@@ -4,7 +4,7 @@
         <meta charset="utf-8" />
         <link rel="icon" href="/favicon.ico" />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="description" content="Rail Map Toolkit" />
         <base href="./" />
@@ -37,6 +37,9 @@
             </p>
         </div>
         <script>
+            if (!crypto.randomUUID) {
+                crypto.randomUUID = () => Math.random().toString();
+            }
             const d = new Date();const tag=`${d.getFullYear()}${String(d.getMonth()+1).padStart(2, '0')}01`;const ver=`${String(d.getFullYear()).slice(-2)}.${d.getMonth()+1}.1`;
             document.getElementById('win').href=`https://ghfast.top/https://github.com/railmapgen/railmapgen.github.io/releases/download/tauri-${tag}/railmapgen_${ver}_x64-setup.exe`;
             document.getElementById('mac').href=`https://ghfast.top/https://github.com/railmapgen/railmapgen.github.io/releases/download/tauri-${tag}/railmapgen_${ver}_aarch64.dmg`;

@@ -1,39 +1,13 @@
-import {
-    Avatar,
-    Button,
-    Flex,
-    HStack,
-    IconButton,
-    Modal,
-    ModalBody,
-    ModalCloseButton,
-    ModalContent,
-    ModalFooter,
-    ModalHeader,
-    ModalOverlay,
-    SystemStyleObject,
-    Text,
-    useToast,
-    VStack,
-} from '@chakra-ui/react';
-import { RmgDebouncedInput } from '@railmapgen/rmg-components';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { MdDriveFileRenameOutline, MdLogout, MdPassword } from 'react-icons/md';
+import { MdOutlineDriveFileRenameOutline, MdOutlineLogout, MdOutlinePassword } from 'react-icons/md';
 import { useRootDispatch, useRootSelector } from '../../../redux';
 import { logout, updateName } from '../../../redux/account/account-slice';
 import { apiFetch } from '../../../util/api';
 import { API_ENDPOINT, API_URL } from '../../../util/constants';
-
-const style: SystemStyleObject = {
-    alignItems: 'center',
-    m: 2,
-    px: 3,
-
-    alignSelf: { base: 'center', md: 'auto' },
-    maxW: { base: '100vw', md: 'unset' },
-    w: { base: 400, md: 'unset' },
-};
+import { ActionIcon, Avatar, Button, Flex, Group, Modal, Text, TextInput } from '@mantine/core';
+import PasswordSetup from './password-setup';
+import { addNotification } from '../../../redux/notification/notification-slice';
 
 const AccountInfo = () => {
     const { t } = useTranslation();
@@ -56,38 +30,48 @@ const AccountInfo = () => {
 
     return (
         <>
-            <Flex sx={style}>
-                <Avatar size="md" name={name} />
-                <VStack spacing={0} alignItems="flex-start" ml={2}>
-                    <Text as="b">{name}</Text>
-                    <Text fontSize="sm">{email}</Text>
-                </VStack>
-                <HStack ml="auto" spacing={1}>
-                    <IconButton
-                        variant="ghost"
+            <Flex py="xs" align="center" wrap="wrap">
+                <Avatar size="lg" name={name} color="initials" />
+                <Flex direction="column" ml="xs" flex={1}>
+                    <Text span fw="bold">
+                        {name}
+                    </Text>
+                    <Text span size="sm">
+                        {email}
+                    </Text>
+                </Flex>
+                <Flex ml="auto">
+                    <ActionIcon
+                        variant="subtle"
+                        color="gray"
                         size="sm"
                         onClick={() => setIsChangeModalType('name')}
                         aria-label={t('Change name')}
                         title={t('Change name')}
-                        icon={<MdDriveFileRenameOutline />}
-                    />
-                    <IconButton
-                        variant="ghost"
+                    >
+                        <MdOutlineDriveFileRenameOutline />
+                    </ActionIcon>
+                    <ActionIcon
+                        variant="subtle"
+                        color="gray"
                         size="sm"
                         onClick={() => setIsChangeModalType('password')}
                         aria-label={t('Change password')}
                         title={t('Change password')}
-                        icon={<MdPassword />}
-                    />
-                    <IconButton
-                        variant="ghost"
+                    >
+                        <MdOutlinePassword />
+                    </ActionIcon>
+                    <ActionIcon
+                        variant="subtle"
+                        color="gray"
                         size="sm"
                         onClick={handleLogOut}
                         aria-label={t('Log out')}
                         title={t('Log out')}
-                        icon={<MdLogout />}
-                    />
-                </HStack>
+                    >
+                        <MdOutlineLogout />
+                    </ActionIcon>
+                </Flex>
             </Flex>
             <ChangeModal infoType={isChangeModalType} onClose={() => setIsChangeModalType(undefined)} />
         </>
@@ -99,63 +83,68 @@ export default AccountInfo;
 export function ChangeModal(props: { infoType: 'name' | 'password' | undefined; onClose: () => void }) {
     const { infoType, onClose } = props;
     const { t } = useTranslation();
-    const toast = useToast();
     const dispatch = useRootDispatch();
 
     const { isLoggedIn, id, token } = useRootSelector(state => state.account);
     const [value, setValue] = React.useState('');
 
     const showErrorToast = (msg: string) =>
-        toast({
-            title: msg,
-            status: 'error' as const,
-            duration: 9000,
-            isClosable: true,
-        });
+        dispatch(
+            addNotification({
+                title: t('Unable to update account info'),
+                message: msg,
+                type: 'error',
+                duration: 9000,
+            })
+        );
 
     const handleChange = async () => {
         if (!isLoggedIn || !infoType) return;
-        const rep = await apiFetch(
-            API_ENDPOINT.USER + '/' + id,
-            { method: 'PATCH', body: JSON.stringify({ [infoType]: value }) },
-            token
-        );
-        if (!rep) {
-            showErrorToast(t('Login status expired'));
-            dispatch(logout());
-            return;
-        }
-        if (rep.status !== 200) {
-            showErrorToast(await rep.text());
-            return;
-        }
-        if (infoType === 'password') {
-            dispatch(logout());
-            onClose();
-            return;
-        }
-        if (infoType === 'name') {
-            dispatch(updateName(value));
-            onClose();
-            return;
+        try {
+            const rep = await apiFetch(
+                API_ENDPOINT.USER + '/' + id,
+                { method: 'PATCH', body: JSON.stringify({ [infoType]: value }) },
+                token
+            );
+            if (!rep) {
+                showErrorToast(t('Login status expired'));
+                dispatch(logout());
+                return;
+            }
+            if (rep.status !== 200) {
+                showErrorToast(await rep.text());
+                return;
+            }
+            if (infoType === 'password') {
+                dispatch(logout());
+                onClose();
+                return;
+            }
+            if (infoType === 'name') {
+                dispatch(updateName(value));
+                onClose();
+                return;
+            }
+        } catch (e) {
+            showErrorToast((e as Error).message);
         }
     };
 
     return (
-        <Modal isOpen={infoType ? true : false} onClose={onClose} size="xl" scrollBehavior="inside">
-            <ModalOverlay />
-            <ModalContent>
-                <ModalHeader>{t('Update account info')}</ModalHeader>
-                <ModalCloseButton />
-
-                <ModalBody>
-                    <RmgDebouncedInput defaultValue={value} onDebouncedChange={val => setValue(val)} />
-                </ModalBody>
-
-                <ModalFooter>
-                    <Button onClick={handleChange}>{t('Change')}</Button>
-                </ModalFooter>
-            </ModalContent>
+        <Modal opened={!!infoType} onClose={onClose} title={t('Update account info')} closeOnEscape={false}>
+            {infoType === 'name' && (
+                <TextInput
+                    label={t('Name')}
+                    value={value}
+                    onChange={({ currentTarget: { value } }) => setValue(value)}
+                />
+            )}
+            {infoType === 'password' && <PasswordSetup value={value} onChange={value => setValue(value)} />}
+            <Group mt="xs">
+                <Button ml="auto" onClick={handleChange}>
+                    {t('Change')}
+                </Button>
+            </Group>
         </Modal>
     );
 }

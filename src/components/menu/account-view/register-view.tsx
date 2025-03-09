@@ -1,29 +1,17 @@
-import {
-    Alert,
-    AlertDescription,
-    AlertIcon,
-    Button,
-    Flex,
-    Heading,
-    InputGroup,
-    InputRightElement,
-    Stack,
-    Text,
-    useToast,
-} from '@chakra-ui/react';
-import { RmgDebouncedInput, RmgFields, RmgSection, RmgSectionHeader } from '@railmapgen/rmg-components';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { MdCheck } from 'react-icons/md';
+import { MdOutlineErrorOutline, MdOutlineInfo } from 'react-icons/md';
 import { useRootDispatch } from '../../../redux';
 import { fetchLogin } from '../../../redux/account/account-slice';
 import { API_ENDPOINT, API_URL } from '../../../util/constants';
 import { emailValidator, passwordValidator } from './account-utils';
-
-const sendEmailVerificationInterval = 60;
+import { RMSection, RMSectionBody, RMSectionHeader } from '@railmapgen/mantine-components';
+import { Alert, Button, TextInput, Title } from '@mantine/core';
+import PasswordSetup from './password-setup';
+import EmailInputWithOtp from './email-input-with-otp';
+import { addNotification } from '../../../redux/notification/notification-slice';
 
 const RegisterView = (props: { setLoginState: (_: 'login' | 'register') => void }) => {
-    const toast = useToast();
     const { t } = useTranslation();
     const dispatch = useRootDispatch();
 
@@ -34,53 +22,37 @@ const RegisterView = (props: { setLoginState: (_: 'login' | 'register') => void 
     const [emailVerificationSent, setEmailVerificationSent] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
-    const [isSendEmailVerificationDisabled, setIsSendEmailVerificationDisabled] = useState(false);
-    const [sendEmailVerificationDisabledseconds, setSendEmailVerificationDisabledSeconds] =
-        useState(sendEmailVerificationInterval);
-
-    useEffect(() => {
-        let timer: number;
-        if (isSendEmailVerificationDisabled && sendEmailVerificationDisabledseconds > 0) {
-            timer = window.setTimeout(() => {
-                setSendEmailVerificationDisabledSeconds(sendEmailVerificationDisabledseconds - 1);
-            }, 1000);
-        } else if (sendEmailVerificationDisabledseconds === 0) {
-            setIsSendEmailVerificationDisabled(false);
-        }
-
-        return () => clearTimeout(timer);
-    }, [isSendEmailVerificationDisabled, sendEmailVerificationDisabledseconds]);
-
     const isEmailValid = !!email && emailValidator(email);
     const areFieldsValid =
         !!name && isEmailValid && !!emailVerificationToken && !!password && passwordValidator(password);
 
     const showErrorToast = (msg: string) =>
-        toast({
-            title: msg,
-            status: 'error' as const,
-            duration: 9000,
-            isClosable: true,
-        });
+        dispatch(
+            addNotification({
+                title: t('Unable to create your account'),
+                message: msg,
+                type: 'error',
+                duration: 9000,
+            })
+        );
 
     const handleVerifyEmail = async () => {
-        setIsSendEmailVerificationDisabled(true);
-        setSendEmailVerificationDisabledSeconds(sendEmailVerificationInterval);
-        const rep = await fetch(API_URL + API_ENDPOINT.AUTH_SEND_VERIFICATION_EMAIL, {
-            method: 'POST',
-            headers: {
-                accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ email }),
-        });
-        if (rep.status === 204) {
-            setEmailVerificationSent(email);
-            return;
-        }
-        if (rep.status === 400) {
+        try {
+            const rep = await fetch(API_URL + API_ENDPOINT.AUTH_SEND_VERIFICATION_EMAIL, {
+                method: 'POST',
+                headers: {
+                    accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email }),
+            });
+            if (rep.status === 204) {
+                setEmailVerificationSent(email);
+            } else if (rep.status > 400) {
+                setEmailVerificationSent('error');
+            }
+        } catch {
             setEmailVerificationSent('error');
-            return;
         }
     };
 
@@ -105,128 +77,73 @@ const RegisterView = (props: { setLoginState: (_: 'login' | 'register') => void 
                 username?: string;
             };
             if (error) {
-                toast({
-                    title: error,
-                    status: 'error' as const,
-                    duration: 9000,
-                    isClosable: true,
-                });
+                showErrorToast(error);
             } else {
-                toast({
-                    title: t('Welcome ') + username,
-                    status: 'success' as const,
-                    duration: 5000,
-                    isClosable: true,
-                });
+                dispatch(
+                    addNotification({
+                        title: t('Welcome ') + username,
+                        message: t('Your account is created successfully.'),
+                        type: 'success',
+                        duration: 5000,
+                    })
+                );
             }
+        } catch (e) {
+            showErrorToast((e as Error).message);
         } finally {
             setIsLoading(false);
         }
     };
 
     return (
-        <RmgSection>
-            <RmgSectionHeader>
-                <Heading as="h4" size="md" my={1}>
+        <RMSection>
+            <RMSectionHeader>
+                <Title order={3} size="h5">
                     {t('Create an account')}
-                </Heading>
-            </RmgSectionHeader>
+                </Title>
+            </RMSectionHeader>
 
-            {emailVerificationSent && (
-                <Alert status={emailVerificationSent === 'error' ? 'error' : 'info'}>
-                    <AlertIcon />
-                    <AlertDescription>
-                        {emailVerificationSent === 'error'
-                            ? t('The email is not valid!')
-                            : t('Verification email is sent to: ') + emailVerificationSent}
-                    </AlertDescription>
-                </Alert>
-            )}
+            <RMSectionBody direction="column" gap="xs">
+                {emailVerificationSent === 'error' && (
+                    <Alert color="red" icon={<MdOutlineErrorOutline />} title={t('The email is not valid!')} />
+                )}
+                {emailVerificationSent && emailVerificationSent !== 'error' && (
+                    <Alert
+                        color="blue"
+                        icon={<MdOutlineInfo />}
+                        title={t('Verification email is sent to') + ' ' + emailVerificationSent}
+                    />
+                )}
 
-            <Flex px={2} flexDirection="column">
-                <RmgFields
-                    fields={[
-                        {
-                            label: t('Name'),
-                            type: 'input',
-                            value: name,
-                            onChange: setName,
-                            debouncedDelay: 0,
-                            helper: t('You may always change it later.'),
-                        },
-                        {
-                            label: t('Email'),
-                            type: 'custom',
-                            component: (
-                                <InputGroup size="sm">
-                                    <RmgDebouncedInput
-                                        type="email"
-                                        value={email}
-                                        onDebouncedChange={setEmail}
-                                        delay={0}
-                                        validator={emailValidator}
-                                    />
-                                    <InputRightElement width="auto" bottom={0} top="unset">
-                                        {emailVerificationSent ? (
-                                            <>
-                                                <MdCheck />
-                                                <Text fontSize="xs" ml={1}>
-                                                    {t('Verification code sent')}
-                                                </Text>
-                                            </>
-                                        ) : (
-                                            <Button
-                                                size="xs"
-                                                onClick={handleVerifyEmail}
-                                                isDisabled={!isEmailValid || isSendEmailVerificationDisabled}
-                                            >
-                                                {isSendEmailVerificationDisabled
-                                                    ? `${sendEmailVerificationDisabledseconds}s`
-                                                    : t('Send verification code')}
-                                            </Button>
-                                        )}
-                                    </InputRightElement>
-                                </InputGroup>
-                            ),
-                            helper: t("We'll never share your email."),
-                        },
-                        {
-                            label: t('Verification code'),
-                            type: 'input',
-                            variant: 'number',
-                            value: emailVerificationToken,
-                            onChange: setEmailVerificationToken,
-                            debouncedDelay: 0,
-                        },
-                        {
-                            label: t('Password'),
-                            type: 'input',
-                            variant: 'password',
-                            value: password,
-                            onChange: setPassword,
-                            debouncedDelay: 0,
-                            validator: passwordValidator,
-                            helper: t('Minimum 8 characters. Contain at least 1 letter and 1 number.'),
-                        },
-                    ]}
-                    minW="full"
+                <TextInput
+                    label={t('Name')}
+                    description={t('You may always change it later.')}
+                    value={name}
+                    onChange={({ currentTarget: { value } }) => setName(value)}
                 />
+                <EmailInputWithOtp
+                    description={t("We'll never share your email.")}
+                    value={email}
+                    onChange={setEmail}
+                    onVerify={handleVerifyEmail}
+                    otpSent={emailVerificationSent}
+                    allowResendOtp
+                />
+                <TextInput
+                    label={t('Verification code')}
+                    value={emailVerificationToken}
+                    onChange={({ currentTarget: { value } }) => setEmailVerificationToken(value)}
+                />
+                <PasswordSetup value={password} onChange={setPassword} />
 
-                <Stack mt={1}>
-                    <Button
-                        colorScheme="primary"
-                        onClick={handleRegister}
-                        isLoading={isLoading}
-                        isDisabled={!areFieldsValid || isLoading}
-                    >
-                        {t('Sign up')}
-                    </Button>
-                    <Button onClick={() => props.setLoginState('login')} isDisabled={isLoading}>
-                        {t('Back to log in')}
-                    </Button>
-                </Stack>
-            </Flex>
-        </RmgSection>
+                <Button onClick={handleRegister} loading={isLoading} disabled={!areFieldsValid || isLoading}>
+                    {t('Sign up')}
+                </Button>
+                <Button variant="default" onClick={() => props.setLoginState('login')} disabled={isLoading}>
+                    {t('Back to log in')}
+                </Button>
+            </RMSectionBody>
+        </RMSection>
     );
 };
 

@@ -1,17 +1,3 @@
-import {
-    Button,
-    Card,
-    CardBody,
-    CardFooter,
-    CardHeader,
-    Heading,
-    ListItem,
-    Stack,
-    Text,
-    UnorderedList,
-    useToast,
-} from '@chakra-ui/react';
-import { RmgSection, RmgSectionHeader } from '@railmapgen/rmg-components';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRootDispatch, useRootSelector } from '../../../redux';
@@ -24,6 +10,9 @@ import {
 import { apiFetch } from '../../../util/api';
 import { API_ENDPOINT } from '../../../util/constants';
 import RedeemModal from '../../modal/redeem-modal';
+import { RMSection, RMSectionBody, RMSectionHeader } from '@railmapgen/mantine-components';
+import { Button, Card, List, Stack, Text, Title } from '@mantine/core';
+import { addNotification } from '../../../redux/notification/notification-slice';
 
 interface APISubscription {
     type: 'RMP' | 'RMP_CLOUD' | 'RMP_EXPORT';
@@ -31,7 +20,6 @@ interface APISubscription {
 }
 
 const SubscriptionSection = () => {
-    const toast = useToast();
     const { t } = useTranslation();
     const { isLoggedIn, token } = useRootSelector(state => state.account);
     const dispatch = useRootDispatch();
@@ -40,12 +28,14 @@ const SubscriptionSection = () => {
     const [isRedeemModalOpen, setIsRedeemModalOpen] = React.useState(false);
 
     const showErrorToast = (msg: string) =>
-        toast({
-            title: msg,
-            status: 'error' as const,
-            duration: 9000,
-            isClosable: true,
-        });
+        dispatch(
+            addNotification({
+                title: t('Unable to retrieve your subscriptions'),
+                message: msg,
+                type: 'error',
+                duration: 9000,
+            })
+        );
 
     const getSubscriptions = async () => {
         if (!isLoggedIn) return;
@@ -77,77 +67,65 @@ const SubscriptionSection = () => {
     }, []);
 
     return (
-        <RmgSection>
-            <RmgSectionHeader>
-                <Heading as="h4" size="md" my={1}>
+        <RMSection>
+            <RMSectionHeader align="center">
+                <Title order={3} size="h5">
                     {t('All subscriptions')}
-                </Heading>
-                <Button size="sm" ml="auto" onClick={() => setIsRedeemModalOpen(true)}>
+                </Title>
+                <Button variant="subtle" size="xs" ml="auto" onClick={() => setIsRedeemModalOpen(true)}>
                     {t('Redeem')}
                 </Button>
-            </RmgSectionHeader>
+            </RMSectionHeader>
 
-            <Stack px={2}>
+            <RMSectionBody direction="column" gap="xs">
                 {subscriptions.length === 0 && (
-                    <Card overflow="hidden" variant="outline" mb="3">
-                        <CardHeader>
-                            <Heading size="md">{t('Rail Map Painter')}</Heading>
-                        </CardHeader>
-                        <Stack direction={{ base: 'column', sm: 'row' }}>
-                            <CardBody>
-                                <Stack>
-                                    <Text>{t('With this subscription, the following features are unlocked:')}</Text>
-                                    <UnorderedList>
-                                        <ListItem>
-                                            <Text>{t('PRO features')}</Text>
-                                        </ListItem>
-                                        <ListItem>
-                                            <Text>{t('Sync 9 more saves')}</Text>
-                                        </ListItem>
-                                        <ListItem>
-                                            <Text>{t('Unlimited master nodes')}</Text>
-                                        </ListItem>
-                                        <ListItem>
-                                            <Text>{t('Unlimited parallel lines')}</Text>
-                                        </ListItem>
-                                    </UnorderedList>
+                    <Card withBorder shadow="sm">
+                        <Card.Section p="xs">
+                            <Title order={4} size="h3">
+                                {t('Rail Map Painter')}
+                            </Title>
+                        </Card.Section>
+                        <Stack gap="xs">
+                            <Text>{t('With this subscription, the following features are unlocked:')}</Text>
+                            <List withPadding>
+                                <List.Item>{t('PRO features')}</List.Item>
+                                <List.Item>{t('Sync 9 more saves')}</List.Item>
+                                <List.Item>{t('Unlimited master nodes')}</List.Item>
+                                <List.Item>{t('Unlimited parallel lines')}</List.Item>
+                            </List>
 
-                                    <Text>
-                                        {t('Expires at:')} {t('Not applicable')}
-                                    </Text>
-                                </Stack>
-                            </CardBody>
+                            <Text>
+                                {t('Expires at:')} {t('Not applicable')}
+                            </Text>
                         </Stack>
                     </Card>
                 )}
 
                 {subscriptions.map(_ => (
-                    <Card key={_.type} overflow="hidden" variant="outline" mb="3">
-                        <CardHeader>
-                            <Heading size="md">{t(_.type === 'RMP' ? 'Rail Map Painter' : _.type)}</Heading>
-                        </CardHeader>
-                        <Stack direction={{ base: 'column', sm: 'row' }}>
-                            <CardBody>
-                                <Text py="2">
-                                    {t('Expires at:')} {new Date(_.expires).toLocaleString()}
-                                </Text>
-                            </CardBody>
-                            <CardFooter>
-                                <Button variant="solid" colorScheme="blue" onClick={() => setIsRedeemModalOpen(true)}>
-                                    {t('Renew')}
-                                </Button>
-                            </CardFooter>
+                    <Card key={_.type} withBorder shadow="sm">
+                        <Card.Section p="xs">
+                            <Title order={4} size="h3">
+                                {t(_.type === 'RMP' ? 'Rail Map Painter' : _.type)}
+                            </Title>
+                        </Card.Section>
+                        <Stack gap="xs">
+                            <Text>
+                                {t('Expires at:')} {new Date(_.expires).toLocaleString()}
+                            </Text>
+                            <Button color="blue" onClick={() => setIsRedeemModalOpen(true)}>
+                                {t('Renew')}
+                            </Button>
                         </Stack>
                     </Card>
                 ))}
-            </Stack>
+            </RMSectionBody>
 
             <RedeemModal
-                isOpen={isRedeemModalOpen}
+                opened={isRedeemModalOpen}
                 onClose={() => setIsRedeemModalOpen(false)}
                 getSubscriptions={getSubscriptions}
             />
-        </RmgSection>
+        </RMSection>
     );
 };
 

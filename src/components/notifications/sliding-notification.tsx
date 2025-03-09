@@ -1,0 +1,61 @@
+import { DefaultMantineColor, Notification, Transition } from '@mantine/core';
+import { useEffect, useState } from 'react';
+import { removeNotification, RMNotification, RMNotificationType } from '../../redux/notification/notification-slice';
+import { useRootDispatch } from '../../redux';
+
+const NOTIFICATION_TYPE_COLOUR_MAPPING: Record<RMNotificationType, DefaultMantineColor | undefined> = {
+    info: undefined,
+    success: 'green',
+    warning: 'yellow',
+    error: 'red',
+};
+
+const OPEN_DELAY_MS = 200;
+const ANIMATION_DURATION_MS = 400;
+
+type SlidingNotificationProps = {
+    notification: RMNotification;
+};
+
+export default function SlidingNotification({ notification }: SlidingNotificationProps) {
+    const dispatch = useRootDispatch();
+
+    const [opened, setOpened] = useState(false);
+
+    useEffect(() => {
+        setTimeout(() => {
+            setOpened(true);
+        }, OPEN_DELAY_MS);
+
+        const closeTimeoutId = setTimeout(() => {
+            setOpened(false);
+        }, OPEN_DELAY_MS + notification.duration);
+
+        setTimeout(
+            () => {
+                dispatch(removeNotification(notification.id));
+            },
+            OPEN_DELAY_MS + notification.duration + ANIMATION_DURATION_MS
+        );
+
+        return () => {
+            clearTimeout(closeTimeoutId);
+        };
+    }, []);
+
+    return (
+        <Transition mounted={opened} transition="slide-left" duration={ANIMATION_DURATION_MS} timingFunction="ease">
+            {style => (
+                <Notification
+                    color={NOTIFICATION_TYPE_COLOUR_MAPPING[notification.type]}
+                    title={notification.title}
+                    onClose={() => setOpened(false)}
+                    withBorder
+                    style={style}
+                >
+                    {notification.message}
+                </Notification>
+            )}
+        </Transition>
+    );
+}

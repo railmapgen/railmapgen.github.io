@@ -1,86 +1,46 @@
-import { Alert, AlertDescription, AlertIcon, Flex, Heading, Link, SystemStyleObject } from '@chakra-ui/react';
-import { RmgEnvBadge } from '@railmapgen/rmg-components';
+import classes from './nav-menu.module.css';
 import rmgRuntime from '@railmapgen/rmg-runtime';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
-import { useRootSelector } from '../../redux';
-import { isShowDevtools } from '../../redux/app/app-slice';
+import { useRootDispatch, useRootSelector } from '../../redux';
+import { isShowDevtools, MenuView, setMenuView } from '../../redux/app/app-slice';
 import ResolveConflictModal from '../modal/resolve-conflict-modal';
-import AccountStatus from './account-view/account-status';
 import AccountView from './account-view/account-view';
 import AppsSection from './main-view/apps-section';
 import LinksSection from './main-view/links-section';
-import NavMenuFooter from './nav-menu-footer';
 import SettingsView from './settings-view';
 import FontsSection from './support-view/fonts-section';
 import SupportSection from './support-view/support-section';
+import { RMEnvBadge, RMWindowHeader } from '@railmapgen/mantine-components';
+import { ActionIcon, Alert, Anchor, Avatar, Divider, Title, Tooltip } from '@mantine/core';
+import {
+    MdOutlineApps,
+    MdOutlineBuild,
+    MdOutlineHelpOutline,
+    MdOutlineLink,
+    MdOutlinePeopleOutline,
+    MdOutlineSettings,
+    MdWarning,
+} from 'react-icons/md';
+import clsx from 'clsx';
+import ContributorModal from '../modal/contributor-modal/contributor-modal';
+import { ComponentProps, ReactNode, useState } from 'react';
 
-const NAV_MENU_WIDTH = 420;
-
-const style: SystemStyleObject = {
-    flexShrink: 0,
-    flexDirection: 'column',
-    overflow: 'hidden',
-    alignItems: 'flex-end',
-    background: 'inherit',
-    transition: '0.3s ease-in-out',
-    maxW: 0,
-    visibility: 'hidden',
-    boxShadow: 'lg',
-    zIndex: 100,
-
-    '.show-menu &': {
-        maxW: { base: '100%', md: NAV_MENU_WIDTH },
-        w: { base: '100%', md: 'unset' },
-        visibility: 'initial',
-    },
-
-    '& > div': {
-        flexDirection: 'column',
-        h: '100%',
-        w: { base: '100vw', md: NAV_MENU_WIDTH },
-        background: 'inherit',
-
-        '& .nav-menu__header': {
-            // header
-            flex: 0,
-            flexDirection: 'row',
-            alignItems: 'center',
-            minHeight: 10,
-            pl: 12,
-        },
-
-        '& .nav-menu__body': {
-            // body
-            flexDirection: 'column',
-            flex: 1,
-            overflowX: 'hidden',
-            overflowY: 'auto',
-            background: 'inherit',
-        },
-    },
-
-    '& .chakra-alert': {
-        flexGrow: 0,
-        pl: 3,
-        pr: 2,
-        py: 2,
-
-        '& a': {
-            fontWeight: 'bold',
-            textDecoration: 'underline',
-
-            '&:hover, &:focus': {
-                textDecoration: 'none',
-            },
-        },
-    },
+type AsideButton = {
+    key: MenuView;
+    label: ReactNode;
+    Icon: ReactNode;
+    ActionIconProps?: ComponentProps<typeof ActionIcon>;
 };
 
 export default function NavMenu() {
     const { t } = useTranslation();
 
-    const { menuView, lastShowDevtools } = useRootSelector(state => state.app);
+    const { isShowMenu, menuView, lastShowDevtools } = useRootSelector(state => state.app);
+    const { isLoggedIn, name } = useRootSelector(state => state.account);
+    const dispatch = useRootDispatch();
+
+    const [isContributorModalOpen, setIsContributorModalOpen] = useState(false);
 
     const [searchParams] = useSearchParams();
     const prdUrl =
@@ -88,58 +48,106 @@ export default function NavMenu() {
         '?' +
         searchParams.toString();
 
+    const asideButtons: AsideButton[] = [
+        { key: 'apps', label: t('Apps'), Icon: <MdOutlineApps size={22} /> },
+        { key: 'links', label: t('Useful links'), Icon: <MdOutlineLink size={22} /> },
+        {
+            key: 'devtools',
+            label: t('Devtools'),
+            Icon: <MdOutlineBuild size={22} />,
+            ActionIconProps: { style: { display: isShowDevtools(lastShowDevtools) ? 'inline-flex' : 'none' } },
+        },
+        {
+            key: 'account',
+            label: t('Account'),
+            Icon: (
+                <Avatar
+                    variant="light"
+                    name={isLoggedIn ? name : undefined}
+                    // src="https://github.com/thekingofcity.png?size=100"
+                    size="sm"
+                    color="initials"
+                />
+            ),
+            ActionIconProps: { mt: 'auto' },
+        },
+        {
+            key: 'contributors',
+            label: t('Contributors'),
+            Icon: <MdOutlinePeopleOutline size={22} />,
+            ActionIconProps: { onClick: () => setIsContributorModalOpen(true) },
+        },
+        { key: 'support', label: t('Help & support'), Icon: <MdOutlineHelpOutline size={22} /> },
+        { key: 'settings', label: t('Settings'), Icon: <MdOutlineSettings size={22} /> },
+    ];
+
     return (
-        <Flex sx={style}>
-            <Flex>
-                {/* menu-header */}
-                <Flex className="nav-menu__header">
-                    <Heading as="h4" size="md">
-                        {t('Rail Map Toolkit')}
-                    </Heading>
-                    <RmgEnvBadge environment={rmgRuntime.getEnv()} version={rmgRuntime.getAppVersion()} />
-                </Flex>
+        <nav className={clsx(classes.root, isShowMenu && classes['show-menu'])}>
+            <div className={classes.wrapper}>
+                <RMWindowHeader className={classes.header}>
+                    <Title>{t('Rail Map Toolkit')}</Title>
+                    <RMEnvBadge env={rmgRuntime.getEnv()} ver={rmgRuntime.getAppVersion()} />
+                </RMWindowHeader>
+
+                <Divider />
 
                 {rmgRuntime.getEnv() !== 'PRD' && (
-                    <Alert status="warning">
-                        <AlertIcon />
-                        <AlertDescription>
-                            {t("You're currently viewing a testing environment.")}{' '}
-                            <Link href={prdUrl} isExternal>
-                                {t('Back to production environment')}
-                            </Link>
-                        </AlertDescription>
+                    <Alert color="yellow" icon={<MdWarning />} className={classes.alert}>
+                        {t("You're currently viewing a testing environment.")}{' '}
+                        <Anchor size="sm" href={prdUrl} target="_blank">
+                            {t('Back to production environment')}
+                        </Anchor>
                     </Alert>
                 )}
 
-                {menuView === 'main' && <AccountStatus />}
+                <div className={classes.body}>
+                    <div className={classes.aside}>
+                        {asideButtons.map(({ key, label, Icon, ActionIconProps }) => (
+                            <Tooltip key={key} label={label} position="right" withArrow>
+                                <ActionIcon
+                                    variant={menuView === key ? 'light' : 'subtle'}
+                                    color={menuView === key ? undefined : 'gray'}
+                                    size="lg"
+                                    onClick={() => dispatch(setMenuView(key))}
+                                    {...ActionIconProps}
+                                >
+                                    {Icon}
+                                </ActionIcon>
+                            </Tooltip>
+                        ))}
+                    </div>
+                    <Divider orientation="vertical" />
+                    <div className={classes.main}>
+                        {/*{menuView === 'main' && <AccountStatus />}*/}
 
-                {/* menu-body */}
-                <Flex className="nav-menu__body">
-                    {menuView === 'main' ? (
-                        <>
+                        {/* menu-body */}
+                        {menuView === 'apps' ? (
                             <AppsSection assetType="app" />
-                            {isShowDevtools(lastShowDevtools) && <AppsSection assetType="devtool" />}
+                        ) : menuView === 'links' ? (
                             <LinksSection />
-                        </>
-                    ) : menuView === 'settings' ? (
-                        <SettingsView />
-                    ) : menuView === 'support' ? (
-                        <>
-                            <SupportSection />
-                            <FontsSection />
-                        </>
-                    ) : menuView === 'account' ? (
-                        <AccountView />
-                    ) : (
-                        <></>
-                    )}
-                </Flex>
+                        ) : menuView === 'devtools' ? (
+                            <AppsSection assetType="devtool" />
+                        ) : menuView === 'settings' ? (
+                            <SettingsView />
+                        ) : menuView === 'support' ? (
+                            <>
+                                <SupportSection />
+                                <FontsSection />
+                            </>
+                        ) : menuView === 'account' ? (
+                            <AccountView />
+                        ) : (
+                            <></>
+                        )}
 
-                {/* menu-footer */}
-                <NavMenuFooter />
+                        {/* menu-footer */}
 
-                <ResolveConflictModal />
-            </Flex>
-        </Flex>
+                        <ResolveConflictModal />
+                    </div>
+                </div>
+            </div>
+
+            <ContributorModal opened={isContributorModalOpen} onClose={() => setIsContributorModalOpen(false)} />
+        </nav>
     );
 }

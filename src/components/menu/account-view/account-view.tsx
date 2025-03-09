@@ -1,6 +1,5 @@
-import { Divider, Flex, Heading } from '@chakra-ui/react';
-import { RmgSection, RmgSectionHeader } from '@railmapgen/rmg-components';
-import React from 'react';
+import classes from './account-view.module.css';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRootSelector } from '../../../redux';
 import AccountInfo from './account-info';
@@ -9,20 +8,22 @@ import LoginView from './login-view';
 import RegisterView from './register-view';
 import SavesSection from './saves-section';
 import SubscriptionSection from './subscription-section';
+import { RMSection, RMSectionBody, RMSectionHeader } from '@railmapgen/mantine-components';
+import { Divider, Title } from '@mantine/core';
 
 const AccountView = () => {
     const { t } = useTranslation();
     const { isLoggedIn } = useRootSelector(state => state.account);
 
-    const [loginState, setLoginState] = React.useState('login' as 'login' | 'register' | 'forgot-password');
+    const [loginState, setLoginState] = useState<'login' | 'register' | 'forgot-password'>('login');
 
     return (
-        <RmgSection display="flex" flexDirection="column" h="100%" overflow="hidden">
-            <RmgSectionHeader>
-                <Heading as="h4" size="md" my={1}>
+        <RMSection>
+            <RMSectionHeader>
+                <Title order={2} size="h4">
                     {t('Account')}
-                </Heading>
-            </RmgSectionHeader>
+                </Title>
+            </RMSectionHeader>
 
             {!isLoggedIn ? (
                 loginState === 'login' ? (
@@ -33,17 +34,14 @@ const AccountView = () => {
                     <ForgotPasswordView setLoginState={setLoginState} />
                 )
             ) : (
-                <Flex flexDirection="column" h="100%" overflow="hidden" bg="inherit">
+                <RMSectionBody className={classes.body}>
                     <AccountInfo />
                     <Divider />
-                    <Flex flexDirection="column" overflowY="auto" bg="inherit">
-                        <SubscriptionSection />
-                        <Divider />
-                        <SavesSection />
-                    </Flex>
-                </Flex>
+                    <SubscriptionSection />
+                    <SavesSection />
+                </RMSectionBody>
             )}
-        </RmgSection>
+        </RMSection>
     );
 };
 

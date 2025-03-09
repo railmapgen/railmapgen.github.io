@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { AssetType, getAvailableAsset } from '../../../util/asset-enablements';
-import { Flex, Heading } from '@chakra-ui/react';
 import AppItemButton from './app-item-button';
 import rmgRuntime from '@railmapgen/rmg-runtime';
 import { useTranslation } from 'react-i18next';
 import AboutModal from '../../modal/about-modal';
-import { RmgSection, RmgSectionHeader } from '@railmapgen/rmg-components';
+import { RMSection, RMSectionHeader } from '@railmapgen/mantine-components';
+import { Flex, Title } from '@mantine/core';
 
 type AppsSectionProps = {
     assetType: AssetType;
@@ -19,12 +19,12 @@ export default function AppsSection({ assetType }: AppsSectionProps) {
     const availableApps = getAvailableAsset(assetType, rmgRuntime.getEnv(), rmgRuntime.getInstance());
 
     return (
-        <RmgSection>
-            <RmgSectionHeader>
-                <Heading as="h4" size="md" my={1}>
+        <RMSection>
+            <RMSectionHeader>
+                <Title order={2} size="h4">
                     {assetType === 'devtool' ? t('Devtools') : t('Apps')}
-                </Heading>
-            </RmgSectionHeader>
+                </Title>
+            </RMSectionHeader>
             <Flex direction="column">
                 {availableApps.map(appId => (
                     <AppItemButton key={appId} appId={appId} onAboutOpen={() => setAboutModalAppId(appId)} />
@@ -32,6 +32,6 @@ export default function AppsSection({ assetType }: AppsSectionProps) {
             </Flex>
 
             <AboutModal appId={aboutModalAppId} onClose={() => setAboutModalAppId(undefined)} />
-        </RmgSection>
+        </RMSection>
     );
 }

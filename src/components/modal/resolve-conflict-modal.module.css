@@ -1,0 +1,18 @@
+.card {
+    min-width: 200px;
+    flex: 1;
+    box-shadow: var(--mantine-shadow-sm);
+
+    > div {
+        gap: var(--mantine-spacing-xs);
+
+        > div:first-of-type {
+            align-items: center;
+
+            span {
+                font-weight: 500;
+                margin-left: var(--mantine-spacing-xs);
+            }
+        }
+    }
+}

@@ -1,23 +1,9 @@
-import { Alert, AlertIcon, Flex, SystemStyleObject, Wrap, WrapItem } from '@chakra-ui/react';
-import { RmgLoader } from '@railmapgen/rmg-components';
+import useContributors from '../../hook/use-contributors';
+import { RMSectionBody } from '@railmapgen/mantine-components';
+import { Alert, Group, LoadingOverlay } from '@mantine/core';
+import { MdWarning } from 'react-icons/md';
 import GithubAvatar from './github-avatar';
 import { useTranslation } from 'react-i18next';
-import useContributors from '../../hook/use-contributors';
-
-const styles: SystemStyleObject = {
-    position: 'relative',
-    minH: 20,
-
-    '& .chakra-alert': {
-        flexDirection: 'column',
-    },
-
-    '& .chakra-alert__icon': {
-        boxSize: 7,
-        mr: 0,
-        mb: 1,
-    },
-};
 
 interface ContributorAvatarWallProps {
     appId: string;
@@ -30,25 +16,20 @@ export default function ContributorAvatarWall(props: ContributorAvatarWallProps)
     const { contributors, isLoading, isError } = useContributors(appId);
 
     return (
-        <Flex sx={styles}>
-            {isLoading && <RmgLoader isIndeterminate />}
+        <RMSectionBody>
+            <LoadingOverlay visible={isLoading} />
 
             {isError && (
-                <Alert status="warning">
-                    <AlertIcon />
-                    {t('Unable to load contributors')}
-                </Alert>
+                <Alert color="yellow" icon={<MdWarning />} title={t('Unable to load contributors')} flex={1}></Alert>
             )}
 
             {!isError && contributors && (
-                <Wrap spacing={1.5}>
+                <Group gap="xs">
                     {contributors?.map(contributor => (
-                        <WrapItem key={contributor}>
-                            <GithubAvatar login={contributor} urlRepo={appId} size="sm" />
-                        </WrapItem>
+                        <GithubAvatar key={contributor} login={contributor} urlRepo={appId} />
                     ))}
-                </Wrap>
+                </Group>
             )}
-        </Flex>
+        </RMSectionBody>
     );
 }

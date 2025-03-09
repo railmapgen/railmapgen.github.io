@@ -1,5 +1,9 @@
-import { TextEncoder } from 'util';
 import crypto from 'node:crypto';
+import { setupTest } from '@railmapgen/mantine-components/utils';
+import { setupBroadcastChannelMock } from '@railmapgen/rmg-runtime/util';
+
+setupTest();
+setupBroadcastChannelMock();
 
 const originalFetch = global.fetch;
 global.fetch = vi.fn().mockImplementation((url: string, init?: RequestInit) => {
@@ -14,5 +18,4 @@ global.fetch = vi.fn().mockImplementation((url: string, init?: RequestInit) => {
     }
 });
 
-global.TextEncoder = TextEncoder;
 vi.stubGlobal('crypto', crypto);

@@ -1,7 +1,6 @@
-import { RmgErrorBoundary, RmgLoader, RmgThemeProvider } from '@railmapgen/rmg-components';
 import rmgRuntime, { logger } from '@railmapgen/rmg-runtime';
-import { StrictMode, lazy } from 'react';
-import { Root, createRoot } from 'react-dom/client';
+import { lazy, StrictMode } from 'react';
+import { createRoot, Root } from 'react-dom/client';
 import { I18nextProvider } from 'react-i18next';
 import { Provider } from 'react-redux';
 import i18n from './i18n/config';
@@ -9,34 +8,30 @@ import './index.css';
 import './inject-seo';
 import store from './redux';
 import { syncAfterLogin } from './redux/account/account-slice';
-import {
-    addRemoteFont,
-    closeApp,
-    isShowDevtools,
-    openApp,
-    updateTabMetadata,
-    updateTabUrl,
-} from './redux/app/app-slice';
+import { addRemoteFont, closeApp, isShowDevtools, openApp, updateTabMetadata } from './redux/app/app-slice';
 import initStore from './redux/init';
 import { checkTokenAndRefreshStore } from './util/api';
 import { getAllowedAssetTypes, getAvailableAsset } from './util/asset-enablements';
 import { Events, FRAME_ID_PREFIX } from './util/constants';
 import { registerOnRMPSaveChange } from './util/local-storage-save';
+import { RMErrorBoundary, RMMantineProvider } from '@railmapgen/mantine-components';
+import { LoadingOverlay } from '@mantine/core';
 
 let root: Root;
 const AppRoot = lazy(() => import('./components/app-root'));
 
 const renderApp = () => {
     root = createRoot(document.getElementById('root') as HTMLDivElement);
+
     root.render(
         <StrictMode>
             <Provider store={store}>
                 <I18nextProvider i18n={i18n}>
-                    <RmgThemeProvider>
-                        <RmgErrorBoundary suspenseFallback={<RmgLoader isIndeterminate={true} />} allowReset>
+                    <RMMantineProvider>
+                        <RMErrorBoundary suspenseFallback={<LoadingOverlay visible />} allowReset>
                             <AppRoot />
-                        </RmgErrorBoundary>
-                    </RmgThemeProvider>
+                        </RMErrorBoundary>
+                    </RMMantineProvider>
                 </I18nextProvider>
             </Provider>
         </StrictMode>
@@ -52,6 +47,18 @@ rmgRuntime.ready().then(async () => {
     await store.dispatch(syncAfterLogin());
 
     renderApp();
+
+    // FIXME: Broadcast current theme to chakra UI apps. Do not remove until all apps are migrated.
+    const colourMode = rmgRuntime.getColourMode();
+    if (colourMode === 'system') {
+        if (window.matchMedia?.('(prefers-color-scheme: dark)')?.matches) {
+            window.localStorage.setItem('chakra-ui-color-mode', 'dark');
+        } else {
+            window.localStorage.setItem('chakra-ui-color-mode', 'light');
+        }
+    } else {
+        window.localStorage.setItem('chakra-ui-color-mode', colourMode);
+    }
 
     rmgRuntime.onAppOpen(app => {
         const allowedAssetTypes = getAllowedAssetTypes(isShowDevtools(store.getState().app.lastShowDevtools));
@@ -72,14 +79,6 @@ rmgRuntime.ready().then(async () => {
             const id = frameId.slice(FRAME_ID_PREFIX.length);
             logger.info(`Received metadata update for frame=${id}, metadata is`, metadata);
             store.dispatch(updateTabMetadata({ ...metadata, id }));
-        }
-    });
-
-    rmgRuntime.onUrlUpdate((url, frameId) => {
-        if (frameId) {
-            const id = frameId.slice(FRAME_ID_PREFIX.length);
-            logger.info(`Received URL update for frame=${id}, url=${url}`);
-            store.dispatch(updateTabUrl({ id, url }));
         }
     });
 

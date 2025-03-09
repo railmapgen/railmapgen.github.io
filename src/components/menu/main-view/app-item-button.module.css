@@ -1,0 +1,19 @@
+.button {
+    border-radius: var(--mantine-radius-sm);
+
+    &:not([data-active]) {
+        @mixin hover {
+            background-color: var(--mantine-primary-color-light-hover);
+        }
+    }
+}
+
+.label {
+    font-size: var(--mantine-font-size-md);
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.sub-label {
+    white-space: nowrap;
+}
