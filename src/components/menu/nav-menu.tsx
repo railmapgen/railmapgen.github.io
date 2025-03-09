@@ -24,7 +24,8 @@ import {
 } from 'react-icons/md';
 import clsx from 'clsx';
 import ContributorModal from '../modal/contributor-modal/contributor-modal';
-import { ComponentProps, ReactNode, useState } from 'react';
+import { ComponentProps, ReactNode, useEffect, useState } from 'react';
+import { fetchSaveList } from '../../redux/account/account-slice';
 
 type AsideButton = {
     key: MenuView;
@@ -47,6 +48,11 @@ export default function NavMenu() {
         (rmgRuntime.getInstance() === 'GitLab' ? 'https://railmapgen.gitlab.io/' : 'https://railmapgen.github.io/') +
         '?' +
         searchParams.toString();
+
+    useEffect(() => {
+        if (!isLoggedIn) return;
+        dispatch(fetchSaveList());
+    }, [isLoggedIn]);
 
     const asideButtons: AsideButton[] = [
         { key: 'apps', label: t('Apps'), Icon: <MdOutlineApps size={22} /> },
@@ -139,8 +145,6 @@ export default function NavMenu() {
                         ) : (
                             <></>
                         )}
-
-                        {/* menu-footer */}
 
                         <ResolveConflictModal />
                     </div>
