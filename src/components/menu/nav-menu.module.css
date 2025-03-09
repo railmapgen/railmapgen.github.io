@@ -15,6 +15,7 @@
         width: var(--menu-width);
         border-right: 1px solid var(--mantine-color-default-border);
         visibility: visible;
+        z-index: var(--mantine-z-index-popover);
 
         @media (max-width: $mantine-breakpoint-xs) {
             width: 100vw;
