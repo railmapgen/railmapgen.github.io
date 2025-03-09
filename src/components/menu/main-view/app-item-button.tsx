@@ -157,7 +157,7 @@ export default function AppItemButton(props: AppItemProps) {
                                 rightSection={
                                     <ActionIcon
                                         variant="subtle"
-                                        color={isAppActive ? 'white' : 'gray'}
+                                        color={isTabActive ? 'white' : 'gray'}
                                         aria-label={t('Close tab')}
                                         title={t('Close tab')}
                                         onClick={event => {

@@ -39,6 +39,8 @@
         width: 120px;
         padding: var(--mantine-spacing-xs);
         background: white;
+        border: 1px solid var(--mantine-color-default-border);
         border-radius: 12px;
+        box-shadow: var(--mantine-shadow-sm);
     }
 }
