@@ -88,9 +88,9 @@ export const assetEnablement: Record<string, AssetDetail> = {
         url: '/rmp-designer/',
         assetType: 'app',
     },
-    'rmg-components': {
+    'mantine-components': {
         name: 'Components',
-        url: '/rmg-components/',
+        url: '/mantine-components/',
         assetType: 'devtool',
         allowedInstances: ['Org', 'GitHub', 'GitLab', 'localhost', 'unknown'],
     },
@@ -108,7 +108,7 @@ export const assetEnablement: Record<string, AssetDetail> = {
     },
     'seed-project': {
         name: 'Seed Project',
-        url: '/seed-project/',
+        url: '/__APP_NAME__/',
         assetType: 'devtool',
         allowedInstances: ['Org', 'GitHub', 'GitLab', 'localhost', 'unknown'],
     },

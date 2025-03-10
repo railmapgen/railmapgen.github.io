@@ -12,18 +12,18 @@
         "@railmapgen/mantine-components": "^0.1.15",
         "@railmapgen/rmg-runtime": "^12.0.0",
         "@railmapgen/rmg-translate": "^3.4.1",
-        "@reduxjs/toolkit": "^2.6.0",
+        "@reduxjs/toolkit": "^2.6.1",
         "clsx": "^2.1.1",
         "react": "^19.0.0",
         "react-dom": "^19.0.0",
         "react-i18next": "^15.4.1",
         "react-icons": "^5.5.0",
         "react-redux": "^9.2.0",
-        "react-router-dom": "^7.2.0"
+        "react-router-dom": "^7.3.0"
     },
     "devDependencies": {
         "@eslint/eslintrc": "^3.3.0",
-        "@eslint/js": "^9.21.0",
+        "@eslint/js": "^9.22.0",
         "@testing-library/jest-dom": "^6.6.3",
         "@testing-library/react": "^16.2.0",
         "@testing-library/user-event": "^14.6.1",
@@ -31,7 +31,7 @@
         "@types/react-dom": "^19.0.4",
         "@types/react-router-dom": "^5.3.3",
         "@vitejs/plugin-react": "^4.3.4",
-        "eslint": "^9.21.0",
+        "eslint": "^9.22.0",
         "eslint-plugin-prettier": "^5.2.3",
         "eslint-plugin-react": "^7.37.4",
         "jsdom": "^26.0.0",
@@ -41,8 +41,8 @@
         "prettier": "^3.5.3",
         "typescript": "^5.8.2",
         "typescript-eslint": "^8.26.0",
-        "vite": "^6.2.0",
-        "vitest": "^3.0.7"
+        "vite": "^6.2.1",
+        "vitest": "^3.0.8"
     },
     "scripts": {
         "dev": "vite --host",
@@ -52,5 +52,5 @@
         "lint:fix": "eslint ./src ./runtime-demo --fix",
         "preview": "vite preview --host"
     },
-    "version": "3.0.0"
+    "version": "3.0.3"
 }
