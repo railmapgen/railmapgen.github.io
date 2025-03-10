@@ -12,7 +12,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [macos-latest, macos-13, ubuntu-20.04, windows-latest]
+        include:
+          - platform: 'macos-latest'
+            args: '--target aarch64-apple-darwin'
+          - platform: 'macos-latest'
+            args: '--target x86_64-apple-darwin'
+          - platform: 'ubuntu-22.04'
+            args: ''
+          - platform: 'windows-latest'
+            args: ''
 
     runs-on: ${{ matrix.platform }}
     steps:
@@ -20,18 +28,21 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: lts/*
       - name: Install Rust stable
         uses: dtolnay/rust-toolchain@stable
+        with:
+          # Those targets are only used on macos runners so it's in an `if` to slightly speed up windows and linux builds.
+          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
       - name: Rust cache
         uses: swatinem/rust-cache@v2
         with:
           workspaces: './tauri -> target'
-      - name: Install dependencies (ubuntu only)
-        if: matrix.platform == 'ubuntu-20.04'
+      - name: install dependencies (ubuntu only)
+        if: matrix.platform == 'ubuntu-22.04'
         run: |
           sudo apt-get update
-          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
       - name: Pull gh-pages from github
         run: |
           git clone -b gh-pages --depth 1 https://github.com/railmapgen/railmapgen.github.io.git ui
@@ -54,7 +65,7 @@ jobs:
           f=open('tauri/tauri.conf.json', 'r+');
           conf=json.load(f);
           d=date.today()
-          conf['package']['version']=f'{d.year-2000}.{d.month}.{d.day}';
+          conf['version']=f'{d.year-2000}.{d.month}.{d.day}';
           f.seek(0);
           json.dump(conf,f,indent=2);
           f.truncate();
@@ -111,3 +122,4 @@ jobs:
             Rail Map Toolkit is able to run offline with these packages, but we do RECOMMEND using the [Official Website](https://railmapgen.org/) as it provides the latest features of Rail Map Toolkit. The packages below are only suitable for extreme situations where users are behind the notorious firewall or simply offline. All resources are cached and bundled.
           releaseDraft: false
           prerelease: false
+          args: ${{ matrix.args }}
