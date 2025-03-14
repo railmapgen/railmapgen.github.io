@@ -1,4 +1,4 @@
-import useContributors from '../../hook/use-contributors';
+import useContributors from './hook/use-contributors';
 import { RMSectionBody } from '@railmapgen/mantine-components';
 import { Alert, Group, LoadingOverlay } from '@mantine/core';
 import { MdWarning } from 'react-icons/md';

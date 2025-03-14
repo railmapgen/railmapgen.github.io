@@ -166,6 +166,10 @@ export const assetEnablement: Record<string, AssetDetail> = {
     },
 };
 
+export const tempAssets: Record<string, string> = {
+    contributors: '/contributors/',
+};
+
 export const getAvailableAsset = (assetType: AssetType, env: RmgEnv, instance: RmgInstance): string[] => {
     return Object.entries(assetEnablement)
         .filter(([, component]) => {

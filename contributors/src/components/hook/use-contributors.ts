@@ -1,7 +1,7 @@
-import { assetEnablement } from '../../util/asset-enablements';
-import { useEffect, useRef, useState } from 'react';
-import { getContributorsByPage } from '../../service/github-api-service';
-import { getLegacyContributors } from '../../service/info-service';
+import { assetEnablement } from '../../../../src/util/asset-enablements';
+import { useEffect, useState } from 'react';
+import { CONTRIBUTOR_CACHE } from '../../service/github-api-service';
+import { LEGACY_CONTRIBUTOR_CACHE } from '../../service/info-service';
 import useAppendingSet from './use-appending-set';
 import { logger } from '@railmapgen/rmg-runtime';
 
@@ -13,26 +13,12 @@ export default function useContributors(appId: string) {
     const [isLoading, setIsLoading] = useState(true);
     const [isError, setIsError] = useState(false);
 
-    const controllerRef = useRef<AbortController>(null);
-
-    const getGitHubContributors = async () => {
-        let page = 0;
-        while (++page) {
-            controllerRef.current = new AbortController();
-            const pageResult = await getContributorsByPage(appId, page, controllerRef.current?.signal);
-            appendContributors(pageResult.filter(contributorFilter));
-            if (pageResult.length < 100) {
-                break;
-            }
-        }
-    };
-
     useEffect(() => {
-        getGitHubContributors()
+        CONTRIBUTOR_CACHE[appId]()
+            .then(contributors => appendContributors(contributors.filter(contributorFilter)))
             .then(() => {
                 if (assetEnablement[appId].legacyContributors) {
-                    controllerRef.current = new AbortController();
-                    return getLegacyContributors(appId, controllerRef.current?.signal);
+                    return LEGACY_CONTRIBUTOR_CACHE[appId]();
                 } else {
                     return [];
                 }
@@ -45,7 +31,6 @@ export default function useContributors(appId: string) {
             .finally(() => setIsLoading(false));
 
         return () => {
-            controllerRef.current?.abort();
             setIsLoading(true);
             setIsError(false);
         };

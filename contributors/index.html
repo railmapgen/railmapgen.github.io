@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <link rel="icon" href="/favicon.ico" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="robots" content="noindex" />
+  <meta name="description" content="Rail Map Toolkit - Contributors" />
+  <base href="./" />
+  <link rel="apple-touch-icon" href="/logo192.png" />
+  <link rel="manifest" href="/manifest.json" />
+  <style>
+      @keyframes animation-spinner {
+          0% {transform: rotate(0deg)}
+          100% {transform: rotate(360deg)}
+      }
+      .spinner {
+          border-top: 2px solid currentcolor;
+          border-right: 2px solid currentcolor;
+          border-bottom: 2px solid transparent;
+          border-left: 2px solid transparent;
+          border-radius: 100%;
+          width: 28px;
+          height: 28px;
+          animation: 0.45s linear 0s infinite animation-spinner;
+          position: absolute;
+          top: calc(50% - 16px);
+          left: calc(50% - 16px);
+      }
+  </style>
+
+  <title>Contributors</title>
+</head>
+<body>
+<noscript>You need to enable JavaScript to run this app.</noscript>
+<div id="root">
+  <div class="spinner"></div>
+</div>
+
+<script type="module" src="./src/index.tsx"></script>
+</body>
+</html>
