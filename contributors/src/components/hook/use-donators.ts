@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
-import { getDonatorsByPage } from '../../service/github-api-service';
-import { assetEnablement } from '../../util/asset-enablements';
+import { useEffect, useState } from 'react';
+import { DONATOR_CACHE } from '../../service/github-api-service';
+import { assetEnablement } from '../../../../src/util/asset-enablements';
 import useAppendingSet from './use-appending-set';
 import { logger } from '@railmapgen/rmg-runtime';
 
@@ -9,8 +9,6 @@ export default function useDonators() {
     const [isLoading, setIsLoading] = useState(true);
     const [isError, setIsError] = useState(false);
 
-    const controllerRef = useRef<AbortController>(null);
-
     const getGitHubDonators = async () => {
         const appIds = Object.entries(assetEnablement)
             .filter(([, detail]) => detail.showDonators)
@@ -18,15 +16,7 @@ export default function useDonators() {
 
         for (const appId of appIds) {
             try {
-                let page = 0;
-                while (++page) {
-                    controllerRef.current = new AbortController();
-                    const pageResult = await getDonatorsByPage(appId, page, controllerRef.current?.signal);
-                    appendDonators(pageResult);
-                    if (pageResult.length < 100) {
-                        break;
-                    }
-                }
+                appendDonators(await DONATOR_CACHE[appId]());
             } catch (err) {
                 logger.error('unable to fetch donators for:', appId, err);
                 throw err;
@@ -40,7 +30,6 @@ export default function useDonators() {
             .finally(() => setIsLoading(false));
 
         return () => {
-            controllerRef.current?.abort();
             setIsLoading(true);
             setIsError(false);
         };

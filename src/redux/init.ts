@@ -5,7 +5,7 @@ import { assetEnablement, getAllowedAssetTypes, getAvailableAsset } from '../uti
 import { LocalStorageKey, QUERY_STRINGS, WorkspaceTab } from '../util/constants';
 import { checkInstance } from '../util/instance-checker';
 import { isSafari } from '../util/utils';
-import { LoginInfo, login } from './account/account-slice';
+import { login, LoginInfo } from './account/account-slice';
 import {
     isShowDevtools,
     neverShowFontAdvice,

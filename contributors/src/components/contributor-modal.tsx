@@ -4,25 +4,14 @@ import DevTeamSection from './dev-team-section';
 import ResourceAdminSection from './resource-admin-section';
 import ResourceContributorSection from './resource-contributor-section';
 import DonatorSection from './donator-section';
-import { Button, Group, Modal } from '@mantine/core';
+import { Button, Group } from '@mantine/core';
+import { RMPageBody } from '@railmapgen/mantine-components';
 
-interface ContributorModalProps {
-    opened: boolean;
-    onClose: () => void;
-}
-
-export default function ContributorModal(props: ContributorModalProps) {
-    const { opened, onClose } = props;
+export default function ContributorModal() {
     const { t } = useTranslation();
 
     return (
-        <Modal
-            opened={opened}
-            onClose={onClose}
-            size="xl"
-            title={t('Contributors')}
-            classNames={{ body: classes.body }}
-        >
+        <RMPageBody className={classes.body}>
             <DevTeamSection />
             <DonatorSection />
             <ResourceAdminSection />
@@ -37,6 +26,6 @@ export default function ContributorModal(props: ContributorModalProps) {
                     {t('Contribution Wiki')}
                 </Button>
             </Group>
-        </Modal>
+        </RMPageBody>
     );
 }

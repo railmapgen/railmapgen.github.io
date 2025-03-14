@@ -1,4 +1,4 @@
-import { assetEnablement } from '../../../util/asset-enablements';
+import { assetEnablement } from '../../../src/util/asset-enablements';
 import ContributorAvatarWall from './contributor-avatar-wall';
 import { useTranslation } from 'react-i18next';
 import { RMSection, RMSectionBody, RMSectionHeader } from '@railmapgen/mantine-components';
