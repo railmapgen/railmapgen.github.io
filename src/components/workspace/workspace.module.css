@@ -2,19 +2,22 @@
     flex: 1;
     min-width: 0;
     transform: translateZ(0);
+    overflow: hidden;
 }
 
 .app-container {
     height: 100%;
     display: none;
+    overflow: hidden;
 
     &.show {
-        display: block;
+        display: flex;
     }
 }
 
 .app-container iframe {
     border: none;
+    flex: 1;
 }
 
 .welcome {

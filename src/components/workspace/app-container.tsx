@@ -21,8 +21,6 @@ export default function AppContainer(props: AppContainerProps) {
                 src={frameUrl}
                 loading="lazy"
                 title={tab.app}
-                width="100%"
-                height="100%"
                 data-persisted-url={tab.url}
                 data-testid="app-container-iframe"
             />
