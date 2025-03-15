@@ -7,7 +7,7 @@ import rmgRuntime from '@railmapgen/rmg-runtime';
 import { MdAdd, MdClose, MdInfoOutline, MdModeStandby, MdMoreHoriz } from 'react-icons/md';
 import { assetEnablement } from '../../../util/asset-enablements';
 import { ActionIcon, Badge, Menu, NavLink } from '@mantine/core';
-import { useMediaQuery } from '@mantine/hooks';
+import useSmMediaQuery from '../../hook/use-sm-media-query';
 
 interface AppItemProps {
     appId: string;
@@ -19,7 +19,7 @@ export default function AppItemButton(props: AppItemProps) {
     const { t } = useTranslation();
     const dispatch = useRootDispatch();
 
-    const smMediaQuery = useMediaQuery(`(min-width: 36em)`);
+    const smMediaQuery = useSmMediaQuery();
 
     const { activeTab, openedTabs } = useRootSelector(state => state.app);
 
