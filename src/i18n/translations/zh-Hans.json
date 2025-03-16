@@ -98,6 +98,7 @@
     "Your account is created successfully.": "已成功创建您的账户。",
     "Your password has been reset successfully.": "已成功重置您的密码。",
     "You're currently viewing a testing environment.": "您正在浏览测试环境。",
+    "Due to a policy issue with our email provider, user registration and password resets are temporarily unavailable.": "由于我们的邮件服务提供商的政策问题，用户注册和密码重置暂时不可用。",
 
     "Login status expired":"登录过期",
     "Log in / Sign up":"登录 / 注册",

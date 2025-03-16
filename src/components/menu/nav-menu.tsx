@@ -113,6 +113,12 @@ export default function NavMenu() {
                     </Alert>
                 )}
 
+                <Alert color="yellow" icon={<MdWarning />} className={classes.alert}>
+                    {t(
+                        'Due to a policy issue with our email provider, user registration and password resets are temporarily unavailable.'
+                    )}
+                </Alert>
+
                 <div className={classes.body}>
                     <div className={classes.aside}>
                         {asideButtons.map(({ key, label, Icon, ActionIconProps }) => (
