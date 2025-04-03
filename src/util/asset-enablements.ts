@@ -156,7 +156,7 @@ export const assetEnablement: Record<string, AssetDetail> = {
     },
     busLineDesigner: {
         name: 'Bus Line Designer',
-        url: 'https://buslinedesigner.bobliu.tech',
+        url: 'https://busline.design/',
         assetType: 'link',
     },
     linesPaper: {
