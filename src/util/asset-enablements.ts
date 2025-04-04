@@ -161,7 +161,7 @@ export const assetEnablement: Record<string, AssetDetail> = {
     },
     busLineDesigner: {
         name: 'Bus Line Designer',
-        url: 'https://buslinedesigner.bobliu.tech',
+        url: 'https://busline.design/',
         assetType: 'link',
     },
     linesPaper: {
@@ -169,6 +169,10 @@ export const assetEnablement: Record<string, AssetDetail> = {
         url: 'https://space.bilibili.com/3546659889875715',
         assetType: 'link',
     },
+};
+
+export const tempAssets: Record<string, string> = {
+    contributors: '/contributors/',
 };
 
 export const getAvailableAsset = (assetType: AssetType, env: RmgEnv, instance: RmgInstance): string[] => {

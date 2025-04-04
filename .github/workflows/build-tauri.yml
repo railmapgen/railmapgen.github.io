@@ -66,7 +66,7 @@ jobs:
           f=open('tauri/tauri.conf.json', 'r+');
           conf=json.load(f);
           d=date.today()
-          conf['package']['version']=f'{d.year-2000}.{d.month}.{d.day}';
+          conf['version']=f'{d.year-2000}.{d.month}.{d.day}';
           f.seek(0);
           json.dump(conf,f,indent=2);
           f.truncate();

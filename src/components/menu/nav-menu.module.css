@@ -8,18 +8,23 @@
     height: 100%;
     box-shadow: var(--mantine-shadow-md);
     width: 0;
-    /*transition: 0.3s ease-in-out;*/
-    visibility: hidden;
+    transition: 0.3s ease-in-out;
+    overflow: hidden;
+    /*visibility: hidden;*/
 
     &.show-menu {
         width: var(--menu-width);
         border-right: 1px solid var(--mantine-color-default-border);
-        visibility: visible;
+        /*visibility: visible;*/
         z-index: var(--mantine-z-index-popover);
 
         @media (max-width: $mantine-breakpoint-xs) {
             width: 100vw;
         }
+    }
+
+    @media (max-width: $mantine-breakpoint-xs) {
+        transition: none;
     }
 }
 

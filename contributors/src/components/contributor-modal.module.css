@@ -1,4 +1,8 @@
 .body {
+    flex-direction: column;
+    padding: 0 var(--mantine-spacing-xs) var(--mantine-spacing-xs) var(--mantine-spacing-xs);
+    overflow-y: auto;
+
     > div:not(:first-of-type) {
         margin-top: var(--mantine-spacing-sm)
     }

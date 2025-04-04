@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { assetEnablement } from '../../util/asset-enablements';
+import { assetEnablement, tempAssets } from '../../util/asset-enablements';
 import { WorkspaceTab } from '../../util/constants';
 import { constructUrl } from '../../util/utils';
 
@@ -127,6 +127,15 @@ const appSlice = createSlice({
             state.activeTab = tabId;
         },
 
+        openTempApp: (state, action: PayloadAction<string>) => {
+            const tempAppId = action.payload;
+            const hasTempAppOpened = state.openedTabs.some(tab => tab.id === tempAppId);
+            if (!hasTempAppOpened) {
+                state.openedTabs.push({ id: tempAppId, app: tempAppId, url: tempAssets[tempAppId] });
+            }
+            state.activeTab = tempAppId;
+        },
+
         closeTab: (state, action: PayloadAction<string>) => {
             const id = action.payload;
 
@@ -215,6 +224,7 @@ export const {
     setActiveTab,
     openApp,
     openAppInNew,
+    openTempApp,
     closeTab,
     closeApp,
     updateTabMetadata,

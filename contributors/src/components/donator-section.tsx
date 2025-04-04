@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import useDonators from '../../hook/use-donators';
+import useDonators from './hook/use-donators';
 import { RMSection, RMSectionBody, RMSectionHeader } from '@railmapgen/mantine-components';
 import { Alert, Group, LoadingOverlay, Title } from '@mantine/core';
 import { MdWarning } from 'react-icons/md';

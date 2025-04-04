@@ -3,7 +3,7 @@ import rmgRuntime from '@railmapgen/rmg-runtime';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import { useRootDispatch, useRootSelector } from '../../redux';
-import { isShowDevtools, MenuView, setMenuView } from '../../redux/app/app-slice';
+import { isShowDevtools, MenuView, openTempApp, setMenuView, toggleMenu } from '../../redux/app/app-slice';
 import ResolveConflictModal from '../modal/resolve-conflict-modal';
 import AccountView from './account-view/account-view';
 import AppsSection from './main-view/apps-section';
@@ -23,9 +23,9 @@ import {
     MdWarning,
 } from 'react-icons/md';
 import clsx from 'clsx';
-import ContributorModal from '../modal/contributor-modal/contributor-modal';
-import { ComponentProps, ReactNode, useEffect, useState } from 'react';
+import { ComponentProps, ReactNode, useEffect } from 'react';
 import { fetchSaveList } from '../../redux/account/account-slice';
+import useSmMediaQuery from '../hook/use-sm-media-query';
 
 type AsideButton = {
     key: MenuView;
@@ -41,8 +41,7 @@ export default function NavMenu() {
     const { isLoggedIn, name } = useRootSelector(state => state.account);
     const dispatch = useRootDispatch();
 
-    const [isContributorModalOpen, setIsContributorModalOpen] = useState(false);
-
+    const smMediaQuery = useSmMediaQuery();
     const [searchParams] = useSearchParams();
     const prdUrl =
         (rmgRuntime.getInstance() === 'GitLab' ? 'https://railmapgen.gitlab.io/' : 'https://railmapgen.github.io/') +
@@ -81,7 +80,15 @@ export default function NavMenu() {
             key: 'contributors',
             label: t('Contributors'),
             Icon: <MdOutlinePeopleOutline size={22} />,
-            ActionIconProps: { onClick: () => setIsContributorModalOpen(true) },
+            ActionIconProps: {
+                onClick: () => {
+                    dispatch(openTempApp('contributors'));
+                    if (!smMediaQuery) {
+                        dispatch(toggleMenu());
+                        rmgRuntime.toggleNavMenu(false);
+                    }
+                },
+            },
         },
         { key: 'support', label: t('Help & support'), Icon: <MdOutlineHelpOutline size={22} /> },
         { key: 'settings', label: t('Settings'), Icon: <MdOutlineSettings size={22} /> },
@@ -150,8 +157,6 @@ export default function NavMenu() {
                     </div>
                 </div>
             </div>
-
-            <ContributorModal opened={isContributorModalOpen} onClose={() => setIsContributorModalOpen(false)} />
         </nav>
     );
 }

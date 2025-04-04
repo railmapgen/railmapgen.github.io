@@ -1,12 +1,12 @@
 import { act, renderHook } from '@testing-library/react';
 import useContributors from './use-contributors';
 import { vi } from 'vitest';
-import { wait } from '../../util/utils';
+import { waitForMs } from '@railmapgen/rmg-runtime/util';
 
 const originalFetch = global.fetch;
 const mockFetch = vi.fn().mockImplementation(async url => {
     if (url.includes('api.github.com') && url.endsWith('page=1')) {
-        await wait(500);
+        await waitForMs(500);
         return {
             json: () =>
                 Promise.resolve([
@@ -20,7 +20,7 @@ const mockFetch = vi.fn().mockImplementation(async url => {
                 ]),
         };
     } else if (url.includes('api.github.com') && url.endsWith('page=2')) {
-        await wait(500);
+        await waitForMs(500);
         return {
             json: () =>
                 Promise.resolve(
@@ -32,7 +32,7 @@ const mockFetch = vi.fn().mockImplementation(async url => {
                 ),
         };
     } else if (url.includes('legacy-contributor-list')) {
-        await wait(1000);
+        await waitForMs(1000);
         return {
             text: () => Promise.resolve('b\nc\n'),
         };
@@ -58,17 +58,18 @@ describe('useContributors', () => {
         expect(result.current.isError).toBeFalsy();
 
         // page 1 resolved
+        expect(mockFetch).toBeCalledTimes(1);
         await act(async () => {
             vi.advanceTimersByTime(501);
         });
-        expect(result.current.contributors).toHaveLength(98); // excludes wongchito and thekingofcity
         expect(result.current.isLoading).toBeTruthy(); // still loading
 
         // page 2 resolved
+        expect(mockFetch).toBeCalledTimes(2);
         await act(async () => {
             vi.advanceTimersByTime(501);
         });
-        expect(result.current.contributors).toHaveLength(98 + 10);
+        expect(result.current.contributors).toHaveLength(98 + 10); // excludes wongchito and thekingofcity
         expect(result.current.isLoading).toBeTruthy(); // still loading
 
         // legacy resolved
