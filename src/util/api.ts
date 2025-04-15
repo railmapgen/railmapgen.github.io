@@ -1,4 +1,5 @@
 import { logger } from '@railmapgen/rmg-runtime';
+import { fetch } from '@tauri-apps/plugin-http';
 import { logout, setExpires, setToken } from '../redux/account/account-slice';
 import { createStore } from '../redux/index';
 import { API_ENDPOINT, API_URL } from './constants';
@@ -11,10 +12,12 @@ export const apiFetch = async (apiEndpoint: API_ENDPOINT | string, init?: Reques
         accept: 'application/json',
         'Content-Type': 'application/json',
         'Cache-Control': 'no-cache',
+        referer: 'https://railmapgen.org/',
     } as {
         accept: string;
         'Content-Type': string;
         'Cache-Control': string;
+        referer: string;
         Authorization?: string;
     };
     const headers = structuredClone(defaultHeaders);
