@@ -40,7 +40,7 @@ export default function DevTeamSection() {
                     <Flex>
                         <Title order={3}>thekingofcity</Title>
                         <Text span>Author of Rail Map Painter</Text>
-                        <Text span>Author of RMG (Shanghai Metro style)</Text>
+                        <Text span>Author of Rail Map Announcer</Text>
                     </Flex>
                 </Card>
                 <Card
