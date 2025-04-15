@@ -1,13 +1,13 @@
+import { ActionIcon, Avatar, Button, Flex, Group, Modal, Text, TextInput } from '@mantine/core';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { MdOutlineDriveFileRenameOutline, MdOutlineLogout, MdOutlinePassword } from 'react-icons/md';
 import { useRootDispatch, useRootSelector } from '../../../redux';
 import { logout, updateName } from '../../../redux/account/account-slice';
-import { apiFetch } from '../../../util/api';
-import { API_ENDPOINT, API_URL } from '../../../util/constants';
-import { ActionIcon, Avatar, Button, Flex, Group, Modal, Text, TextInput } from '@mantine/core';
-import PasswordSetup from './password-setup';
 import { addNotification } from '../../../redux/notification/notification-slice';
+import { apiFetch } from '../../../util/api';
+import { API_ENDPOINT } from '../../../util/constants';
+import PasswordSetup from './password-setup';
 
 const AccountInfo = () => {
     const { t } = useTranslation();
@@ -17,12 +17,8 @@ const AccountInfo = () => {
 
     const handleLogOut = async () => {
         if (!isLoggedIn) return;
-        await fetch(API_URL + API_ENDPOINT.AUTH_LOGOUT, {
+        await apiFetch(API_ENDPOINT.AUTH_LOGOUT, {
             method: 'POST',
-            headers: {
-                accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
             body: JSON.stringify({ refreshToken }),
         });
         dispatch(logout());
@@ -106,7 +102,7 @@ export function ChangeModal(props: { infoType: 'name' | 'password' | undefined; 
                 { method: 'PATCH', body: JSON.stringify({ [infoType]: value }) },
                 token
             );
-            if (!rep) {
+            if (rep.status === 401) {
                 showErrorToast(t('Login status expired'));
                 dispatch(logout());
                 return;

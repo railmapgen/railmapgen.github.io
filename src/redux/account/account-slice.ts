@@ -1,7 +1,7 @@
 import { logger } from '@railmapgen/rmg-runtime';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../index';
-import { API_ENDPOINT, API_URL, APILoginResponse, APISaveInfo, APISaveList, SAVE_KEY } from '../../util/constants';
+import { API_ENDPOINT, APILoginResponse, APISaveInfo, APISaveList, SAVE_KEY } from '../../util/constants';
 import { getRMPSave, notifyRMPSaveChange, setRMPSave } from '../../util/local-storage-save';
 import { apiFetch } from '../../util/api';
 import { setLastChangedAtTimeStamp, setResolveConflictModal } from '../rmp-save/rmp-save-slice';
@@ -60,7 +60,7 @@ export const fetchSaveList = createAsyncThunk<APISaveList, undefined>(
         const { isLoggedIn, token } = (getState() as RootState).account;
         if (!isLoggedIn || !token) return rejectWithValue('No token.');
         const rep = await apiFetch(API_ENDPOINT.SAVES, {}, token);
-        if (!rep) {
+        if (rep.status === 401) {
             dispatch(logout());
             return rejectWithValue('Can not recover from expired refresh token.');
         }
@@ -76,12 +76,8 @@ export const fetchLogin = createAsyncThunk<{ error?: string; username?: string }
     async (accountInfo, { dispatch }) => {
         const { email, password } = accountInfo;
         try {
-            const loginRes = await fetch(API_URL + API_ENDPOINT.AUTH_LOGIN, {
+            const loginRes = await apiFetch(API_ENDPOINT.AUTH_LOGIN, {
                 method: 'POST',
-                headers: {
-                    accept: 'application/json',
-                    'Content-Type': 'application/json',
-                },
                 body: JSON.stringify({ email, password }),
             });
             if (loginRes.status !== 200) {
@@ -128,7 +124,7 @@ export const syncAfterLogin = createAsyncThunk<undefined, undefined>(
         }
         const lastUpdateAt = new Date(save.lastUpdateAt);
         const rep = await apiFetch(API_ENDPOINT.SAVES + '/' + currentSaveId, {}, token);
-        if (!rep) {
+        if (rep.status === 401) {
             dispatch(logout());
             return rejectWithValue('Login status expired.');
         }

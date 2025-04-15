@@ -64,7 +64,7 @@ const SavesSection = () => {
                 },
                 token
             );
-            if (!rep) {
+            if (rep.status === 401) {
                 showErrorToast(t('Login status expired'));
                 dispatch(logout());
                 return;
@@ -132,7 +132,7 @@ const SavesSection = () => {
                 },
                 token
             );
-            if (!rep) {
+            if (rep.status === 401) {
                 showErrorToast(t('Login status expired'));
                 setSyncButtonIsLoading(undefined);
                 dispatch(logout());
@@ -148,7 +148,7 @@ const SavesSection = () => {
             // sync another save slot
             setSyncButtonIsLoading(saveId);
             const rep = await apiFetch(API_ENDPOINT.SAVES + '/' + saveId, {}, token);
-            if (!rep) {
+            if (rep.status === 401) {
                 showErrorToast(t('Login status expired'));
                 setSyncButtonIsLoading(undefined);
                 dispatch(logout());
@@ -171,7 +171,7 @@ const SavesSection = () => {
         if (!isLoggedIn || !saveId || !token) return;
         setDeleteButtonIsLoading(saveId);
         const rep = await apiFetch(API_ENDPOINT.SAVES + '/' + currentSaveId, { method: 'DELETE' }, token);
-        if (!rep) {
+        if (rep.status === 401) {
             showErrorToast(t('Login status expired'));
             setDeleteButtonIsLoading(undefined);
             dispatch(logout());

@@ -33,7 +33,7 @@ const RedeemModal = (props: { opened: boolean; onClose: () => void; getSubscript
             { method: 'POST', body: JSON.stringify({ cdkey: CDKey.trim() }) },
             token
         );
-        if (!rep) {
+        if (rep.status === 401) {
             showErrorToast(t('Login status expired'));
             dispatch(logout());
             return;

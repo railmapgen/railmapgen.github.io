@@ -112,7 +112,7 @@ export const updateSave = async (currentSaveId: number, token: string, refreshTo
     const save = await getRMPSave(key);
     if (!save) return undefined;
     const { data, hash } = save;
-    return await apiFetch(
+    const response = await apiFetch(
         API_ENDPOINT.SAVES + '/' + currentSaveId,
         {
             method: 'PATCH',
@@ -120,4 +120,6 @@ export const updateSave = async (currentSaveId: number, token: string, refreshTo
         },
         token
     );
+    if (response.status === 401) return undefined;
+    return response;
 };

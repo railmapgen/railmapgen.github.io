@@ -1,15 +1,16 @@
+import { Alert, Button, TextInput, Title } from '@mantine/core';
+import { RMSection, RMSectionBody, RMSectionHeader } from '@railmapgen/mantine-components';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MdOutlineErrorOutline, MdOutlineInfo } from 'react-icons/md';
 import { useRootDispatch } from '../../../redux';
 import { fetchLogin } from '../../../redux/account/account-slice';
-import { API_ENDPOINT, API_URL } from '../../../util/constants';
-import { emailValidator, passwordValidator } from './account-utils';
-import { RMSection, RMSectionBody, RMSectionHeader } from '@railmapgen/mantine-components';
-import { Alert, Button, TextInput, Title } from '@mantine/core';
-import PasswordSetup from './password-setup';
-import EmailInputWithOtp from './email-input-with-otp';
 import { addNotification } from '../../../redux/notification/notification-slice';
+import { apiFetch } from '../../../util/api';
+import { API_ENDPOINT } from '../../../util/constants';
+import { emailValidator, passwordValidator } from './account-utils';
+import EmailInputWithOtp from './email-input-with-otp';
+import PasswordSetup from './password-setup';
 
 const RegisterView = (props: { setLoginState: (_: 'login' | 'register') => void }) => {
     const { t } = useTranslation();
@@ -38,12 +39,8 @@ const RegisterView = (props: { setLoginState: (_: 'login' | 'register') => void 
 
     const handleVerifyEmail = async () => {
         try {
-            const rep = await fetch(API_URL + API_ENDPOINT.AUTH_SEND_VERIFICATION_EMAIL, {
+            const rep = await apiFetch(API_ENDPOINT.AUTH_SEND_VERIFICATION_EMAIL, {
                 method: 'POST',
-                headers: {
-                    accept: 'application/json',
-                    'Content-Type': 'application/json',
-                },
                 body: JSON.stringify({ email }),
             });
             if (rep.status === 204) {
@@ -59,12 +56,8 @@ const RegisterView = (props: { setLoginState: (_: 'login' | 'register') => void 
     const handleRegister = async () => {
         setIsLoading(true);
         try {
-            const registerRep = await fetch(API_URL + API_ENDPOINT.AUTH_REGISTER, {
+            const registerRep = await apiFetch(API_ENDPOINT.AUTH_REGISTER, {
                 method: 'POST',
-                headers: {
-                    accept: 'application/json',
-                    'Content-Type': 'application/json',
-                },
                 body: JSON.stringify({ name, email, password, emailVerificationToken: Number(emailVerificationToken) }),
             });
             if (registerRep.status !== 201) {

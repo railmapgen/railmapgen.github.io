@@ -40,7 +40,7 @@ const SubscriptionSection = () => {
     const getSubscriptions = async () => {
         if (!isLoggedIn) return;
         const rep = await apiFetch(API_ENDPOINT.SUBSCRIPTION, {}, token);
-        if (!rep) {
+        if (rep.status === 401) {
             showErrorToast(t('Login status expired'));
             dispatch(logout());
             return;

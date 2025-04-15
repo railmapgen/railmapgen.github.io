@@ -25,7 +25,6 @@ export const apiFetch = async (apiEndpoint: API_ENDPOINT | string, init?: Reques
         headers,
         ...init,
     });
-    if (rep.status === 401) return undefined;
     return rep;
 };
 

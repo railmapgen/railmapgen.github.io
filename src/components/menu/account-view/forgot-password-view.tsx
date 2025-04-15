@@ -1,15 +1,16 @@
+import { Alert, Button, TextInput, Title } from '@mantine/core';
+import { RMSection, RMSectionBody, RMSectionHeader } from '@railmapgen/mantine-components';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { MdOutlineErrorOutline, MdOutlineInfo } from 'react-icons/md';
 import { useRootDispatch } from '../../../redux';
 import { fetchLogin } from '../../../redux/account/account-slice';
-import { API_ENDPOINT, API_URL } from '../../../util/constants';
+import { addNotification } from '../../../redux/notification/notification-slice';
+import { apiFetch } from '../../../util/api';
+import { API_ENDPOINT } from '../../../util/constants';
 import { emailValidator, passwordValidator } from './account-utils';
-import { MdOutlineErrorOutline, MdOutlineInfo } from 'react-icons/md';
-import { RMSection, RMSectionBody, RMSectionHeader } from '@railmapgen/mantine-components';
-import { Alert, Button, TextInput, Title } from '@mantine/core';
 import EmailInputWithOtp from './email-input-with-otp';
 import PasswordSetup from './password-setup';
-import { addNotification } from '../../../redux/notification/notification-slice';
 
 const ForgotPasswordView = (props: { setLoginState: (_: 'login' | 'register' | 'forgot-password') => void }) => {
     const { t } = useTranslation();
@@ -36,12 +37,8 @@ const ForgotPasswordView = (props: { setLoginState: (_: 'login' | 'register' | '
 
     const handleSendResetPasswordEmail = async () => {
         try {
-            const rep = await fetch(API_URL + API_ENDPOINT.AUTH_SEND_RESET_PASSWORD_EMAIL, {
+            const rep = await apiFetch(API_ENDPOINT.AUTH_SEND_RESET_PASSWORD_EMAIL, {
                 method: 'POST',
-                headers: {
-                    accept: 'application/json',
-                    'Content-Type': 'application/json',
-                },
                 body: JSON.stringify({ email }),
             });
             if (rep.status === 204) {
@@ -57,14 +54,10 @@ const ForgotPasswordView = (props: { setLoginState: (_: 'login' | 'register' | '
     const handleResetPassword = async () => {
         setIsLoading(true);
         const resetPasswordParam = new URLSearchParams({ token: resetPasswordToken });
-        const resetPasswordURL = `${API_URL}${API_ENDPOINT.AUTH_RESET_PASSWORD}?${resetPasswordParam.toString()}`;
+        const resetPasswordURL = `${API_ENDPOINT.AUTH_RESET_PASSWORD}?${resetPasswordParam.toString()}`;
         try {
-            const resetPasswordRep = await fetch(resetPasswordURL, {
+            const resetPasswordRep = await apiFetch(resetPasswordURL, {
                 method: 'POST',
-                headers: {
-                    accept: 'application/json',
-                    'Content-Type': 'application/json',
-                },
                 body: JSON.stringify({ password }),
             });
             if (resetPasswordRep.status !== 204) {
