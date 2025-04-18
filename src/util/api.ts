@@ -1,8 +1,11 @@
 import { logger } from '@railmapgen/rmg-runtime';
-import { fetch } from '@tauri-apps/plugin-http';
+import { fetch as fetchTauri } from '@tauri-apps/plugin-http';
 import { logout, setExpires, setToken } from '../redux/account/account-slice';
 import { createStore } from '../redux/index';
 import { API_ENDPOINT, API_URL } from './constants';
+
+// set fetch to tauri fetch if in tauri
+const fetch = '__TAURI__' in window ? fetchTauri : window.fetch;
 
 /**
  * A helper method to add json headers.
