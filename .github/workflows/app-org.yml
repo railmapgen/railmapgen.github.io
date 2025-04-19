@@ -9,7 +9,7 @@ on:
 jobs:
   release:
     # Only run if the "Publish App" workflow succeeded
-    # if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4
