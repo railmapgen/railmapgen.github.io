@@ -1,4 +1,4 @@
-name: Publish railmapgen.local
+name: Publish App
 on:
   workflow_dispatch:
   schedule:
@@ -7,20 +7,23 @@ on:
 
 jobs:
   publish-tauri:
-    permissions:
-      contents: write
+    permissions: write-all
     strategy:
       fail-fast: false
       matrix:
         include:
           - platform: 'macos-latest'
-            args: '--target aarch64-apple-darwin'
+            target: 'aarch64-apple-darwin'
           - platform: 'macos-latest'
-            args: '--target x86_64-apple-darwin'
-          - platform: 'ubuntu-22.04'
-            args: ''
+            target: 'x86_64-apple-darwin'
+          - platform: 'ubuntu-latest'
+            target: 'x86_64-unknown-linux-gnu'
+          - platform: 'ubuntu-latest'
+            target: 'aarch64-unknown-linux-gnu'
           - platform: 'windows-latest'
-            args: ''
+            target: 'x86_64-pc-windows-msvc'
+          - platform: 'windows-latest'
+            target: 'aarch64-pc-windows-msvc'
 
     runs-on: ${{ matrix.platform }}
     steps:
@@ -32,14 +35,13 @@ jobs:
       - name: Install Rust stable
         uses: dtolnay/rust-toolchain@stable
         with:
-          # Those targets are only used on macos runners so it's in an `if` to slightly speed up windows and linux builds.
-          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+          target: ${{ matrix.target }}
       - name: Rust cache
         uses: swatinem/rust-cache@v2
         with:
           workspaces: './tauri -> target'
       - name: install dependencies (ubuntu only)
-        if: matrix.platform == 'ubuntu-22.04'
+        if: matrix.platform == 'ubuntu-latest'
         run: |
           sudo apt-get update
           sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
@@ -80,8 +82,8 @@ jobs:
           f=open('ui/rmg-templates/info.json', 'r+');info=json.load(f);info['instance']='Tauri';f.seek(0);json.dump(info,f,indent=2);f.truncate();f.close();
           f=open('ui/rmp/info.json', 'r+');info=json.load(f);info['instance']='Tauri';f.seek(0);json.dump(info,f,indent=2);f.truncate();f.close();
           f=open('ui/rmp-gallery/info.json', 'r+');info=json.load(f);info['instance']='Tauri';f.seek(0);json.dump(info,f,indent=2);f.truncate();f.close();
-          f=open('ui/rmp-designer/info.json', 'r+');info=json.load(f);info['instance']='Tauri';f.seek(0);json.dump(info,f,indent=2);f.truncate();f.close();"
-          f=open('ui/rma/info.json', 'r+');info=json.load(f);info['instance']='Tauri';f.seek(0);json.dump(info,f,indent=2);f.truncate();f.close();
+          f=open('ui/rmp-designer/info.json', 'r+');info=json.load(f);info['instance']='Tauri';f.seek(0);json.dump(info,f,indent=2);f.truncate();f.close();
+          f=open('ui/rma/info.json', 'r+');info=json.load(f);info['instance']='Tauri';f.seek(0);json.dump(info,f,indent=2);f.truncate();f.close();"
       - name: Get versions of each project
         run: |
           python3 -c "import urllib.request;import json;import os;
@@ -127,4 +129,4 @@ jobs:
             Rail Map Toolkit is able to run offline with these packages, but we do RECOMMEND using the [Official Website](https://railmapgen.org/) as it provides the latest features of Rail Map Toolkit. The packages below are only suitable for extreme situations where users are behind the notorious firewall or simply offline. All resources are cached and bundled.
           releaseDraft: false
           prerelease: false
-          args: ${{ matrix.args }}
+          args: --target ${{ matrix.target }}
