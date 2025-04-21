@@ -8,7 +8,7 @@
     "active": true,
     "category": "DeveloperTool",
     "copyright": "",
-    "targets": "all",
+    "targets": ["appimage", "nsis", "dmg"],
     "externalBin": [],
     "icon": [
       "icons/icon192.png",
