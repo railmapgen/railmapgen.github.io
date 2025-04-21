@@ -1,12 +1,7 @@
-import rmgRuntime, { logger } from '@railmapgen/rmg-runtime';
+import { logger } from '@railmapgen/rmg-runtime';
 import { logout, setExpires, setToken } from '../redux/account/account-slice';
 import { createStore } from '../redux/index';
 import { API_ENDPOINT, API_URL } from './constants';
-
-export const isTauri = rmgRuntime.getInstance() === 'Tauri' && '__TAURI__' in window;
-// set fetch to tauri fetch if in tauri
-// @ts-expect-error global TAURI is injected in rmg-home
-export const fetch = isTauri ? (window.__TAURI__.http.fetch as typeof window.fetch) : window.fetch;
 
 /**
  * A helper method to add json headers.
@@ -21,14 +16,10 @@ export const apiFetch = async (apiEndpoint: API_ENDPOINT | string, init?: Reques
         'Content-Type': string;
         'Cache-Control': string;
         Authorization?: string;
-        referer?: string;
     };
     const headers = structuredClone(defaultHeaders);
     if (token) {
         headers['Authorization'] = `Bearer ${token}`;
-    }
-    if (isTauri) {
-        headers['referer'] = 'https://railmapgen.org/';
     }
     const rep = await fetch(`${API_URL}${apiEndpoint}`, {
         headers,
