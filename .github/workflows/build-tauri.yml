@@ -1,9 +1,9 @@
 name: Publish App
 on:
   workflow_dispatch:
-  schedule:
-    # Runs "at 00:00 on day-of-month 1" (see https://crontab.guru)
-    - cron: '0 0 1 * *'
+  # schedule:
+  #   # Runs "at 00:00 on day-of-month 1" (see https://crontab.guru)
+  #   - cron: '0 0 1 * *'
 
 jobs:
   publish-tauri:
