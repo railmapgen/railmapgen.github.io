@@ -1,15 +1,16 @@
+import { ActionIcon, Button, Card, Stack, Text, Title, Tooltip } from '@mantine/core';
+import { RMSection, RMSectionBody, RMSectionHeader } from '@railmapgen/mantine-components';
 import { logger } from '@railmapgen/rmg-runtime';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { MdDeleteOutline, MdOutlineSync, MdOutlineSyncAlt } from 'react-icons/md';
 import { useRootDispatch, useRootSelector } from '../../../redux';
 import { fetchSaveList, logout, syncAfterLogin } from '../../../redux/account/account-slice';
+import { addNotification } from '../../../redux/notification/notification-slice';
 import { setLastChangedAtTimeStamp } from '../../../redux/rmp-save/rmp-save-slice';
 import { apiFetch } from '../../../util/api';
 import { API_ENDPOINT, APISaveList, SAVE_KEY } from '../../../util/constants';
 import { getRMPSave, notifyRMPSaveChange, setRMPSave } from '../../../util/local-storage-save';
-import { RMSection, RMSectionBody, RMSectionHeader } from '@railmapgen/mantine-components';
-import { Button, Card, Stack, Text, Title } from '@mantine/core';
-import { addNotification } from '../../../redux/notification/notification-slice';
 
 const MAXIMUM_FREE_SAVE = 1;
 const MAXIMUM_SAVE = 10;
@@ -189,14 +190,11 @@ const SavesSection = () => {
     return (
         <RMSection>
             <RMSectionHeader align="center">
-                <Title order={3} size="h5">
+                <Title order={3} size="h5" flex="1">
                     {t('Synced saves')}
                 </Title>
-                <Text ml="auto" size="sm">
-                    {t('Maximum save count:')} {activeSubscriptions.RMP_CLOUD ? 10 : 1}
-                </Text>
                 <Button variant="subtle" size="xs" ml="xs" disabled={!canCreateNewSave} onClick={handleCreateNewSave}>
-                    {t('Create')}
+                    {canCreateNewSave ? t('Create') : t('Subscribe to sync more')}
                 </Button>
             </RMSectionHeader>
 
@@ -210,22 +208,27 @@ const SavesSection = () => {
                             </Text>
                         </Stack>
                         <Stack gap="xs" ml="xs">
-                            <Button
-                                variant="filled"
-                                color="red"
-                                loading={deleteButtonIsLoading === _.id}
-                                onClick={() => handleDeleteSave(_.id)}
+                            <Tooltip label={t('Delete')}>
+                                <ActionIcon
+                                    color="red"
+                                    loading={deleteButtonIsLoading === _.id}
+                                    onClick={() => handleDeleteSave(_.id)}
+                                >
+                                    <MdDeleteOutline />
+                                </ActionIcon>
+                            </Tooltip>
+                            <Tooltip
+                                label={_.id === currentSaveId ? t('Sync now') : t('Sync this slot')}
+                                position="bottom"
                             >
-                                {t('Delete this save')}
-                            </Button>
-                            <Button
-                                variant="filled"
-                                disabled={isUpdateDisabled(_.id)}
-                                loading={syncButtonIsLoading === _.id}
-                                onClick={() => handleSync(_.id)}
-                            >
-                                {_.id === currentSaveId ? t('Sync now') : t('Sync this slot')}
-                            </Button>
+                                <ActionIcon
+                                    disabled={isUpdateDisabled(_.id)}
+                                    loading={syncButtonIsLoading === _.id}
+                                    onClick={() => handleSync(_.id)}
+                                >
+                                    {_.id === currentSaveId ? <MdOutlineSync /> : <MdOutlineSyncAlt />}
+                                </ActionIcon>
+                            </Tooltip>
                         </Stack>
                     </Card>
                 ))}
