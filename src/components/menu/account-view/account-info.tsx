@@ -1,19 +1,21 @@
-import { ActionIcon, Avatar, Button, Flex, Group, Modal, Text, TextInput } from '@mantine/core';
+import { ActionIcon, Avatar, Button, Flex, Group, Modal, Stack, Text } from '@mantine/core';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { MdOutlineDriveFileRenameOutline, MdOutlineLogout, MdOutlinePassword } from 'react-icons/md';
+import { MdOutlineLogout, MdOutlinePassword } from 'react-icons/md';
 import { useRootDispatch, useRootSelector } from '../../../redux';
 import { logout, updateName } from '../../../redux/account/account-slice';
 import { addNotification } from '../../../redux/notification/notification-slice';
 import { apiFetch } from '../../../util/api';
 import { API_ENDPOINT } from '../../../util/constants';
+import InlineEdit from '../../common/inline-edit';
 import PasswordSetup from './password-setup';
 
 const AccountInfo = () => {
     const { t } = useTranslation();
     const dispatch = useRootDispatch();
-    const { isLoggedIn, email, name, refreshToken } = useRootSelector(state => state.account);
-    const [isChangeModalType, setIsChangeModalType] = React.useState(undefined as 'name' | 'password' | undefined);
+    const { isLoggedIn, id, email, name, token, refreshToken } = useRootSelector(state => state.account);
+    const [isChangeModalType, setIsChangeModalType] = React.useState(undefined as 'password' | undefined);
+    const [password, setPassword] = React.useState('');
 
     const handleLogOut = async () => {
         if (!isLoggedIn) return;
@@ -24,59 +26,122 @@ const AccountInfo = () => {
         dispatch(logout());
     };
 
+    const showErrorToast = (msg: string) =>
+        dispatch(
+            addNotification({
+                title: t('Unable to update account info'),
+                message: msg,
+                type: 'error',
+                duration: 9000,
+            })
+        );
+
+    const handleNameChange = async (name: string) => {
+        if (!isLoggedIn) return;
+        try {
+            const rep = await apiFetch(
+                API_ENDPOINT.USER + '/' + id,
+                { method: 'PATCH', body: JSON.stringify({ name }) },
+                token
+            );
+            if (rep.status === 401) {
+                showErrorToast(t('Login status expired'));
+                dispatch(logout());
+                return;
+            }
+            if (rep.status !== 200) {
+                showErrorToast(await rep.text());
+                return;
+            }
+            dispatch(updateName(name));
+        } catch (e) {
+            showErrorToast((e as Error).message);
+        }
+    };
+
+    const handlePasswordChange = async () => {
+        if (!isLoggedIn) return;
+        try {
+            const rep = await apiFetch(
+                API_ENDPOINT.USER + '/' + id,
+                { method: 'PATCH', body: JSON.stringify({ password }) },
+                token
+            );
+            if (rep.status === 401) {
+                showErrorToast(t('Login status expired'));
+                dispatch(logout());
+                return;
+            }
+            if (rep.status !== 200) {
+                showErrorToast(await rep.text());
+                return;
+            }
+            dispatch(logout());
+            setIsChangeModalType(undefined);
+        } catch (e) {
+            showErrorToast((e as Error).message);
+        }
+    };
+
     return (
         <>
             <Flex py="xs" align="center" wrap="wrap">
                 <Avatar size="lg" name={name} color="initials" />
-                <Flex direction="column" ml="xs" flex={1}>
-                    <Text span fw="bold">
-                        {name}
-                    </Text>
+                <Stack justify="center" ml="md" gap="0" flex="1">
+                    <Group>
+                        <InlineEdit
+                            initialValue={name ?? ''}
+                            onSave={newName => handleNameChange(newName)}
+                            iconVariant="subtle"
+                            textInputWidth="181px"
+                        />
+                        <ActionIcon
+                            variant="subtle"
+                            color="gray"
+                            size="sm"
+                            onClick={() => setIsChangeModalType('password')}
+                            aria-label={t('Change password')}
+                            title={t('Change password')}
+                        >
+                            <MdOutlinePassword />
+                        </ActionIcon>
+                        <ActionIcon
+                            variant="subtle"
+                            color="gray"
+                            size="sm"
+                            onClick={handleLogOut}
+                            aria-label={t('Log out')}
+                            title={t('Log out')}
+                        >
+                            <MdOutlineLogout />
+                        </ActionIcon>
+                    </Group>
                     <Text span size="sm">
                         {email}
                     </Text>
-                </Flex>
-                <Flex ml="auto">
-                    <ActionIcon
-                        variant="subtle"
-                        color="gray"
-                        size="sm"
-                        onClick={() => setIsChangeModalType('name')}
-                        aria-label={t('Change name')}
-                        title={t('Change name')}
-                    >
-                        <MdOutlineDriveFileRenameOutline />
-                    </ActionIcon>
-                    <ActionIcon
-                        variant="subtle"
-                        color="gray"
-                        size="sm"
-                        onClick={() => setIsChangeModalType('password')}
-                        aria-label={t('Change password')}
-                        title={t('Change password')}
-                    >
-                        <MdOutlinePassword />
-                    </ActionIcon>
-                    <ActionIcon
-                        variant="subtle"
-                        color="gray"
-                        size="sm"
-                        onClick={handleLogOut}
-                        aria-label={t('Log out')}
-                        title={t('Log out')}
-                    >
-                        <MdOutlineLogout />
-                    </ActionIcon>
-                </Flex>
+                </Stack>
             </Flex>
-            <ChangeModal infoType={isChangeModalType} onClose={() => setIsChangeModalType(undefined)} />
+
+            <Modal
+                opened={!!isChangeModalType}
+                onClose={() => setIsChangeModalType(undefined)}
+                title={t('Update account info')}
+                closeOnEscape={false}
+            >
+                <PasswordSetup value={password} onChange={value => setPassword(value)} />
+                <Group mt="xs">
+                    <Button ml="auto" onClick={handlePasswordChange}>
+                        {t('Change')}
+                    </Button>
+                </Group>
+            </Modal>
         </>
     );
 };
 
 export default AccountInfo;
 
-export function ChangeModal(props: { infoType: 'name' | 'password' | undefined; onClose: () => void }) {
+export function ChangeModal(props: { infoType: 'password' | undefined; onClose: () => void }) {
     const { infoType, onClose } = props;
     const { t } = useTranslation();
     const dispatch = useRootDispatch();
@@ -128,13 +193,6 @@ export function ChangeModal(props: { infoType: 'name' | 'password' | undefined; 
 
     return (
         <Modal opened={!!infoType} onClose={onClose} title={t('Update account info')} closeOnEscape={false}>
-            {infoType === 'name' && (
-                <TextInput
-                    label={t('Name')}
-                    value={value}
-                    onChange={({ currentTarget: { value } }) => setValue(value)}
-                />
-            )}
             {infoType === 'password' && <PasswordSetup value={value} onChange={value => setValue(value)} />}
             <Group mt="xs">
                 <Button ml="auto" onClick={handleChange}>

@@ -1,4 +1,4 @@
-import { ActionIcon, Button, Card, Stack, Text, Title, Tooltip } from '@mantine/core';
+import { ActionIcon, Button, Card, Group, Text, Title } from '@mantine/core';
 import { RMSection, RMSectionBody, RMSectionHeader } from '@railmapgen/mantine-components';
 import { logger } from '@railmapgen/rmg-runtime';
 import React from 'react';
@@ -11,6 +11,7 @@ import { setLastChangedAtTimeStamp } from '../../../redux/rmp-save/rmp-save-slic
 import { apiFetch } from '../../../util/api';
 import { API_ENDPOINT, APISaveList, SAVE_KEY } from '../../../util/constants';
 import { getRMPSave, notifyRMPSaveChange, setRMPSave } from '../../../util/local-storage-save';
+import InlineEdit from '../../common/inline-edit';
 
 const MAXIMUM_FREE_SAVE = 1;
 const MAXIMUM_SAVE = 10;
@@ -186,6 +187,24 @@ const SavesSection = () => {
         dispatch(fetchSaveList());
         setDeleteButtonIsLoading(undefined);
     };
+    const handleEditSaveName = async (saveId: number, newName: string) => {
+        if (!isLoggedIn || !saveId || !token) return;
+        const rep = await apiFetch(
+            `${API_ENDPOINT.SAVES}/${saveId}/metadata`,
+            { method: 'PATCH', body: JSON.stringify({ index: newName }) },
+            token
+        );
+        if (rep.status === 401) {
+            showErrorToast(t('Login status expired'));
+            dispatch(logout());
+            return;
+        }
+        if (rep.status !== 200) {
+            showErrorToast(await rep.text());
+            return;
+        }
+        dispatch(fetchSaveList());
+    };
 
     return (
         <RMSection>
@@ -200,36 +219,41 @@ const SavesSection = () => {
 
             <RMSectionBody direction="column" gap="xs">
                 {saveList?.map(_ => (
-                    <Card key={_.id} withBorder shadow="sm" style={{ flexDirection: 'row' }}>
-                        <Stack gap="xs" flex={1}>
-                            <Text fw={500}>{_.id === currentSaveId ? t('Current save') : t('Cloud save')}</Text>
-                            <Text>
-                                {t('Last update at:')} {new Date(_.lastUpdateAt).toLocaleString()}
-                            </Text>
-                        </Stack>
-                        <Stack gap="xs" ml="xs">
-                            <Tooltip label={t('Delete')}>
-                                <ActionIcon
-                                    color="red"
-                                    loading={deleteButtonIsLoading === _.id}
-                                    onClick={() => handleDeleteSave(_.id)}
-                                >
-                                    <MdDeleteOutline />
-                                </ActionIcon>
-                            </Tooltip>
-                            <Tooltip
-                                label={_.id === currentSaveId ? t('Sync now') : t('Sync this slot')}
-                                position="bottom"
+                    <Card key={_.id} withBorder shadow="sm">
+                        <Group>
+                            <InlineEdit
+                                initialValue={_.index}
+                                onSave={val => handleEditSaveName(_.id, val)}
+                                textInputWidth="207px"
+                            />
+                            <ActionIcon
+                                disabled={isUpdateDisabled(_.id)}
+                                loading={syncButtonIsLoading === _.id}
+                                onClick={() => handleSync(_.id)}
+                                title={_.id === currentSaveId ? t('Sync now') : t('Sync this slot')}
                             >
-                                <ActionIcon
-                                    disabled={isUpdateDisabled(_.id)}
-                                    loading={syncButtonIsLoading === _.id}
-                                    onClick={() => handleSync(_.id)}
-                                >
-                                    {_.id === currentSaveId ? <MdOutlineSync /> : <MdOutlineSyncAlt />}
-                                </ActionIcon>
-                            </Tooltip>
-                        </Stack>
+                                {_.id === currentSaveId ? <MdOutlineSync /> : <MdOutlineSyncAlt />}
+                            </ActionIcon>
+                            <ActionIcon
+                                color="red"
+                                loading={deleteButtonIsLoading === _.id}
+                                onClick={() => handleDeleteSave(_.id)}
+                                title={t('Delete')}
+                            >
+                                <MdDeleteOutline />
+                            </ActionIcon>
+                        </Group>
+                        <Group justify="space-between" mt="md" mb="md">
+                            <Text>
+                                {t('ID')}: {_.id}
+                            </Text>
+                            <Text>
+                                {t('Status')}: {_.id === currentSaveId ? t('Current save') : t('Cloud save')}
+                            </Text>
+                        </Group>
+                        <Text>
+                            {t('Last update at')}: {new Date(_.lastUpdateAt).toLocaleString()}
+                        </Text>
                     </Card>
                 ))}
             </RMSectionBody>
