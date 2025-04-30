@@ -19,14 +19,17 @@ interface AssetDetail {
 }
 
 const getTauriUrl = () => {
-    const baseUrl = 'https://railmapgen.org/app/';
+    const baseUrl = 'https://ghfast.top/https://github.com/railmapgen/railmapgen.github.io/releases/download';
+    const d = new Date();
+    const tag = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}01`;
+    const ver = `${String(d.getFullYear()).slice(-2)}.${d.getMonth() + 1}.1`;
     const platform = navigator.platform;
     const suffix = platform.includes('Linux')
-        ? 'linux_x86.AppImage'
+        ? 'amd64.AppImage'
         : platform.includes('Mac')
-          ? 'macos_arm.dmg'
-          : 'windows_x86.exe';
-    return baseUrl + `railmapgen_${suffix}`;
+          ? 'aarch64.dmg'
+          : 'x64-setup.exe';
+    return baseUrl + `/tauri-${tag}/railmapgen_${ver}_${suffix}`;
 };
 
 export const assetEnablement: Record<string, AssetDetail> = {
