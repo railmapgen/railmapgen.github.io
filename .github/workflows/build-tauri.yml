@@ -129,3 +129,6 @@ jobs:
           releaseDraft: false
           prerelease: false
           args: --target ${{ matrix.target }}
+          owner: railmapgen
+          repo: railmapgen.github.io
+          releaseCommitish: main
