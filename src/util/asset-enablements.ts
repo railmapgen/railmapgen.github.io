@@ -29,7 +29,7 @@ const getTauriUrl = () => {
         : platform.includes('Mac')
           ? 'aarch64.dmg'
           : 'x64-setup.exe';
-    return baseUrl + `/tauri-${tag}/railmapgen_${ver}_${suffix}`;
+    return baseUrl + `/tauri-${tag}/Rail.Map.Toolkit_${ver}_${suffix}`;
 };
 
 export const assetEnablement: Record<string, AssetDetail> = {
