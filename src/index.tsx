@@ -16,6 +16,7 @@ import { Events, FRAME_ID_PREFIX } from './util/constants';
 import { registerOnRMPSaveChange } from './util/local-storage-save';
 import { RMErrorBoundary, RMMantineProvider } from '@railmapgen/mantine-components';
 import { LoadingOverlay } from '@mantine/core';
+import { addRemoteNotification } from './redux/notification/notification-slice';
 
 let root: Root;
 const AppRoot = lazy(() => import('./components/app-root'));
@@ -84,6 +85,10 @@ rmgRuntime.ready().then(async () => {
 
     rmgRuntime.onRemoteFontLoaded(({ family, definition: { displayName, url } }) => {
         store.dispatch(addRemoteFont({ family, config: { displayName, url } }));
+    });
+
+    rmgRuntime.onNewNotification(payload => {
+        store.dispatch(addRemoteNotification(payload));
     });
 
     rmgRuntime.event(Events.APP_LOAD, { openedApps: store.getState().app.openedTabs.map(tab => tab.app) });
