@@ -1,9 +1,10 @@
 import { DefaultMantineColor, Notification, Transition } from '@mantine/core';
 import { useEffect, useState } from 'react';
-import { removeNotification, RMNotification, RMNotificationType } from '../../redux/notification/notification-slice';
+import { removeNotification } from '../../redux/notification/notification-slice';
 import { useRootDispatch } from '../../redux';
+import { RMNotification } from '@railmapgen/rmg-runtime';
 
-const NOTIFICATION_TYPE_COLOUR_MAPPING: Record<RMNotificationType, DefaultMantineColor | undefined> = {
+const NOTIFICATION_TYPE_COLOUR_MAPPING: Record<RMNotification['type'], DefaultMantineColor | undefined> = {
     info: undefined,
     success: 'green',
     warning: 'yellow',

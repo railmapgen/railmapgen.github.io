@@ -1,16 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import rmgRuntime from '@railmapgen/rmg-runtime';
-
-export type RMNotificationType = 'info' | 'success' | 'warning' | 'error';
-
-export type RMNotification = {
-    id: string;
-    title: string;
-    message: string;
-    type: RMNotificationType;
-    duration: number;
-    source: string;
-};
+import rmgRuntime, { RMNotification } from '@railmapgen/rmg-runtime';
 
 export interface NotificationState {
     notifications: RMNotification[];
@@ -28,6 +17,10 @@ const notificationSlice = createSlice({
             state.notifications.push({ ...action.payload, id: crypto.randomUUID(), source: rmgRuntime.getAppName() });
         },
 
+        addRemoteNotification: (state, action: PayloadAction<RMNotification>) => {
+            state.notifications.push(action.payload);
+        },
+
         removeNotification: (state, action: PayloadAction<string>) => {
             const index = state.notifications.findIndex(n => n.id === action.payload);
             if (index > -1) {
@@ -37,5 +30,5 @@ const notificationSlice = createSlice({
     },
 });
 
-export const { addNotification, removeNotification } = notificationSlice.actions;
+export const { addNotification, addRemoteNotification, removeNotification } = notificationSlice.actions;
 export default notificationSlice.reducer;
