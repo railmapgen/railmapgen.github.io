@@ -1,16 +1,16 @@
+import { Anchor, Button, Group, List, Modal, Text, TextInput } from '@mantine/core';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { MdOpenInNew } from 'react-icons/md';
 import { useRootDispatch, useRootSelector } from '../../redux';
-import { logout } from '../../redux/account/account-slice';
+import { fetchSubscription, logout } from '../../redux/account/account-slice';
+import { addNotification } from '../../redux/notification/notification-slice';
 import { apiFetch } from '../../util/api';
 import { API_ENDPOINT } from '../../util/constants';
-import { Anchor, Button, Group, List, Modal, Text, TextInput } from '@mantine/core';
-import { addNotification } from '../../redux/notification/notification-slice';
 
-const RedeemModal = (props: { opened: boolean; onClose: () => void; getSubscriptions: () => Promise<void> }) => {
+const RedeemModal = (props: { opened: boolean; onClose: () => void }) => {
     const { t } = useTranslation();
-    const { opened, onClose, getSubscriptions } = props;
+    const { opened, onClose } = props;
     const { isLoggedIn, token } = useRootSelector(state => state.account);
     const dispatch = useRootDispatch();
 
@@ -34,7 +34,7 @@ const RedeemModal = (props: { opened: boolean; onClose: () => void; getSubscript
             token
         );
         if (rep.status === 401) {
-            showErrorToast(t('Login status expired'));
+            showErrorToast(t('Login status expired.'));
             dispatch(logout());
             return;
         }
@@ -43,7 +43,7 @@ const RedeemModal = (props: { opened: boolean; onClose: () => void; getSubscript
             showErrorToast(t(msg));
             return;
         }
-        await getSubscriptions();
+        dispatch(fetchSubscription());
         // TODO: let RMP refresh its subscription status
         onClose();
     };

@@ -1,75 +1,25 @@
+import { Button, Card, List, Stack, Text, Title, Tooltip } from '@mantine/core';
+import { RMSection, RMSectionBody, RMSectionHeader } from '@railmapgen/mantine-components';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useRootDispatch, useRootSelector } from '../../../redux';
-import {
-    ActiveSubscriptions,
-    defaultActiveSubscriptions,
-    logout,
-    setActiveSubscriptions,
-} from '../../../redux/account/account-slice';
-import { apiFetch } from '../../../util/api';
-import { API_ENDPOINT } from '../../../util/constants';
+import { useRootSelector } from '../../../redux';
 import RedeemModal from '../../modal/redeem-modal';
-import { RMSection, RMSectionBody, RMSectionHeader } from '@railmapgen/mantine-components';
-import { Button, Card, List, Stack, Text, Title } from '@mantine/core';
-import { addNotification } from '../../../redux/notification/notification-slice';
 
-interface APISubscription {
-    type: 'RMP' | 'RMP_CLOUD' | 'RMP_EXPORT';
-    expires: string;
-}
+const DAYS_TO_REMIND_RENEW = 90;
+const MILLISECONDS_TO_REMIND_RENEW = DAYS_TO_REMIND_RENEW * 24 * 60 * 60 * 1000;
 
 const SubscriptionSection = () => {
     const { t } = useTranslation();
-    const { isLoggedIn, token } = useRootSelector(state => state.account);
-    const dispatch = useRootDispatch();
 
-    const [subscriptions, setSubscriptions] = React.useState([] as APISubscription[]);
+    const { activeSubscriptions } = useRootSelector(state => state.account);
     const [isRedeemModalOpen, setIsRedeemModalOpen] = React.useState(false);
 
-    const showErrorToast = (msg: string) =>
-        dispatch(
-            addNotification({
-                title: t('Unable to retrieve your subscriptions'),
-                message: msg,
-                type: 'error',
-                duration: 9000,
-            })
-        );
-
-    const getSubscriptions = async () => {
-        if (!isLoggedIn) return;
-        const rep = await apiFetch(API_ENDPOINT.SUBSCRIPTION, {}, token);
-        if (rep.status === 401) {
-            showErrorToast(t('Login status expired'));
-            dispatch(logout());
-            return;
-        }
-        if (rep.status !== 200) {
-            showErrorToast(await rep.text());
-            return;
-        }
-        const subscriptions = (await rep.json()).subscriptions as APISubscription[];
-        if (!subscriptions.map(_ => _.type).includes('RMP_CLOUD')) return;
-        setSubscriptions([{ type: 'RMP', expires: subscriptions[0].expires }]);
-
-        const activeSubscriptions = structuredClone(defaultActiveSubscriptions);
-        for (const subscription of subscriptions) {
-            const type = subscription.type;
-            if (type in activeSubscriptions) {
-                activeSubscriptions[type as keyof ActiveSubscriptions] = true;
-            }
-        }
-        dispatch(setActiveSubscriptions(activeSubscriptions));
-    };
-    React.useEffect(() => {
-        getSubscriptions();
-    }, []);
+    const noneSubscription = !activeSubscriptions.RMP_CLOUD && !activeSubscriptions.RMP_EXPORT;
 
     return (
         <RMSection>
             <RMSectionHeader align="center">
-                <Title order={3} size="h5">
+                <Title order={3} size="h3">
                     {t('All subscriptions')}
                 </Title>
                 <Button variant="subtle" size="xs" ml="auto" onClick={() => setIsRedeemModalOpen(true)}>
@@ -78,10 +28,10 @@ const SubscriptionSection = () => {
             </RMSectionHeader>
 
             <RMSectionBody direction="column" gap="xs">
-                {subscriptions.length === 0 && (
+                {noneSubscription && (
                     <Card withBorder shadow="sm">
                         <Card.Section p="xs">
-                            <Title order={4} size="h3">
+                            <Title order={4} size="h4">
                                 {t('Rail Map Painter')}
                             </Title>
                         </Card.Section>
@@ -101,30 +51,74 @@ const SubscriptionSection = () => {
                     </Card>
                 )}
 
-                {subscriptions.map(_ => (
-                    <Card key={_.type} withBorder shadow="sm">
+                {!noneSubscription && (
+                    <Card withBorder shadow="sm">
                         <Card.Section p="xs">
-                            <Title order={4} size="h3">
-                                {t(_.type === 'RMP' ? 'Rail Map Painter' : _.type)}
+                            <Title order={4} size="h4">
+                                {t('Rail Map Painter')}
                             </Title>
                         </Card.Section>
                         <Stack gap="xs">
                             <Text>
-                                {t('Expires at:')} {new Date(_.expires).toLocaleString()}
+                                {t('Expires at:')} {new Date(activeSubscriptions.RMP_CLOUD!).toLocaleString()}
                             </Text>
-                            <Button color="blue" onClick={() => setIsRedeemModalOpen(true)}>
-                                {t('Renew')}
-                            </Button>
+                            {new Date(activeSubscriptions.RMP_CLOUD!).getTime() - new Date().getTime() <
+                            MILLISECONDS_TO_REMIND_RENEW ? (
+                                <Tooltip
+                                    opened
+                                    label={t('Renew now and get an extra 45 days!')}
+                                    position="bottom"
+                                    withArrow
+                                >
+                                    <Button color="blue" onClick={() => setIsRedeemModalOpen(true)}>
+                                        {t('Renew')}
+                                    </Button>
+                                </Tooltip>
+                            ) : (
+                                <Button color="blue" onClick={() => setIsRedeemModalOpen(true)}>
+                                    {t('Renew')}
+                                </Button>
+                            )}
                         </Stack>
                     </Card>
-                ))}
+                )}
+
+                {/* {Object.entries(activeSubscriptions)
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                    .filter(([_, expires]) => expires)
+                    .map(([type, expires]) => (
+                        <Card key={type} withBorder shadow="sm">
+                            <Card.Section p="xs">
+                                <Title order={4} size="h4">
+                                    {t(type)}
+                                </Title>
+                            </Card.Section>
+                            <Stack gap="xs">
+                                <Text>
+                                    {t('Expires at:')} {new Date(expires).toLocaleString()}
+                                </Text>
+                                {new Date(expires).getTime() - new Date().getTime() < MILLISECONDS_TO_REMIND_RENEW ? (
+                                    <Tooltip
+                                        opened
+                                        label={t('Renew now and get an extra 45 days!')}
+                                        position="bottom"
+                                        withArrow
+                                    >
+                                        <Button color="blue" onClick={() => setIsRedeemModalOpen(true)}>
+                                            {t('Renew')}
+                                        </Button>
+                                    </Tooltip>
+                                ) : (
+                                    <Button color="blue" onClick={() => setIsRedeemModalOpen(true)}>
+                                        {t('Renew')}
+                                    </Button>
+                                )}
+                            </Stack>
+                        </Card>
+                    ))} */}
             </RMSectionBody>
 
-            <RedeemModal
-                opened={isRedeemModalOpen}
-                onClose={() => setIsRedeemModalOpen(false)}
-                getSubscriptions={getSubscriptions}
-            />
+            <RedeemModal opened={isRedeemModalOpen} onClose={() => setIsRedeemModalOpen(false)} />
         </RMSection>
     );
 };

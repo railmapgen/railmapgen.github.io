@@ -45,7 +45,7 @@ const AccountInfo = () => {
                 token
             );
             if (rep.status === 401) {
-                showErrorToast(t('Login status expired'));
+                showErrorToast(t('Login status expired.'));
                 dispatch(logout());
                 return;
             }
@@ -68,7 +68,7 @@ const AccountInfo = () => {
                 token
             );
             if (rep.status === 401) {
-                showErrorToast(t('Login status expired'));
+                showErrorToast(t('Login status expired.'));
                 dispatch(logout());
                 return;
             }
