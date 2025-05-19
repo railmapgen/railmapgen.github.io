@@ -40,6 +40,7 @@ const SubscriptionSection = () => {
                                 <List.Item>{t('Sync 9 more saves')}</List.Item>
                                 <List.Item>{t('Unlimited master nodes')}</List.Item>
                                 <List.Item>{t('Unlimited parallel lines')}</List.Item>
+                                <List.Item>{t('Random station names')}</List.Item>
                             </List>
 
                             <Text>
