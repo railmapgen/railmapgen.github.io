@@ -7,7 +7,7 @@ import i18n from './i18n/config';
 import './index.css';
 import './inject-seo';
 import store from './redux';
-import { syncAfterLogin } from './redux/account/account-slice';
+import { fetchSubscription, syncAfterLogin } from './redux/account/account-slice';
 import { addRemoteFont, closeApp, isShowDevtools, openApp, updateTabMetadata } from './redux/app/app-slice';
 import initStore from './redux/init';
 import { checkTokenAndRefreshStore } from './util/api';
@@ -46,6 +46,8 @@ rmgRuntime.ready().then(async () => {
     // Otherwise this is a no-op.
     await checkTokenAndRefreshStore(store);
     await store.dispatch(syncAfterLogin());
+    // Fetch subscription info only if user is logged in.
+    store.dispatch(fetchSubscription());
 
     renderApp();
 

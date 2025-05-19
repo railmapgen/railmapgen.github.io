@@ -1,19 +1,29 @@
 import { logger } from '@railmapgen/rmg-runtime';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { RootState } from '../index';
-import { API_ENDPOINT, APILoginResponse, APISaveInfo, APISaveList, SAVE_KEY } from '../../util/constants';
-import { getRMPSave, notifyRMPSaveChange, setRMPSave } from '../../util/local-storage-save';
+import i18n from '../../i18n/config';
 import { apiFetch } from '../../util/api';
+import {
+    API_ENDPOINT,
+    APILoginResponse,
+    APISaveInfo,
+    APISaveList,
+    APISubscription,
+    SAVE_KEY,
+} from '../../util/constants';
+import { getRMPSave, notifyRMPSaveChange, setRMPSave } from '../../util/local-storage-save';
+import { RootState } from '../index';
+import { addNotification } from '../notification/notification-slice';
 import { setLastChangedAtTimeStamp, setResolveConflictModal } from '../rmp-save/rmp-save-slice';
 
+type DateTimeString = `${string}T${string}Z`;
 export interface ActiveSubscriptions {
-    RMP_CLOUD: boolean;
-    RMP_EXPORT: boolean;
+    RMP_CLOUD?: DateTimeString;
+    RMP_EXPORT?: DateTimeString;
 }
 
 export const defaultActiveSubscriptions: ActiveSubscriptions = {
-    RMP_CLOUD: false,
-    RMP_EXPORT: false,
+    RMP_CLOUD: undefined,
+    RMP_EXPORT: undefined,
 };
 
 export interface AccountState {
@@ -91,7 +101,11 @@ export const fetchLogin = createAsyncThunk<{ error?: string; username?: string }
                 },
             } = (await loginRes.json()) as APILoginResponse;
             dispatch(login({ id: userId, name: username, email, token, expires, refreshToken, refreshExpires }));
-            await dispatch(fetchSaveList()); // make sure saves are set before syncAfterLogin
+
+            dispatch(fetchSubscription());
+
+            // make sure saves are set before syncAfterLogin
+            await dispatch(fetchSaveList());
 
             await dispatch(syncAfterLogin());
 
@@ -149,6 +163,47 @@ export const syncAfterLogin = createAsyncThunk<undefined, undefined>(
                 })
             );
         }
+    }
+);
+
+export const fetchSubscription = createAsyncThunk<undefined, undefined>(
+    'account/fetchSubscription',
+    async (_, { getState, dispatch, rejectWithValue }) => {
+        const { isLoggedIn, token } = (getState() as RootState).account;
+        if (!isLoggedIn || !token) return rejectWithValue('No token.');
+        const rep = await apiFetch(API_ENDPOINT.SUBSCRIPTION, {}, token);
+        if (rep.status === 401) {
+            dispatch(
+                addNotification({
+                    title: i18n.t('Unable to retrieve your subscriptions'),
+                    message: i18n.t('Login status expired.'),
+                    duration: 60,
+                    type: 'error',
+                })
+            );
+            dispatch(logout());
+            return rejectWithValue('Login status expired.');
+        }
+        if (rep.status !== 200) {
+            dispatch(
+                addNotification({
+                    title: i18n.t('Unable to retrieve your subscriptions'),
+                    message: await rep.text(),
+                    duration: 60,
+                    type: 'error',
+                })
+            );
+            return rejectWithValue(await rep.text());
+        }
+        const subscriptions = (await rep.json()).subscriptions as APISubscription[];
+        const activeSubscriptions = structuredClone(defaultActiveSubscriptions);
+        for (const subscription of subscriptions) {
+            const type = subscription.type;
+            if (type in activeSubscriptions) {
+                activeSubscriptions[type as keyof ActiveSubscriptions] = subscription.expires as DateTimeString;
+            }
+        }
+        dispatch(setActiveSubscriptions(activeSubscriptions));
     }
 );
 

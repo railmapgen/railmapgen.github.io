@@ -73,6 +73,11 @@ export interface APISaveList {
     currentSaveId: number;
 }
 
+export interface APISubscription {
+    type: 'RMP' | 'RMP_CLOUD' | 'RMP_EXPORT';
+    expires: string;
+}
+
 export enum SAVE_KEY {
     RMP = 'rmp__param',
 }

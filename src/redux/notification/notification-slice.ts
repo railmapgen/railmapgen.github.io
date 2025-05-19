@@ -1,5 +1,5 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import rmgRuntime, { RMNotification } from '@railmapgen/rmg-runtime';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export interface NotificationState {
     notifications: RMNotification[];

@@ -21,5 +21,8 @@
         "text2": " from local storage. This item is created and used by ",
         "text3": ". Deleting it may cause unrecoverable data loss or unexpected behaviour to the applications.",
         "text4": "Please close this modal unless you're certain to do so or are supervised by our developers."
-    }
+    },
+
+    "RMP_CLOUD": "Rail Map Painter・Tianshu",
+    "RMP_EXPORT": "Rail Map Painter・Yuheng"
 }
