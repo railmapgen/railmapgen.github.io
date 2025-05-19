@@ -182,8 +182,7 @@ export const fetchSubscription = createAsyncThunk<undefined, undefined>(
                 })
             );
             dispatch(logout());
-            rejectWithValue('Login status expired.');
-            return;
+            return rejectWithValue('Login status expired.');
         }
         if (rep.status !== 200) {
             dispatch(
@@ -194,8 +193,7 @@ export const fetchSubscription = createAsyncThunk<undefined, undefined>(
                     type: 'error',
                 })
             );
-            rejectWithValue(await rep.text());
-            return;
+            return rejectWithValue(await rep.text());
         }
         const subscriptions = (await rep.json()).subscriptions as APISubscription[];
         const activeSubscriptions = structuredClone(defaultActiveSubscriptions);
