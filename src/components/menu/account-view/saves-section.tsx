@@ -209,7 +209,7 @@ const SavesSection = () => {
     return (
         <RMSection>
             <RMSectionHeader align="center">
-                <Title order={3} size="h3" flex="1">
+                <Title order={3} size="h5" flex="1">
                     {t('Synced saves')}
                 </Title>
                 <Button variant="subtle" size="xs" ml="xs" disabled={!canCreateNewSave} onClick={handleCreateNewSave}>

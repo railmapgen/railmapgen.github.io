@@ -19,7 +19,7 @@ const SubscriptionSection = () => {
     return (
         <RMSection>
             <RMSectionHeader align="center">
-                <Title order={3} size="h3">
+                <Title order={3} size="h5">
                     {t('All subscriptions')}
                 </Title>
                 <Button variant="subtle" size="xs" ml="auto" onClick={() => setIsRedeemModalOpen(true)}>
@@ -31,9 +31,7 @@ const SubscriptionSection = () => {
                 {noneSubscription && (
                     <Card withBorder shadow="sm">
                         <Card.Section p="xs">
-                            <Title order={4} size="h4">
-                                {t('Rail Map Painter')}
-                            </Title>
+                            <Text fw="bold">{t('Rail Map Painter')}</Text>
                         </Card.Section>
                         <Stack gap="xs">
                             <Text>{t('With this subscription, the following features are unlocked:')}</Text>
@@ -54,9 +52,7 @@ const SubscriptionSection = () => {
                 {!noneSubscription && (
                     <Card withBorder shadow="sm">
                         <Card.Section p="xs">
-                            <Title order={4} size="h4">
-                                {t('Rail Map Painter')}
-                            </Title>
+                            <Text fw="bold">{t('Rail Map Painter')}</Text>
                         </Card.Section>
                         <Stack gap="xs">
                             <Text>
@@ -89,9 +85,7 @@ const SubscriptionSection = () => {
                     .map(([type, expires]) => (
                         <Card key={type} withBorder shadow="sm">
                             <Card.Section p="xs">
-                                <Title order={4} size="h4">
-                                    {t(type)}
-                                </Title>
+                                <Text fw="bold">{t(type)}</Text>
                             </Card.Section>
                             <Stack gap="xs">
                                 <Text>

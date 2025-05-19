@@ -20,7 +20,7 @@ const AccountView = () => {
     return (
         <RMSection>
             <RMSectionHeader>
-                <Title order={2} size="h3">
+                <Title order={2} size="h4">
                     {t('Account')}
                 </Title>
             </RMSectionHeader>
