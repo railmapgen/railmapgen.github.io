@@ -200,7 +200,7 @@ const ShareModal: React.FC<ShareModalProps> = ({ opened, onClose, shareSaveInfo 
                 color="yellow"
                 icon={<MdWarning />}
                 title={t(
-                    'Link will be valid as long as you have an active subscription. Otherwise, the link will be valid for 1 day after creating it.'
+                    'Link will be valid as long as you have an active subscription. Otherwise, the link will be invalid after 1 day.'
                 )}
             />
 

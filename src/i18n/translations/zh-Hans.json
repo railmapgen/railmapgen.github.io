@@ -182,5 +182,5 @@
     "Delete Share": "删除分享",
     "Create Share Link": "创建分享链接",
     "Please be aware that sharing this link does not create a separate copy of your work. Instead, everyone who opens the link will always see the most up-to-date version. So, if you make changes after sharing the link, those changes will be visible to everyone who has the link.": "请注意，分享此链接不会创建您作品的副本。相反，每个打开链接的人都将始终看到最新版本。因此，如果您在分享链接后进行更改，这些更改将对拥有该链接的每个人可见。",
-    "Link will be valid as long as you have an active subscription. Otherwise, the link will be valid for 1 day after creating it.": "只要您拥有有效订阅，链接便会一直有效。否则，链接将在创建后 1 天内有效。"
+    "Link will be valid as long as you have an active subscription. Otherwise, the link will be invalid after 1 day.": "只要您拥有有效订阅，链接便会一直有效。否则，链接将在创建后 1 天内失效。"
 }

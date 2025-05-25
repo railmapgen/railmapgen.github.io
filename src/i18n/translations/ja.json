@@ -182,5 +182,5 @@
     "Delete Share": "共有を削除",
     "Create Share Link": "共有リンクを作成",
     "Please be aware that sharing this link does not create a separate copy of your work. Instead, everyone who opens the link will always see the most up-to-date version. So, if you make changes after sharing the link, those changes will be visible to everyone who has the link.": "ご注意：このリンクを共有しても、作品の個別のコピーは作成されません。代わりに、リンクを開いた人は常に最新バージョンを閲覧することになります。そのため、リンク共有後に変更を加えた場合、その変更はリンクをお持ちのすべての方に表示されます。",
-    "Link will be valid as long as you have an active subscription. Otherwise, the link will be valid for 1 day after creating it.": "有効なご購読がある限り、リンクは有効です。それ以外の場合、リンクは作成後1日間有効となります。"
+    "Link will be valid as long as you have an active subscription. Otherwise, the link will be invalid after 1 day.": "有効なご購読がある限り、リンクは有効です。それ以外の場合、リンクは 1 日後に無効になります。"
 }
