@@ -23,6 +23,12 @@
         "text4": "若你未能確定，或不是在我們的開發人員的指引下操作，請關閉這個視窗。"
     },
 
+    "Session expired.": "工作階段已過期。",
+    "Please log in again.": "請重新登入。",
+    "Error": "錯誤",
+    "Success": "成功",
+    "Close": "關閉",
+
     "About": "關於",
     "Allow cookies to help improve our website": "容許以 Cookies 幫助改進本網站",
     "Appearance": "外觀",
@@ -164,5 +170,17 @@
     "Replace cloud with local": "用本地存檔替換雲端",
     "Download Local save": "下載本地存檔",
     "Replace local with cloud": "用雲端存檔替換本地",
-    "Download Cloud save": "下載雲端存檔"
+    "Download Cloud save": "下載雲端存檔",
+
+    "Share work {{index}}": "分享作品 {{index}}",
+    "Share this link with others to allow them to view this work.": "分享此連結給他人以檢視此作品。",
+    "Copied": "已複製",
+    "Copy": "複製",
+    "Share link created successfully.": "分享連結建立成功。",
+    "Share link deleted successfully.": "分享連結刪除成功。",
+    "This link is valid until:": "此連結有效期至：",
+    "Delete Share": "刪除分享",
+    "Create Share Link": "建立分享連結",
+    "Please be aware that sharing this link does not create a separate copy of your work. Instead, everyone who opens the link will always see the most up-to-date version. So, if you make changes after sharing the link, those changes will be visible to everyone who has the link.": "請注意，分享此連結不會建立您作品的副本。相反，每個開啟連結的人都將始終看到最新版本。因此，如果您在分享連結後進行變更，這些變更將對擁有該連結的每個人可見。",
+    "Link will be valid as long as you have an active subscription. Otherwise, the link will be valid for 1 day after creating it.": "只要您擁有有效訂閱，連結便會一直有效。否則，連結將在建立後 1 天內有效。"
 }

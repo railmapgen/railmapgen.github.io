@@ -51,6 +51,7 @@ export enum API_ENDPOINT {
     SUBSCRIPTION = '/subscription',
     SUBSCRIPTION_REDEEM = '/subscription/redeem',
     SAVES = '/saves',
+    SHARE = '/share',
 }
 
 export const API_URL = 'https://railmapgen.org/v1';
@@ -66,6 +67,10 @@ export interface APISaveInfo {
     id: number;
     hash: string;
     lastUpdateAt: string;
+    share?: {
+        s: string;
+        validUntil: Date | null;
+    };
 }
 
 export interface APISaveList {
