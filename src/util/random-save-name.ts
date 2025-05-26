@@ -202,7 +202,6 @@ const CITIES_LIST = [
     'Bandung',
     'Medan',
     'Semarang',
-    'Santiago',
     'Lima',
     'Bogota',
     'Caracas',

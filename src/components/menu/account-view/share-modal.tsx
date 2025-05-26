@@ -63,12 +63,14 @@ const ShareModal: React.FC<ShareModalProps> = ({ opened, onClose, shareSaveInfo 
                 return;
             }
             if (rep.status !== 201) {
-                addNotification({
-                    type: 'error',
-                    title: t('Error'),
-                    message: await rep.text(),
-                    duration: 5000,
-                });
+                dispatch(
+                    addNotification({
+                        type: 'error',
+                        title: t('Error'),
+                        message: await rep.text(),
+                        duration: 5000,
+                    })
+                );
                 return;
             }
             dispatch(fetchSaveList());
@@ -81,12 +83,14 @@ const ShareModal: React.FC<ShareModalProps> = ({ opened, onClose, shareSaveInfo 
                 })
             );
         } catch (e) {
-            addNotification({
-                type: 'error',
-                title: t('Error'),
-                message: (e as Error).message,
-                duration: 5000,
-            });
+            dispatch(
+                addNotification({
+                    type: 'error',
+                    title: t('Error'),
+                    message: (e as Error).message,
+                    duration: 5000,
+                })
+            );
         }
     };
 
@@ -172,7 +176,9 @@ const ShareModal: React.FC<ShareModalProps> = ({ opened, onClose, shareSaveInfo 
                     <Group justify="space-between">
                         <Text>
                             {t('This link is valid until:')}{' '}
-                            {(share.validUntil ?? new Date(activeSubscriptions.RMP_EXPORT as string)).toLocaleString()}
+                            {new Date(
+                                share.validUntil ?? activeSubscriptions.RMP_EXPORT ?? Date.now().toLocaleString()
+                            ).toLocaleString()}
                         </Text>
                         <Button color="red" onClick={handleDeleteShare} ml="xs" size="sm" variant="light">
                             {t('Delete Share')}

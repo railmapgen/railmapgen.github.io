@@ -57,19 +57,21 @@ export enum API_ENDPOINT {
 export const API_URL = 'https://railmapgen.org/v1';
 // export const API_URL = 'http://localhost:3000/v1';
 
+type Timestamp = `${number}-${number}-${number}T${number}:${number}:${number}Z`;
+
 export interface APILoginResponse {
     user: { id: number; name: string };
-    tokens: { access: { token: string; expires: string }; refresh: { token: string; expires: string } };
+    tokens: { access: { token: string; expires: Timestamp }; refresh: { token: string; expires: Timestamp } };
 }
 
 export interface APISaveInfo {
     index: string;
     id: number;
     hash: string;
-    lastUpdateAt: string;
+    lastUpdateAt: Timestamp;
     share?: {
         s: string;
-        validUntil: Date | null;
+        validUntil: Timestamp | null;
     };
 }
 
