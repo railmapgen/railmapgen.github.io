@@ -1,7 +1,8 @@
-import { Button, Card, List, Stack, Text, Title, Tooltip } from '@mantine/core';
+import { Alert, Button, Card, List, Stack, Text, Title } from '@mantine/core';
 import { RMSection, RMSectionBody, RMSectionHeader } from '@railmapgen/mantine-components';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { MdWarning } from 'react-icons/md';
 import { useRootSelector } from '../../../redux';
 import RedeemModal from '../../modal/redeem-modal';
 
@@ -59,22 +60,16 @@ const SubscriptionSection = () => {
                             <Text>
                                 {t('Expires at:')} {new Date(activeSubscriptions.RMP_CLOUD!).toLocaleString()}
                             </Text>
+                            <Button color="blue" onClick={() => setIsRedeemModalOpen(true)}>
+                                {t('Renew')}
+                            </Button>
                             {new Date(activeSubscriptions.RMP_CLOUD!).getTime() - new Date().getTime() <
-                            MILLISECONDS_TO_REMIND_RENEW ? (
-                                <Tooltip
-                                    opened
-                                    label={t('Renew now and get an extra 45 days!')}
-                                    position="bottom"
-                                    withArrow
-                                >
-                                    <Button color="blue" onClick={() => setIsRedeemModalOpen(true)}>
-                                        {t('Renew')}
-                                    </Button>
-                                </Tooltip>
-                            ) : (
-                                <Button color="blue" onClick={() => setIsRedeemModalOpen(true)}>
-                                    {t('Renew')}
-                                </Button>
+                                MILLISECONDS_TO_REMIND_RENEW && (
+                                <Alert
+                                    title={t('Renew now and get an extra 45 days!')}
+                                    color="yellow"
+                                    icon={<MdWarning />}
+                                />
                             )}
                         </Stack>
                     </Card>
@@ -92,21 +87,15 @@ const SubscriptionSection = () => {
                                 <Text>
                                     {t('Expires at:')} {new Date(expires).toLocaleString()}
                                 </Text>
-                                {new Date(expires).getTime() - new Date().getTime() < MILLISECONDS_TO_REMIND_RENEW ? (
-                                    <Tooltip
-                                        opened
-                                        label={t('Renew now and get an extra 45 days!')}
-                                        position="bottom"
-                                        withArrow
-                                    >
-                                        <Button color="blue" onClick={() => setIsRedeemModalOpen(true)}>
-                                            {t('Renew')}
-                                        </Button>
-                                    </Tooltip>
-                                ) : (
-                                    <Button color="blue" onClick={() => setIsRedeemModalOpen(true)}>
-                                        {t('Renew')}
-                                    </Button>
+                                <Button color="blue" onClick={() => setIsRedeemModalOpen(true)}>
+                                    {t('Renew')}
+                                </Button>
+                                {new Date(expires).getTime() - new Date().getTime() < MILLISECONDS_TO_REMIND_RENEW && (
+                                    <Alert
+                                        title={t('Renew now and get an extra 45 days!')}
+                                        color="yellow"
+                                        icon={<MdWarning />}
+                                    />
                                 )}
                             </Stack>
                         </Card>
