@@ -25,7 +25,7 @@ const defaultSaveInfo: APISaveInfo = {
     index: '0',
     id: 0,
     hash: '',
-    lastUpdateAt: '',
+    lastUpdateAt: '1970-01-01T00:00:00Z',
 };
 
 interface ShareModalProps {
