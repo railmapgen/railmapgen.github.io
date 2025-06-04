@@ -23,6 +23,12 @@
         "text4": "확실하지 않거나 당사 개발자의 안내 없이 작업하는 경우 이 대화 상자를 닫으십시오."
     },
 
+    "Session expired.": "세션이 만료되었습니다.",
+    "Please log in again.": "다시 로그인해주세요.",
+    "Error": "오류",
+    "Success": "성공",
+    "Close": "닫기",
+
     "About": "정보",
     "Allow cookies to help improve our website": "쿠키를 허용하여 웹사이트 개선에 도움을 주세요",
     "Appearance": "모양",
@@ -158,11 +164,23 @@
     "CDKey could be purchased in the following sites:": "CD키는 다음 사이트에서 구매할 수 있습니다:",
     "Enter your CDKey here": "여기에 CD키를 입력하세요",
 
-    "Oops! It seems there's a conflict": "おっと！競合が発生したようです (おっと！きょうごうが はっせいした ようです)",
+    "Oops! It seems there's a conflict": "이런! 충돌이 발생한 것 같습니다.",
     "The local save is newer than the cloud one. Which one would you like to keep?": "로컬 저장 파일이 클라우드 저장 파일보다 최신입니다. 어떤 버전을 유지하시겠습니까?",
     "Local save": "로컬 저장 파일",
     "Replace cloud with local": "클라우드를 로컬 저장 파일로 교체",
     "Download Local save": "로컬 저장 파일 다운로드",
     "Replace local with cloud": "로컬을 클라우드 저장 파일로 교체",
-    "Download Cloud save": "클라우드 저장 파일 다운로드"
+    "Download Cloud save": "클라우드 저장 파일 다운로드",
+
+    "Share work {{index}}": "작업 공유 {{index}}",
+    "Share this link with others to allow them to view this work.": "이 링크를 다른 사람과 공유하여 작업을 볼 수 있도록 하세요.",
+    "Copied": "복사됨",
+    "Copy": "복사",
+    "Share link created successfully.": "공유 링크가 성공적으로 만들어졌습니다.",
+    "Share link deleted successfully.": "공유 링크가 성공적으로 삭제되었습니다.",
+    "This link is valid until:": "이 링크는 다음 날짜까지 유효합니다:",
+    "Delete Share": "공유 삭제",
+    "Create Share Link": "공유 링크 만들기",
+    "Please be aware that sharing this link does not create a separate copy of your work. Instead, everyone who opens the link will always see the most up-to-date version. So, if you make changes after sharing the link, those changes will be visible to everyone who has the link.": "이 링크를 공유해도 작업의 별도 사본이 만들어지지 않습니다. 대신 링크를 여는 모든 사람은 항상 최신 버전을 보게 됩니다. 따라서 링크를 공유한 후 변경하면 해당 변경 사항이 링크를 가진 모든 사람에게 표시됩니다.",
+    "Link will be valid as long as you have an active subscription. Otherwise, the link will be invalid after 1 day.": "활성 구독이 있는 한 링크는 유효합니다. 그렇지 않으면 링크는 1일 후에 만료됩니다."
 }
