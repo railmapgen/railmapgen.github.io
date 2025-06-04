@@ -42,6 +42,8 @@ const SubscriptionSection = () => {
                                 <List.Item>{t('Unlimited master nodes')}</List.Item>
                                 <List.Item>{t('Unlimited parallel lines')}</List.Item>
                                 <List.Item>{t('Random station names')}</List.Item>
+                                <List.Item>{t('Export super large images')}</List.Item>
+                                <List.Item>{t('Share saves with others')}</List.Item>
                             </List>
 
                             <Text>
@@ -51,31 +53,7 @@ const SubscriptionSection = () => {
                     </Card>
                 )}
 
-                {!noneSubscription && (
-                    <Card withBorder shadow="sm">
-                        <Card.Section p="xs">
-                            <Text fw="bold">{t('Rail Map Painter')}</Text>
-                        </Card.Section>
-                        <Stack gap="xs">
-                            <Text>
-                                {t('Expires at:')} {new Date(activeSubscriptions.RMP_CLOUD!).toLocaleString()}
-                            </Text>
-                            <Button color="blue" onClick={() => setIsRedeemModalOpen(true)}>
-                                {t('Renew')}
-                            </Button>
-                            {new Date(activeSubscriptions.RMP_CLOUD!).getTime() - new Date().getTime() <
-                                MILLISECONDS_TO_REMIND_RENEW && (
-                                <Alert
-                                    title={t('Renew now and get an extra 45 days!')}
-                                    color="yellow"
-                                    icon={<MdWarning />}
-                                />
-                            )}
-                        </Stack>
-                    </Card>
-                )}
-
-                {/* {Object.entries(activeSubscriptions)
+                {Object.entries(activeSubscriptions)
                     // eslint-disable-next-line @typescript-eslint/no-unused-vars
                     .filter(([_, expires]) => expires)
                     .map(([type, expires]) => (
@@ -99,7 +77,7 @@ const SubscriptionSection = () => {
                                 )}
                             </Stack>
                         </Card>
-                    ))} */}
+                    ))}
             </RMSectionBody>
 
             <RedeemModal opened={isRedeemModalOpen} onClose={() => setIsRedeemModalOpen(false)} />
