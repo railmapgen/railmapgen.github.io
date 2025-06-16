@@ -60,8 +60,12 @@ export const initActiveTab = (store: RootStore) => {
 export const openSearchedApp = (store: RootStore) => {
     const searchParams = new URLSearchParams(window.location.search);
     const appSearched = searchParams.get(QUERY_STRINGS.APP) ?? '';
-    const extraSearchParams = searchParams.get(QUERY_STRINGS.SEARCH_PARAMS) ?? undefined;
-    const extraHashParams = searchParams.get(QUERY_STRINGS.HASH_PARAMS) ?? undefined;
+    const extraSearchParams =
+        searchParams.get(QUERY_STRINGS.SEARCH_PARAMS) ??
+        searchParams.get(QUERY_STRINGS.SEARCH_PARAMS_SHORT) ??
+        undefined;
+    const extraHashParams =
+        searchParams.get(QUERY_STRINGS.HASH_PARAMS) ?? searchParams.get(QUERY_STRINGS.HASH_PARAMS_SHORT) ?? undefined;
     logger.info(
         `openSearchedApp(), searchParams app=${appSearched}, extraSearchParams are [${extraSearchParams}], extraHashParams are [${extraHashParams}]`
     );
