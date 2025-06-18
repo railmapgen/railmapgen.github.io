@@ -36,7 +36,9 @@ export const FRAME_ID_PREFIX = 'rmg-home:frame-';
 export const QUERY_STRINGS = {
     APP: 'app',
     SEARCH_PARAMS: 'searchParams',
+    SEARCH_PARAMS_SHORT: 's',
     HASH_PARAMS: 'hashParams',
+    HASH_PARAMS_SHORT: 'h',
 };
 
 export enum API_ENDPOINT {
