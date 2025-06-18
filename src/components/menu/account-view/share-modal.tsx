@@ -152,11 +152,11 @@ const ShareModal: React.FC<ShareModalProps> = ({ opened, onClose, shareSaveInfo 
             {share ? (
                 <Stack>
                     <TextInput
-                        value={`${window.origin}?app=rmp&searchParams=${share.s}.org`}
+                        value={`${window.origin}?app=rmp&s=${share.s}.org`}
                         readOnly
                         style={{ flexGrow: 1 }}
                         rightSection={
-                            <CopyButton value={`${window.origin}?app=rmp&searchParams=${share.s}.org`} timeout={2000}>
+                            <CopyButton value={`${window.origin}?app=rmp&s=${share.s}.org`} timeout={2000}>
                                 {({ copied: btnCopied, copy }) => (
                                     <Tooltip label={btnCopied ? t('Copied') : t('Copy')} withArrow position="right">
                                         <ActionIcon
