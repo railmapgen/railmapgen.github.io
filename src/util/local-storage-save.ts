@@ -1,9 +1,9 @@
 import { logger } from '@railmapgen/rmg-runtime';
-import { fetchSaveList, logout, syncAfterLogin } from '../redux/account/account-slice';
+import { fetchSaveList, logout } from '../redux/account/account-slice';
 import { createStore } from '../redux/index';
 import { setLastChangedAtTimeStamp } from '../redux/rmp-save/rmp-save-slice';
-import { API_ENDPOINT, SAVE_KEY } from './constants';
 import { apiFetch } from './api';
+import { API_ENDPOINT, SAVE_KEY } from './constants';
 import { createHash } from './utils';
 
 export const getRMPSave = async (key: SAVE_KEY) => {
@@ -75,7 +75,7 @@ export const registerOnRMPSaveChange = (store: ReturnType<typeof createStore>) =
                 const save = saveList.filter(save => save.id === currentSaveId).at(0);
                 if (!save) {
                     logger.error(`Save id: ${currentSaveId} is not in saveList!`);
-                    // TODO: ask sever to reconstruct currentSaveId
+                    // TODO: ask the server to reconstruct currentSaveId
                     return;
                 }
 
@@ -84,7 +84,7 @@ export const registerOnRMPSaveChange = (store: ReturnType<typeof createStore>) =
                 const lastChangedAt = new Date(lastChangedAtTimeStamp);
                 if (lastChangedAt < lastUpdateAt) {
                     logger.warn(`Save id: ${currentSaveId} is newer in the cloud via local compare.`);
-                    store.dispatch(syncAfterLogin());
+                    // do nothing until the local catch up with the cloud
                     return;
                 }
 
@@ -96,7 +96,7 @@ export const registerOnRMPSaveChange = (store: ReturnType<typeof createStore>) =
                 }
                 if (rep.status === 409) {
                     logger.warn(`Save id: ${currentSaveId} is newer in the cloud via server response.`);
-                    store.dispatch(syncAfterLogin());
+                    // do nothing until the local catch up with the cloud
                     return;
                 }
                 if (rep.status !== 200) return;
