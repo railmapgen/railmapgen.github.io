@@ -27,7 +27,9 @@ export default function DonatorSection() {
 
                 {!isError && donators && (
                     <Group gap="xs">
-                        {donators?.map(contributor => <GithubAvatar key={contributor} login={contributor} />)}
+                        {donators?.map(contributor => (
+                            <GithubAvatar key={contributor} login={contributor} />
+                        ))}
                     </Group>
                 )}
             </RMSectionBody>
