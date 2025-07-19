@@ -23,7 +23,7 @@ import {
     MdWarning,
 } from 'react-icons/md';
 import clsx from 'clsx';
-import { ComponentProps, ReactNode, useEffect } from 'react';
+import { ComponentProps, ReactNode, useEffect, useState } from 'react';
 import { fetchSaveList } from '../../redux/account/account-slice';
 import useSmMediaQuery from '../hook/use-sm-media-query';
 
@@ -40,6 +40,8 @@ export default function NavMenu() {
     const { isShowMenu, menuView, lastShowDevtools } = useRootSelector(state => state.app);
     const { isLoggedIn, name } = useRootSelector(state => state.account);
     const dispatch = useRootDispatch();
+
+    const [showCommunityReviewAd, setShowCommunityReviewAd] = useState(true);
 
     const smMediaQuery = useSmMediaQuery();
     const [searchParams] = useSearchParams();
@@ -109,6 +111,25 @@ export default function NavMenu() {
                         {t("You're currently viewing a testing environment.")}{' '}
                         <Anchor size="sm" href={prdUrl} target="_blank">
                             {t('Back to production environment')}
+                        </Anchor>
+                    </Alert>
+                )}
+
+                {showCommunityReviewAd && (
+                    <Alert
+                        color="blue"
+                        icon="🎉"
+                        className={classes.alert}
+                        withCloseButton
+                        onClose={() => setShowCommunityReviewAd(false)}
+                    >
+                        {t('You can now earn subscriptions through community reviews.')}{' '}
+                        <Anchor
+                            size="sm"
+                            href="https://github.com/railmapgen/railmapgen.github.io/wiki/Earn-Subscriptions-Through-Community-Reviews"
+                            target="_blank"
+                        >
+                            {t('More details')}
                         </Anchor>
                     </Alert>
                 )}
