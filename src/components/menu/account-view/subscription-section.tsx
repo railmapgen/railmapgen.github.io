@@ -44,6 +44,7 @@ const SubscriptionSection = () => {
                                 <List.Item>{t('Random station names')}</List.Item>
                                 <List.Item>{t('Export super large images')}</List.Item>
                                 <List.Item>{t('Share saves with others')}</List.Item>
+                                <List.Item>{t('Sync 5 images')}</List.Item>
                             </List>
 
                             <Text>
