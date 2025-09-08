@@ -18,6 +18,9 @@ tauri-build = { version = "2", features = [] }
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 tauri = { version = "2", features = [] }
+tauri-plugin-http = { version = "2", features = ["unsafe-headers"] }
+resvg = "0.45.1"
+tauri-plugin-dialog = "2"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem and the built-in dev server is disabled.
@@ -28,4 +31,4 @@ custom-protocol = [ "tauri/custom-protocol" ]
 # Required for mobile release
 [lib]
 name = "app_lib"
-crate-type = ["staticlib", "cdylib", "rlib", "lib"]
+crate-type = ["staticlib", "cdylib", "rlib"]

@@ -6,6 +6,15 @@
     "main"
   ],
   "permissions": [
-    "core:default"
+    "core:default",
+    {
+      "identifier": "http:default",
+      "allow": [
+        {
+          "url": "https://railmapgen.org"
+        }
+      ]
+    },
+    "dialog:default"
   ]
 }
