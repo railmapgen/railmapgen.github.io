@@ -2,7 +2,7 @@
   "build": {
     "beforeBuildCommand": "",
     "beforeDevCommand": "",
-    "frontendDist": "../ui"
+    "frontendDist": "ui"
   },
   "bundle": {
     "active": true,
@@ -28,7 +28,10 @@
       "providerShortName": null,
       "signingIdentity": "-"
     },
-    "resources": [],
+    "resources": {
+      "ui/fonts/*": "fonts/",
+      "ui/rmp/fonts/*": "fonts/"
+    },
     "shortDescription": "",
     "linux": {
       "deb": {
@@ -36,12 +39,13 @@
       }
     }
   },
-  "productName": "railmapgen",
+  "productName": "Rail Map Toolkit",
   "mainBinaryName": "railmapgen",
   "version": "0.1.0",
   "identifier": "org.railmapgen",
   "plugins": {},
   "app": {
+    "withGlobalTauri": true,
     "windows": [
       {
         "fullscreen": false,

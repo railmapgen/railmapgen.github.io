@@ -1,9 +1,9 @@
 name: Publish App
 on:
   workflow_dispatch:
-  # schedule:
-  #   # Runs "at 00:00 on day-of-month 1" (see https://crontab.guru)
-  #   - cron: '0 0 1 * *'
+  schedule:
+    # Runs "at 00:00 on day-of-month 1" (see https://crontab.guru)
+    - cron: '0 0 1 * *'
 
 jobs:
   publish-tauri:
@@ -27,10 +27,6 @@ jobs:
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v4
-      - name: Setup node
-        uses: actions/setup-node@v4
-        with:
-          node-version: lts/*
       - name: Install Rust stable
         uses: dtolnay/rust-toolchain@stable
         with:
@@ -38,13 +34,16 @@ jobs:
       - name: Rust cache
         uses: swatinem/rust-cache@v2
         with:
-          workspaces: './tauri -> target'
+          key: ${{ runner.os }}-cargo-${{ hashFiles('tauri/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
       - name: install dependencies (ubuntu only)
         if: matrix.platform == 'ubuntu-latest'
         run: |
           sudo apt-get update
           sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
       - name: Pull gh-pages from github
+        working-directory: ./tauri
         run: |
           git clone -b gh-pages --depth 1 https://github.com/railmapgen/railmapgen.github.io.git ui
           cd ui
@@ -62,9 +61,10 @@ jobs:
       - name: Get date
         run: python -c "from datetime import date;import os;f=open(os.getenv('GITHUB_ENV'), 'a');f.write('date='+date.today().strftime('%Y%m%d'));f.close()"
       - name: Use date as version in tauri's package
+        working-directory: ./tauri
         run: |
           python -c "from datetime import date;import json;
-          f=open('tauri/tauri.conf.json', 'r+');
+          f=open('tauri.conf.json', 'r+');
           conf=json.load(f);
           d=date.today()
           conf['version']=f'{d.year-2000}.{d.month}.{d.day}';
@@ -73,6 +73,7 @@ jobs:
           f.truncate();
           f.close()"
       - name: Update instance in info.json
+        working-directory: ./tauri
         run: |
           python -c "import json;
           f=open('ui/info.json', 'r+');info=json.load(f);info['instance']='Tauri';f.seek(0);json.dump(info,f,indent=2);f.truncate();f.close();
@@ -108,11 +109,14 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          projectPath: tauri
           tagName: tauri-${{ env.date }}
-          releaseName: railmapgen.local.${{ env.date }}
+          releaseName: Rail Map Toolkit Desktop Application ${{ env.date }}
           releaseBody: |
-            Offline Rail Map Toolkit packages that are automatically built and published.
+            This application bundles all necessary resources into a single executable file, providing a seamless and self-contained experience whether you're offline or behind restrictive networks.
+            
+            Beyond fundamental access, it unlocks extra features, including enhanced large image rendering capabilities leveraging native architecture support for improved performance. Please note that some advanced features may require a subscription to access.
+
+            This is built and published automatically, see the following table for the version of each component.
 
             | Component          | Version                  |
             |--------------------|--------------------------|
@@ -124,11 +128,6 @@ jobs:
             |rmp-gallery         |`${{ env.rmp_gallery }}`  |
             |rmp-designer        |`${{ env.rmp_designer }}` |
             |rma                 |`${{ env.rma }}`          |
-
-            Rail Map Toolkit is able to run offline with these packages, but we do RECOMMEND using the [Official Website](https://railmapgen.org/) as it provides the latest features of Rail Map Toolkit. The packages below are only suitable for extreme situations where users are behind the notorious firewall or simply offline. All resources are cached and bundled.
           releaseDraft: false
           prerelease: false
           args: --target ${{ matrix.target }}
-          owner: railmapgen
-          repo: railmapgen.github.io
-          releaseCommitish: main
