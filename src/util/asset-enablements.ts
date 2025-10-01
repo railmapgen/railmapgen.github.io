@@ -169,6 +169,11 @@ export const assetEnablement: Record<string, AssetDetail> = {
         url: 'https://space.bilibili.com/3546659889875715',
         assetType: 'link',
     },
+    metrowordle: {
+        name: 'MetroWordle',
+        url: 'https://metrowordle.fun',
+        assetType: 'link',
+    },
 };
 
 export const tempAssets: Record<string, string> = {
