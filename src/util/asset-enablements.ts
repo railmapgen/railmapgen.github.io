@@ -49,6 +49,11 @@ export const assetEnablement: Record<string, AssetDetail> = {
         url: '/rma/',
         assetType: 'app',
     },
+    rsg: {
+        name: 'Rail Sign Generator',
+        url: '/rsg/',
+        assetType: 'app',
+    },
     'rmg-palette': {
         name: 'Palette',
         url: '/rmg-palette/',
