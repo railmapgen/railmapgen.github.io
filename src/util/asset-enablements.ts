@@ -159,6 +159,12 @@ export const assetEnablement: Record<string, AssetDetail> = {
         assetType: 'link',
         allowedInstances: ['Org', 'GitHub', 'GitLab', 'localhost', 'unknown'],
     },
+    'community-review': {
+        name: 'Community review',
+        url: 'https://github.com/railmapgen/railmapgen.github.io/wiki/Earn-Subscriptions-Through-Community-Reviews',
+        assetType: 'link',
+        allowedInstances: ['Org', 'GitHub', 'GitLab', 'localhost', 'unknown'],
+    },
     'mini-metro-web': {
         name: 'Mini Metro Web',
         url: 'https://mini-metro-web.gitlab.io/',
