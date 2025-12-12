@@ -1,4 +1,4 @@
-import { Anchor, Button, Group, List, Modal, Text, TextInput } from '@mantine/core';
+import { Anchor, Button, Divider, Group, List, Modal, Text, TextInput } from '@mantine/core';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { MdOpenInNew } from 'react-icons/md';
@@ -49,23 +49,33 @@ const RedeemModal = (props: { opened: boolean; onClose: () => void }) => {
     };
 
     return (
-        <Modal opened={opened} onClose={onClose} title={t('Redeem your subscription')}>
-            <Text>{t('CDKey could be purchased in the following sites:')}</Text>
+        <Modal opened={opened} onClose={onClose} title={t('Redeem your subscription')} size="md">
+            <Text>{t('CDKeys could be obtained through the following ways:')}</Text>
             <List withPadding mt="xs">
                 <List.Item>
                     <Anchor href="https://afdian.com/item/9c8b220c614311efab2d52540025c377" target="_blank">
                         爱发电 <MdOpenInNew />
                     </Anchor>
                 </List.Item>
+                <List.Item>
+                    <Anchor
+                        href="https://github.com/railmapgen/railmapgen.github.io/wiki/Earn-Subscriptions-Through-Community-Reviews"
+                        target="_blank"
+                    >
+                        {t('Community Reviews')} <MdOpenInNew />
+                    </Anchor>
+                </List.Item>
             </List>
 
-            <Group align="flex-end" gap="sm" mt="xs">
+            <Divider my="md" />
+
+            <Group align="flex-end" gap="sm" mt="xs" mb="md">
                 <TextInput
-                    label="CDKey"
+                    label={t('CDKey')}
                     placeholder={t('Enter your CDKey here')}
                     value={CDKey}
                     onChange={({ currentTarget: { value } }) => setCDKey(value)}
-                    style={{ minWidth: 240 }}
+                    style={{ minWidth: 240, flex: 1 }}
                 />
                 <Button onClick={() => handleRedeem(CDKey)}>{t('Redeem')}</Button>
             </Group>

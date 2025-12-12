@@ -163,8 +163,10 @@
     "Renew": "更新",
     "Renew now and get an extra 45 days!": "今すぐ更新してさらに 45 日間延長！",
     "Redeem your subscription": "契約を引き換える",
-    "CDKey could be purchased in the following sites:": "CD鍵は以下の網頁で購入できます：",
-    "Enter your CDKey here": "ここにCD鍵を入力",
+    "CDKeys could be obtained through the following ways:": "引換コードは以下の方法で入手できます：",
+    "Community Reviews": "共同審査",
+    "CDKey": "引換コード",
+    "Enter your CDKey here": "ここに引換コードを入力",
 
     "Oops! It seems there's a conflict": "おっと！競合が発生したようです",
     "The local save is newer than the cloud one. Which one would you like to keep?": "本地の保存が雲の保存より新しいです。どちらを保持しますか？",
