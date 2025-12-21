@@ -1,6 +1,6 @@
 import rmgRuntime, { logger } from '@railmapgen/rmg-runtime';
 import { clearAllListeners } from '@reduxjs/toolkit';
-import { checkTokenAndRefreshStore } from '../util/api';
+import { checkTokenAndRefresh } from '../util/api';
 import { assetEnablement, getAllowedAssetTypes, getAvailableAsset } from '../util/asset-enablements';
 import { LocalStorageKey, QUERY_STRINGS, WorkspaceTab } from '../util/constants';
 import { checkInstance } from '../util/instance-checker';
@@ -100,7 +100,7 @@ export const initAccountStore = (store: RootStore) => {
     const intervalMS = 60000;
     // check token every minute
     // first check will be done in src\index.tsx in sync
-    setInterval(() => checkTokenAndRefreshStore(store), intervalMS);
+    setInterval(() => checkTokenAndRefresh(store), intervalMS);
 };
 
 export const initRMPSaveStore = (store: RootStore) => {

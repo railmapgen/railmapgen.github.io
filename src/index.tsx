@@ -10,7 +10,7 @@ import store from './redux';
 import { fetchSubscription, syncAfterLogin } from './redux/account/account-slice';
 import { addRemoteFont, closeApp, isShowDevtools, openApp, updateTabMetadata } from './redux/app/app-slice';
 import initStore from './redux/init';
-import { checkTokenAndRefreshStore } from './util/api';
+import { checkTokenAndRefresh } from './util/api';
 import { getAllowedAssetTypes, getAvailableAsset } from './util/asset-enablements';
 import { Events, FRAME_ID_PREFIX } from './util/constants';
 import { registerOnRMPSaveChange } from './util/local-storage-save';
@@ -42,11 +42,12 @@ const renderApp = () => {
 rmgRuntime.ready().then(async () => {
     initStore(store);
 
-    // If user is logged in previously, fetch and sync the save (resolve conflicts might be needed).
+    // If the user is logged in previously, check and refresh the token if needed,
+    // then fetch and sync the save (resolve conflicts might be needed), and update subscription.
     // Otherwise this is a no-op.
-    await checkTokenAndRefreshStore(store);
+    // Note: If the user is offline, the token refresh will fail and the user will be logged out.
+    await checkTokenAndRefresh(store, true);
     await store.dispatch(syncAfterLogin());
-    // Fetch subscription info only if user is logged in.
     store.dispatch(fetchSubscription());
 
     renderApp();

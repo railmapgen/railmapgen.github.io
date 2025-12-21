@@ -46,9 +46,10 @@ const refreshToken = async (refreshToken: string) => {
         method: 'POST',
         headers: defaultHeaders,
         body: JSON.stringify({ refreshToken }),
+        signal: AbortSignal.timeout(3000),
     });
     if (refreshRep.status !== 200) {
-        return;
+        throw new Error(`Failed to refresh token with status ${refreshRep.status}: ${await refreshRep.text()}`);
     }
     const refresh = (await refreshRep.json()) as {
         access: {
@@ -63,12 +64,24 @@ const refreshToken = async (refreshToken: string) => {
     return refresh;
 };
 
-export const checkTokenAndRefreshStore = async (store: ReturnType<typeof createStore>) => {
+/**
+ * Check if the token is expired, and refresh it if needed using the refresh token.
+ * Logout the user if the refresh token is also expired or the refresh fails.
+ *
+ * Param force is used to check the connection on app load and logout the user if offline.
+ * This should render the app even if offline and invalidate the subsequent syncAfterLogin
+ * and fetchSubscription in src/index.tsx.
+ *
+ * @param store The redux store
+ * @param force Whether to force refresh the token regardless of expiry
+ * @returns void
+ */
+export const checkTokenAndRefresh = async (store: ReturnType<typeof createStore>, force = false) => {
     const account = store.getState().account;
     if (!account.isLoggedIn) return;
     const expires = new Date(account.expires!);
     logger.debug(`Current time: ${new Date()}, access token expires time: ${expires}`);
-    if (new Date().getTime() > expires.getTime()) {
+    if (force || new Date().getTime() > expires.getTime()) {
         logger.debug(`Token expires on ${expires} needs to be refreshed on ${new Date()}`);
         const refreshExpires = new Date(account.refreshExpires!);
         if (new Date().getTime() > refreshExpires.getTime()) {
@@ -76,13 +89,14 @@ export const checkTokenAndRefreshStore = async (store: ReturnType<typeof createS
             store.dispatch(logout());
             return;
         }
-        const refresh = await refreshToken(account.refreshToken!);
-        logger.debug(`Token refreshed with ${JSON.stringify(refresh)}`);
-        if (!refresh) {
+        try {
+            const refresh = await refreshToken(account.refreshToken!);
+            logger.debug(`Token refreshed with ${JSON.stringify(refresh)}`);
+            store.dispatch(setToken({ access: refresh.access.token, refresh: refresh.refresh.token }));
+            store.dispatch(setExpires({ expires: refresh.access.expires, refreshExpires: refresh.refresh.expires }));
+        } catch (err) {
+            logger.error(`Failed to refresh token: ${err}, logout!`);
             store.dispatch(logout());
-            return;
         }
-        store.dispatch(setToken({ access: refresh.access.token, refresh: refresh.refresh.token }));
-        store.dispatch(setExpires({ expires: refresh.access.expires, refreshExpires: refresh.refresh.expires }));
     }
 };
