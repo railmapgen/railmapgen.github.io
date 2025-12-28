@@ -39,6 +39,11 @@
   <div class="spinner"></div>
 </div>
 
+<script>
+  if (!crypto.randomUUID) {
+    crypto.randomUUID = () => Math.random().toString(36).slice(2);
+  }
+</script>
 <script type="module" src="./src/index.tsx"></script>
 </body>
 </html>
