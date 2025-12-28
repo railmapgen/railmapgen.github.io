@@ -1,6 +1,6 @@
 .body {
     flex-direction: column;
-    padding: 0 var(--mantine-spacing-xs) var(--mantine-spacing-xs) var(--mantine-spacing-xs);
+    padding: 0 var(--mantine-spacing-xs) calc(env(safe-area-inset-bottom) + var(--mantine-spacing-xs)) var(--mantine-spacing-xs);
     overflow-y: auto;
 
     > div:not(:first-of-type) {
