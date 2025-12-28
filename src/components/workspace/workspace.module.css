@@ -13,6 +13,10 @@
     &.show {
         display: flex;
     }
+
+    &.pb-safe-area-inset {
+        padding-bottom: env(safe-area-inset-bottom);
+    }
 }
 
 .app-container iframe {

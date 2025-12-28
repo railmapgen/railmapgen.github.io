@@ -63,7 +63,7 @@
     flex-shrink: 0;
     display: flex;
     flex-direction: column;
-    padding: var(--mantine-spacing-md) var(--mantine-spacing-xs);
+    padding: var(--mantine-spacing-md) var(--mantine-spacing-xs) max(env(safe-area-inset-bottom), var(--mantine-spacing-md)) var(--mantine-spacing-xs);
     overflow-x: hidden;
     overflow-y: auto;
 
@@ -74,7 +74,7 @@
 
 .main {
     width: 100%;
-    padding: 0 var(--mantine-spacing-xs) var(--mantine-spacing-xs) var(--mantine-spacing-xs);
+    padding: 0 var(--mantine-spacing-xs) max(env(safe-area-inset-bottom), var(--mantine-spacing-xs)) var(--mantine-spacing-xs);
     overflow-x: hidden;
     overflow-y: auto;
     background: var(--mantine-color-white);

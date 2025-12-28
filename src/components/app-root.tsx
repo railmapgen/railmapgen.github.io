@@ -15,6 +15,7 @@ import TerminationModal from './modal/termination-modal';
 import { RMPage, RMWindow } from '@railmapgen/mantine-components';
 import { ActionIcon } from '@mantine/core';
 import Notifications from './notifications/notifications';
+import clsx from 'clsx';
 
 export default function AppRoot() {
     const { t } = useTranslation();
@@ -37,7 +38,7 @@ export default function AppRoot() {
 
     return (
         <BrowserRouter basename={import.meta.env.BASE_URL}>
-            <RMWindow className={isShowMenu ? 'show-menu' : ''}>
+            <RMWindow className={clsx(classes.root, isShowMenu && 'show-menu')}>
                 <ActionIcon
                     className={classes.burger}
                     variant={isShowMenu ? 'subtle' : 'filled'}

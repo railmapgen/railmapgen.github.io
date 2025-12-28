@@ -1,3 +1,4 @@
+import classes from './app-root.module.css';
 import WindowHeader from './window-header';
 import FontsDemo from './fonts-demo';
 import MetadataDemo from './metadata-demo';
@@ -10,7 +11,7 @@ export default function AppRoot() {
             <RMWindow>
                 <WindowHeader />
                 <RMPage w={{ base: '100%', sm: 600 }} style={{ alignSelf: 'center' }}>
-                    <RMPageBody direction="column" px="xs" pb="xs" style={{ overflowY: 'auto' }}>
+                    <RMPageBody className={classes.body} direction="column">
                         <FontsDemo />
                         <MetadataDemo />
                         <NotificationsDemo />
