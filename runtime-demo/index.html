@@ -45,5 +45,10 @@
   <div class="spinner"></div>
 </div>
 
+<script>
+  if (!crypto.randomUUID) {
+    crypto.randomUUID = () => Math.random().toString(36).slice(2);
+  }
+</script>
 </body>
 </html>
