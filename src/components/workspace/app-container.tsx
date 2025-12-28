@@ -20,7 +20,9 @@ export default function AppContainer(props: AppContainerProps) {
             className={clsx(
                 classes['app-container'],
                 isActive && classes.show,
-                !assetEnablement[tab.app]?.supportSafeAreaInset && classes['pb-safe-area-inset']
+                assetEnablement[tab.app] &&
+                    !assetEnablement[tab.app].supportSafeAreaInset &&
+                    classes['pb-safe-area-inset']
             )}
         >
             <iframe

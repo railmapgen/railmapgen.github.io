@@ -16,6 +16,7 @@ interface AssetDetail {
     showContributors?: boolean;
     legacyContributors?: string;
     showDonators?: boolean;
+    isTempAsset?: boolean;
     supportSafeAreaInset?: boolean;
 }
 
@@ -123,6 +124,7 @@ export const assetEnablement: Record<string, AssetDetail> = {
         url: '/rmg-runtime/',
         assetType: 'devtool',
         allowedInstances: ['Org', 'GitHub', 'GitLab', 'localhost', 'unknown'],
+        supportSafeAreaInset: true,
     },
     'runtime-demo': {
         name: 'Runtime Demo',

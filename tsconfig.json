@@ -24,6 +24,7 @@
     },
     "include": [
         "src",
+        "contributors",
         "runtime-demo"
     ],
     "references": [
