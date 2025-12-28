@@ -1,3 +1,7 @@
+.root {
+    padding-top: env(safe-area-inset-top);
+}
+
 .burger {
     position: absolute;
     height: 40px;

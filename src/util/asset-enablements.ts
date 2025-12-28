@@ -16,6 +16,7 @@ interface AssetDetail {
     showContributors?: boolean;
     legacyContributors?: string;
     showDonators?: boolean;
+    supportSafeAreaInset?: boolean;
 }
 
 const getTauriUrl = () => {
@@ -129,6 +130,7 @@ export const assetEnablement: Record<string, AssetDetail> = {
         assetType: 'devtool',
         allowedInstances: ['Org', 'GitHub', 'GitLab', 'localhost', 'unknown'],
         allowMultiInstances: true,
+        supportSafeAreaInset: true,
     },
     tutorial: {
         name: 'Tutorial',

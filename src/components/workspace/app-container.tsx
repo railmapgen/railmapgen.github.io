@@ -2,6 +2,7 @@ import classes from './workspace.module.css';
 import { useMemo } from 'react';
 import { FRAME_ID_PREFIX, WorkspaceTab } from '../../util/constants';
 import clsx from 'clsx';
+import { assetEnablement } from '../../util/asset-enablements';
 
 interface AppContainerProps {
     tab: WorkspaceTab;
@@ -15,7 +16,13 @@ export default function AppContainer(props: AppContainerProps) {
     const frameUrl = useMemo(() => tab.url ?? '/' + tab.app + '/', [tab.app]);
 
     return (
-        <div className={clsx(classes['app-container'], isActive && classes.show)}>
+        <div
+            className={clsx(
+                classes['app-container'],
+                isActive && classes.show,
+                !assetEnablement[tab.app]?.supportSafeAreaInset && classes['pb-safe-area-inset']
+            )}
+        >
             <iframe
                 id={FRAME_ID_PREFIX + tab.id}
                 src={frameUrl}
