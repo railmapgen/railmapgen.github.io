@@ -1,6 +1,6 @@
 .root {
     position: fixed;
-    top: var(--mantine-spacing-lg);
+    top: calc(env(safe-area-inset-top) + var(--mantine-spacing-lg));
     right: var(--mantine-spacing-xs);
     z-index: var(--mantine-z-index-popover);
     margin-left: var(--mantine-spacing-md);

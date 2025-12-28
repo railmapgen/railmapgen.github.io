@@ -30,14 +30,11 @@ export default function SlidingNotification({ notification }: SlidingNotificatio
 
         const closeTimeoutId = setTimeout(() => {
             setOpened(false);
-        }, OPEN_DELAY_MS + notification.duration);
 
-        setTimeout(
-            () => {
+            setTimeout(() => {
                 dispatch(removeNotification(notification.id));
-            },
-            OPEN_DELAY_MS + notification.duration + ANIMATION_DURATION_MS
-        );
+            }, ANIMATION_DURATION_MS);
+        }, OPEN_DELAY_MS + notification.duration);
 
         return () => {
             clearTimeout(closeTimeoutId);
