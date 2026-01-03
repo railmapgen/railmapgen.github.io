@@ -1,9 +1,9 @@
 .root {
-    padding-top: env(safe-area-inset-top);
 }
 
 .burger {
     position: absolute;
+    top: env(safe-area-inset-top);
     height: 40px;
     width: 40px;
     border-radius: 0;

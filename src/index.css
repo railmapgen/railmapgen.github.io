@@ -30,6 +30,8 @@ body {
     height: 100%;
     width: 100%;
     width: -webkit-fill-available;
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
 }
 
 div#root {
@@ -37,8 +39,6 @@ div#root {
     width: 100%;
     background: inherit;
     overflow: hidden;
-    padding-left: env(safe-area-inset-left);
-    padding-right: env(safe-area-inset-right);
 }
 
 * {

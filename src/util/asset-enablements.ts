@@ -62,6 +62,7 @@ export const assetEnablement: Record<string, AssetDetail> = {
         assetType: 'app',
         showContributors: true,
         legacyContributors: 'legacy-contributor-list.txt',
+        supportSafeAreaInset: true,
     },
     'rmg-palette-upload': {
         name: 'Palette - Upload',
