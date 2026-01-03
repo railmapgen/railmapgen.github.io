@@ -68,6 +68,7 @@ export const assetEnablement: Record<string, AssetDetail> = {
         name: 'Palette - Upload',
         url: '/rmg-palette/#/new',
         assetType: 'app',
+        supportSafeAreaInset: true,
     },
     'rmg-templates': {
         name: 'RMG Templates',
