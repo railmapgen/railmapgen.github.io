@@ -52,7 +52,6 @@
     "Fonts are slow to load? Learn how to speed it up!": "글꼴 로딩이 느린가요? 속도를 높이는 방법을 알아보세요!",
     "GitHub Pages mirror": "GitHub Pages 미러",
     "GitLab Pages mirror": "GitLab Pages 미러",
-    "Happy Chinese New Year!": "새해 복 많이 받으세요!",
     "Help & support": "도움말 및 지원",
     "Includes at least 8 characters": "최소 8자 이상 포함",
     "Join us on Slack": "Slack 그룹에 참여하세요",
@@ -188,5 +187,6 @@
     "Please be aware that sharing this link does not create a separate copy of your work. Instead, everyone who opens the link will always see the most up-to-date version. So, if you make changes after sharing the link, those changes will be visible to everyone who has the link.": "이 링크를 공유해도 작업의 별도 사본이 만들어지지 않습니다. 대신 링크를 여는 모든 사람은 항상 최신 버전을 보게 됩니다. 따라서 링크를 공유한 후 변경하면 해당 변경 사항이 링크를 가진 모든 사람에게 표시됩니다.",
     "Link will be valid as long as you have an active subscription. Otherwise, the link will be invalid after 1 day.": "활성 구독이 있는 한 링크는 유효합니다. 그렇지 않으면 링크는 1일 후에 만료됩니다.",
 
-    "happyChineseNewYear": "🎇 새해 복 많이 받으세요! 2026년 춘절 기간(2월 15일~23일) 동안 모든 사용자에게 클라우드 기능이 무료로 제공됩니다."
+    "happyChineseNewYear": "새해 복 많이 받으세요! 2026년 춘절 기간(2월 15일~23일) 동안, 대부분의 계약 '출발 진행(出発進行)' 한정 기능을 모든 사용자에게 무료로 개방합니다.",
+    "happyChineseNewYearClickHere": "자세한 내용은 여기를 클릭하세요."
 }

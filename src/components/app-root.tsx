@@ -15,7 +15,6 @@ import TerminationModal from './modal/termination-modal';
 import { RMPage, RMWindow } from '@railmapgen/mantine-components';
 import { ActionIcon } from '@mantine/core';
 import Notifications from './notifications/notifications';
-import { addNotification } from '../redux/notification/notification-slice';
 import clsx from 'clsx';
 
 export default function AppRoot() {
@@ -29,17 +28,6 @@ export default function AppRoot() {
         if (!rmgRuntime.isAnalyticsQADone()) {
             setIsCookiesModalOpen(true);
         }
-    }, []);
-
-    useEffect(() => {
-        dispatch(
-            addNotification({
-                type: 'warning',
-                title: t('Happy Chinese New Year!'),
-                message: t('happyChineseNewYear'),
-                duration: 10000,
-            })
-        );
     }, []);
 
     const handleToggle = () => {

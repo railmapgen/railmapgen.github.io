@@ -53,7 +53,6 @@
     "Fonts are slow to load? Learn how to speed it up!": "字体加载太慢？看看如何提速！",
     "GitHub Pages mirror": "GitHub Pages 镜像",
     "GitLab Pages mirror": "GitLab Pages 镜像",
-    "Happy Chinese New Year!": "新年快乐！",
     "Help & support": "帮助与支持",
     "Includes at least 8 characters": "含有至少8个字符",
     "Join us on Slack": "加入我们的 Slack 群组",
@@ -189,5 +188,6 @@
     "Please be aware that sharing this link does not create a separate copy of your work. Instead, everyone who opens the link will always see the most up-to-date version. So, if you make changes after sharing the link, those changes will be visible to everyone who has the link.": "请注意，分享此链接不会创建您作品的副本。相反，每个打开链接的人都将始终看到最新版本。因此，如果您在分享链接后进行更改，这些更改将对拥有该链接的每个人可见。",
     "Link will be valid as long as you have an active subscription. Otherwise, the link will be invalid after 1 day.": "只要您拥有有效订阅，链接便会一直有效。否则，链接将在创建后 1 天内失效。",
 
-    "happyChineseNewYear": "🎇 恭贺新禧！2026年春节期间（2月15日至23日），云端功能向所有用户限时免费开放。"
+    "happyChineseNewYear": "恭贺新禧！2026年春节期间（2月15日至23日），绝大多数来自出发进行订阅的功能向所有用户限时免费开放。",
+    "happyChineseNewYearClickHere": "点击此处了解详情。"
 }
