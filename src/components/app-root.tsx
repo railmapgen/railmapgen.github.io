@@ -35,20 +35,23 @@ export default function AppRoot() {
         }
     }, []);
 
-    // CNY 2026 promotion: Show notification once per session
+    // CNY 2026 promotion: Show notification once per session during the promotional period
     const [cnyNotificationShown, setCnyNotificationShown] = useState(false);
 
     useEffect(() => {
         if (!cnyNotificationShown) {
-            const timeoutId = setTimeout(() => {
-                dispatch(
-                    addNotification({
-                        type: 'warning',
-                        title: t('Happy Chinese New Year!'),
-                        message: t('happyChineseNewYear'),
-                        duration: 10000,
-                    })
-                );
+            const timeoutId = setTimeout(async () => {
+                const isInPeriod = await checkCNY2026Period();
+                if (isInPeriod) {
+                    dispatch(
+                        addNotification({
+                            type: 'warning',
+                            title: t('Happy Chinese New Year!'),
+                            message: t('happyChineseNewYear'),
+                            duration: 10000,
+                        })
+                    );
+                }
                 setCnyNotificationShown(true);
             }, 1000);
             return () => clearTimeout(timeoutId);
