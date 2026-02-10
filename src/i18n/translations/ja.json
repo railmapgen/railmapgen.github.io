@@ -52,7 +52,6 @@
     "Fonts are slow to load? Learn how to speed it up!": "フォントの読み込みが遅いですか？高速化する方法をご覧ください！",
     "GitHub Pages mirror": "GitHub Pages ミラー",
     "GitLab Pages mirror": "GitLab Pages ミラー",
-    "Happy Chinese New Year!": "新年あけましておめでとうございます！",
     "Help & support": "助けと支援",
     "Includes at least 8 characters": "8 文字以上を含める",
     "Join us on Slack": "Slack に参加してください",
@@ -186,5 +185,8 @@
     "Delete Share": "共有を削除",
     "Create Share Link": "共有リンクを作成",
     "Please be aware that sharing this link does not create a separate copy of your work. Instead, everyone who opens the link will always see the most up-to-date version. So, if you make changes after sharing the link, those changes will be visible to everyone who has the link.": "ご注意：このリンクを共有しても、作品の個別のコピーは作成されません。代わりに、リンクを開いた人は常に最新バージョンを閲覧することになります。そのため、リンク共有後に変更を加えた場合、その変更はリンクをお持ちのすべての方に表示されます。",
-    "Link will be valid as long as you have an active subscription. Otherwise, the link will be invalid after 1 day.": "有効なご購読がある限り、リンクは有効です。それ以外の場合、リンクは 1 日後に無効になります。"
+    "Link will be valid as long as you have an active subscription. Otherwise, the link will be invalid after 1 day.": "有効なご購読がある限り、リンクは有効です。それ以外の場合、リンクは 1 日後に無効になります。",
+
+    "happyChineseNewYear": "春節おめでとうございます！2026年の春節期間中（2月15日〜23日）、ほとんどの契約「出発進行」限定機能が、全ユーザーに無料で開放されます。",
+    "happyChineseNewYearClickHere": "詳細はこちらをクリック。"
 }
