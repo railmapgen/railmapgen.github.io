@@ -1,20 +1,10 @@
-import classes from './nav-menu.module.css';
-import rmgRuntime from '@railmapgen/rmg-runtime';
-import { useTranslation } from 'react-i18next';
-import { useSearchParams } from 'react-router-dom';
-import { useRootDispatch, useRootSelector } from '../../redux';
-import { isShowDevtools, MenuView, openTempApp, setMenuView, toggleMenu } from '../../redux/app/app-slice';
-import ResolveConflictModal from '../modal/resolve-conflict-modal';
-import AccountView from './account-view/account-view';
-import AppsSection from './main-view/apps-section';
-import LinksSection from './main-view/links-section';
-import SettingsView from './settings-view';
-import FontsSection from './support-view/fonts-section';
-import SupportSection from './support-view/support-section';
-import { RMEnvBadge, RMWindowHeader } from '@railmapgen/mantine-components';
 import { ActionIcon, Alert, Anchor, Avatar, Divider, Title, Tooltip } from '@mantine/core';
+import { RMEnvBadge, RMWindowHeader } from '@railmapgen/mantine-components';
+import rmgRuntime from '@railmapgen/rmg-runtime';
+import clsx from 'clsx';
+import { ComponentProps, ReactNode, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
-    MdCelebration,
     MdOutlineApps,
     MdOutlineBuild,
     MdOutlineHelpOutline,
@@ -23,10 +13,19 @@ import {
     MdOutlineSettings,
     MdWarning,
 } from 'react-icons/md';
-import clsx from 'clsx';
-import { ComponentProps, ReactNode, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { useRootDispatch, useRootSelector } from '../../redux';
 import { fetchSaveList } from '../../redux/account/account-slice';
+import { isShowDevtools, MenuView, openTempApp, setMenuView, toggleMenu } from '../../redux/app/app-slice';
 import useSmMediaQuery from '../hook/use-sm-media-query';
+import ResolveConflictModal from '../modal/resolve-conflict-modal';
+import AccountView from './account-view/account-view';
+import AppsSection from './main-view/apps-section';
+import LinksSection from './main-view/links-section';
+import classes from './nav-menu.module.css';
+import SettingsView from './settings-view';
+import FontsSection from './support-view/fonts-section';
+import SupportSection from './support-view/support-section';
 
 type AsideButton = {
     key: MenuView;
