@@ -73,6 +73,7 @@
     "Resource administrators": "資源管理員",
     "Resource contributors": "資源貢獻者",
     "Restart RMT in this window": "於該視窗重新啟動工具組",
+    "RMT Blog": "RMT 博客",
     "Running": "運行中",
     "Save": "儲存",
     "Select an app to start your own rail map design!": "選擇一個應用程式以開始你的路綫圖設計！",
@@ -188,6 +189,6 @@
     "Please be aware that sharing this link does not create a separate copy of your work. Instead, everyone who opens the link will always see the most up-to-date version. So, if you make changes after sharing the link, those changes will be visible to everyone who has the link.": "請注意，分享此連結不會建立您作品的副本。相反，每個開啟連結的人都將始終看到最新版本。因此，如果您在分享連結後進行變更，這些變更將對擁有該連結的每個人可見。",
     "Link will be valid as long as you have an active subscription. Otherwise, the link will be invalid after 1 day.": "只要您擁有有效訂閱，連結便會一直有效。否則，連結將在 1 天後失效。",
 
-    "happyChineseNewYear": "恭賀新禧！2026年春節期間（2月15日至23日），絕大多數來自出發進行訂閱的功能向所有用戶限時免費開放。",
-    "happyChineseNewYearClickHere": "點擊此處了解詳情。"
+    "happyChineseNewYear": "恭喜發財！2026年農曆新年期間（2月15日至2月23日），絕大多數來自出發進行訂閱的功能向所有用戶限時免費開放。",
+    "happyChineseNewYearClickHere": "了解詳情"
 }

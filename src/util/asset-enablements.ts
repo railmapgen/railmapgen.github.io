@@ -150,6 +150,12 @@ export const assetEnablement: Record<string, AssetDetail> = {
         assetType: 'link',
         allowedInstances: ['GitHub', 'GitLab', 'localhost', 'unknown'],
     },
+    blog: {
+        name: 'RMT Blog',
+        url: 'https://railmapgen.org/rmt-blog/',
+        assetType: 'link',
+        allowedInstances: ['Org', 'GitHub', 'GitLab', 'localhost', 'unknown'],
+    },
     'github-pages': {
         name: 'GitHub Pages mirror',
         url: 'https://railmapgen.github.io',
