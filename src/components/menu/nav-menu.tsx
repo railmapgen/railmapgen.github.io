@@ -35,10 +35,7 @@ type AsideButton = {
 };
 
 export default function NavMenu() {
-    const {
-        t,
-        i18n: { language },
-    } = useTranslation();
+    const { t } = useTranslation();
 
     const { isShowMenu, menuView, lastShowDevtools } = useRootSelector(state => state.app);
     const { isLoggedIn, name } = useRootSelector(state => state.account);
@@ -50,16 +47,6 @@ export default function NavMenu() {
         (rmgRuntime.getInstance() === 'GitLab' ? 'https://railmapgen.gitlab.io/' : 'https://railmapgen.github.io/') +
         '?' +
         searchParams.toString();
-
-    const lang =
-        {
-            'zh-Hans': 'zh-CN',
-            'zh-Hant': 'zh-HK',
-            ja: 'ja-JP',
-            ko: 'ko-KR',
-            en: 'en-US',
-        }[language] || 'zh-CN';
-    const cnyBlogUrl = `https://railmapgen.org/rmt-blog/${lang}/rmg-7th-newyear/`;
 
     useEffect(() => {
         if (!isLoggedIn) return;
@@ -125,13 +112,6 @@ export default function NavMenu() {
                         </Anchor>
                     </Alert>
                 )}
-
-                <Alert color="red" icon={'🎇'} className={classes.alert}>
-                    {t('happyChineseNewYear')}{' '}
-                    <Anchor size="sm" href={cnyBlogUrl} target="_blank">
-                        {t('happyChineseNewYearClickHere')}
-                    </Anchor>
-                </Alert>
 
                 <div className={classes.body}>
                     <div className={classes.aside}>
