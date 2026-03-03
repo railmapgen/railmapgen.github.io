@@ -3,7 +3,7 @@ import GithubAvatar from './github-avatar';
 import { Group, Title } from '@mantine/core';
 import { RMSection, RMSectionHeader } from '@railmapgen/mantine-components';
 
-const RESOURCE_ADMIN = ['Swiftiecott', 'linchen1965', '28yfang', 'Windows-Taskmgr'];
+const RESOURCE_ADMIN = ['Swiftiecott', 'linchen1965', '28yfang', 'Win-Tsk'];
 
 export default function ResourceAdminSection() {
     const { t } = useTranslation();
