@@ -56,6 +56,19 @@ export default function DevTeamSection() {
                         <Text span>Author of Rail Map Painter</Text>
                     </Flex>
                 </Card>
+                <Card
+                    component="a"
+                    className={classes['dev-card']}
+                    href="https://github.com/xhcminecraft"
+                    target="_blank"
+                    withBorder
+                >
+                    <Avatar src="https://github.com/xhcminecraft.png" size="lg" />
+                    <Flex>
+                        <Title order={3}>xhcminecraft</Title>
+                        <Text span>Author of Rail Sign Generator</Text>
+                    </Flex>
+                </Card>
             </RMSectionBody>
         </RMSection>
     );
