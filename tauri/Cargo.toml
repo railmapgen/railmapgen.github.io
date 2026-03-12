@@ -21,6 +21,7 @@ tauri = { version = "2", features = [] }
 tauri-plugin-http = { version = "2", features = ["unsafe-headers"] }
 resvg = "0.45.1"
 tauri-plugin-dialog = "2"
+xmltree = "0.11.0"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem and the built-in dev server is disabled.

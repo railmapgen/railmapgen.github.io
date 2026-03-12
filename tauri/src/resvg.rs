@@ -5,10 +5,9 @@ use resvg::{
     tiny_skia::{Color, Pixmap, Transform},
     usvg::{fontdb, Options, Tree},
 };
-use std::{
-    sync::Arc,
-    time::{SystemTime, UNIX_EPOCH},
-};
+use std::{sync::Arc, time::{SystemTime, UNIX_EPOCH}};
+
+use crate::svg_transform::transform_svg;
 
 #[tauri::command]
 pub async fn render_image(
@@ -31,33 +30,18 @@ pub async fn render_image(
         font_db.load_fonts_dir(&fonts_path);
     }
 
-    // Workaround for MTR fonts, they are using postscript font names
-    // and the fontdb does not support them, so we need to replace them with
-    // the correct font family names.
-    let mut replaced_svg_string = svg_string.replace(
-            "font-family=\"GenYoMinTW-SB, HiraMinProN-W6, Vegur-Bold, Helvetica, serif\"",
-            "font-family=\"源樣明體\"",
-        );
     let myriad_pro_query = fontdb::Query {
         families: &[fontdb::Family::Name("Myriad Pro")],
         weight: fontdb::Weight(700),
         stretch: fontdb::Stretch::Normal,
         style: fontdb::Style::Normal,
     };
-    let myriad_pro_id = font_db.query(&myriad_pro_query);
-    let replaced_to_mtr_en = if myriad_pro_id.is_some() {
-        "font-family=\"Myriad Pro\" font-weight=\"600\""
-    } else {
-        "font-family=\"Vegur\" font-weight=\"700\""
-    };
-    replaced_svg_string = replaced_svg_string.replace(
-        "font-family=\"MyriadPro-Semibold, Vegur-Bold, Helvetica, sans-serif\"",
-        replaced_to_mtr_en,
-    );
+    let has_myriad = font_db.query(&myriad_pro_query).is_some();
+    let transformed_svg = transform_svg(&svg_string, has_myriad);
 
-    // render the SVG string to a PNG image
-    let png_bytes = make_image(replaced_svg_string, font_db_arc, scale / 100f32, is_transparent)
+    let png_bytes = make_image(transformed_svg, font_db_arc, scale / 100f32, is_transparent)
         .expect("Failed to convert SVG to PNG");
+    
     let timestamp = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .unwrap()
