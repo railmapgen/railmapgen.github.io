@@ -53,7 +53,7 @@ const RedeemModal = (props: { opened: boolean; onClose: () => void }) => {
             <Text>{t('CDKeys could be obtained through the following ways:')}</Text>
             <List withPadding mt="xs">
                 <List.Item>
-                    <Anchor href="https://afdian.com/item/9c8b220c614311efab2d52540025c377" target="_blank">
+                    <Anchor href="https://ifdian.net/item/9c8b220c614311efab2d52540025c377" target="_blank">
                         爱发电 <MdOpenInNew />
                     </Anchor>
                 </List.Item>
