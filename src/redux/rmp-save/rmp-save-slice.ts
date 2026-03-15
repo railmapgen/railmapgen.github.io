@@ -1,27 +1,26 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export interface RMPSaveState {
-    /**
-     * The last time the user made a change to the save.
-     * Will be compared with the lastUpdateAt from the cloud to determine if there is a conflict on login.
-     * Will be set to now on every save.
-     */
-    lastChangedAtTimeStamp: number;
+    baseUserId?: number;
+    baseSaveId?: number;
+    baseHash?: string;
     resolveConflictModal: {
         isOpen: boolean;
-        lastChangedAtTimeStamp: number;
-        lastUpdatedAtTimeStamp: number;
+        saveId?: number;
         cloudData: string;
+        cloudHash?: string;
     };
 }
 
 const initialState: RMPSaveState = {
-    lastChangedAtTimeStamp: 0,
+    baseUserId: undefined,
+    baseSaveId: undefined,
+    baseHash: undefined,
     resolveConflictModal: {
         isOpen: false,
-        lastChangedAtTimeStamp: 0,
-        lastUpdatedAtTimeStamp: 0,
+        saveId: undefined,
         cloudData: '',
+        cloudHash: undefined,
     },
 };
 
@@ -29,30 +28,37 @@ const rmpSaveSlice = createSlice({
     name: 'save',
     initialState,
     reducers: {
-        setLastChangedAtTimeStamp: (state, action: PayloadAction<number>) => {
-            state.lastChangedAtTimeStamp = action.payload;
+        setBaseSync: (state, action: PayloadAction<{ userId: number; saveId: number; hash: string }>) => {
+            state.baseUserId = action.payload.userId;
+            state.baseSaveId = action.payload.saveId;
+            state.baseHash = action.payload.hash;
+        },
+        clearBaseSync: state => {
+            state.baseUserId = undefined;
+            state.baseSaveId = undefined;
+            state.baseHash = undefined;
         },
         setResolveConflictModal: (
             state,
-            action: PayloadAction<{ lastChangedAtTimeStamp: number; lastUpdatedAtTimeStamp: number; cloudData: string }>
+            action: PayloadAction<{ saveId: number; cloudData: string; cloudHash: string }>
         ) => {
             state.resolveConflictModal = {
                 isOpen: true,
-                lastChangedAtTimeStamp: action.payload.lastChangedAtTimeStamp,
-                lastUpdatedAtTimeStamp: action.payload.lastUpdatedAtTimeStamp,
+                saveId: action.payload.saveId,
                 cloudData: action.payload.cloudData,
+                cloudHash: action.payload.cloudHash,
             };
         },
         clearResolveConflictModal: state => {
             state.resolveConflictModal = {
                 isOpen: false,
-                lastChangedAtTimeStamp: 0,
-                lastUpdatedAtTimeStamp: 0,
+                saveId: undefined,
                 cloudData: '',
+                cloudHash: undefined,
             };
         },
     },
 });
 
-export const { setLastChangedAtTimeStamp, setResolveConflictModal, clearResolveConflictModal } = rmpSaveSlice.actions;
+export const { setBaseSync, clearBaseSync, setResolveConflictModal, clearResolveConflictModal } = rmpSaveSlice.actions;
 export default rmpSaveSlice.reducer;

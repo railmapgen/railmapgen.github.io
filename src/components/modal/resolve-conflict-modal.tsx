@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { MdOutlineCloud, MdOutlineComputer } from 'react-icons/md';
 import { useRootDispatch, useRootSelector } from '../../redux';
 import { fetchSaveList, logout, syncAfterLogin } from '../../redux/account/account-slice';
-import { clearResolveConflictModal, setLastChangedAtTimeStamp } from '../../redux/rmp-save/rmp-save-slice';
+import { clearResolveConflictModal, setBaseSync } from '../../redux/rmp-save/rmp-save-slice';
 import { SAVE_KEY } from '../../util/constants';
 import { downloadAs } from '../../util/download';
 import { getRMPSave, notifyRMPSaveChange, setRMPSave, updateSave } from '../../util/local-storage-save';
@@ -12,9 +12,9 @@ import { Button, Card, Flex, Group, Modal, Stack, Text } from '@mantine/core';
 
 const ResolveConflictModal = () => {
     const { t } = useTranslation();
-    const { token, refreshToken, currentSaveId } = useRootSelector(state => state.account);
+    const { id: userId, token } = useRootSelector(state => state.account);
     const {
-        resolveConflictModal: { isOpen, lastChangedAtTimeStamp, lastUpdatedAtTimeStamp, cloudData },
+        resolveConflictModal: { isOpen, saveId, cloudData, cloudHash },
     } = useRootSelector(state => state.rmpSave);
     const dispatch = useRootDispatch();
 
@@ -22,18 +22,19 @@ const ResolveConflictModal = () => {
 
     const onClose = () => dispatch(clearResolveConflictModal());
     const replaceLocalWithCloud = () => {
+        if (!userId || !saveId || !cloudHash) return;
         setRMPSave(SAVE_KEY.RMP, cloudData);
+        dispatch(setBaseSync({ userId, saveId, hash: cloudHash }));
         notifyRMPSaveChange();
-        dispatch(setLastChangedAtTimeStamp(lastUpdatedAtTimeStamp));
         onClose();
     };
     const downloadCloud = () => {
-        downloadAs(`RMP_${lastUpdatedAtTimeStamp}.json`, 'application/json', cloudData);
+        downloadAs(`RMP_cloud_${Date.now()}.json`, 'application/json', cloudData);
     };
     const replaceCloudWithLocal = async () => {
-        if (!currentSaveId || !token || !refreshToken) return;
+        if (!saveId || !token || !cloudHash || !userId) return;
         setReplaceCloudWithLocalLoading(true);
-        const rep = await updateSave(currentSaveId, token, refreshToken, SAVE_KEY.RMP);
+        const rep = await updateSave(saveId, token, SAVE_KEY.RMP, cloudHash);
         if (!rep) {
             dispatch(logout());
             setReplaceCloudWithLocalLoading(false);
@@ -44,15 +45,23 @@ const ResolveConflictModal = () => {
             setReplaceCloudWithLocalLoading(false);
             return;
         }
-        if (rep.status !== 200) return;
+        if (rep.status !== 200) {
+            setReplaceCloudWithLocalLoading(false);
+            return;
+        }
+
+        const localSave = await getRMPSave(SAVE_KEY.RMP);
+        if (localSave) {
+            dispatch(setBaseSync({ userId, saveId, hash: localSave.hash }));
+        }
         dispatch(fetchSaveList());
         setReplaceCloudWithLocalLoading(false);
         onClose();
     };
     const downloadLocal = async () => {
-        // fetchLogin will handle local save that does not exist
-        const { data: localData } = (await getRMPSave(SAVE_KEY.RMP))!;
-        downloadAs(`RMP_${lastChangedAtTimeStamp}.json`, 'application/json', localData);
+        const localSave = await getRMPSave(SAVE_KEY.RMP);
+        if (!localSave) return;
+        downloadAs(`RMP_local_${Date.now()}.json`, 'application/json', localSave.data);
     };
 
     return (
@@ -75,9 +84,6 @@ const ResolveConflictModal = () => {
                             <MdOutlineComputer />
                             <Text span>{t('Local save')}</Text>
                         </Flex>
-                        <Text span>
-                            {t('Update at:')} {new Date(lastChangedAtTimeStamp).toLocaleString()}
-                        </Text>
                         <Button
                             color="red"
                             loading={replaceCloudWithLocalLoading}
@@ -94,10 +100,6 @@ const ResolveConflictModal = () => {
                             <MdOutlineCloud />
                             <Text span>{t('Cloud save')}</Text>
                         </Flex>
-
-                        <Text span>
-                            {t('Update at:')} {new Date(lastUpdatedAtTimeStamp).toLocaleString()}
-                        </Text>
                         <Button color="red" onClick={() => replaceLocalWithCloud()}>
                             {t('Replace local with cloud')}
                         </Button>

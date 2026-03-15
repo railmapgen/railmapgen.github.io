@@ -7,11 +7,12 @@ import { MdDeleteOutline, MdOutlineShare, MdOutlineSync, MdOutlineSyncAlt } from
 import { useRootDispatch, useRootSelector } from '../../../redux';
 import { fetchSaveList, logout, syncAfterLogin } from '../../../redux/account/account-slice';
 import { addNotification } from '../../../redux/notification/notification-slice';
-import { setLastChangedAtTimeStamp } from '../../../redux/rmp-save/rmp-save-slice';
+import { clearBaseSync, setBaseSync } from '../../../redux/rmp-save/rmp-save-slice';
 import { apiFetch } from '../../../util/api';
 import { API_ENDPOINT, APISaveList, SAVE_KEY } from '../../../util/constants';
 import { getRMPSave, notifyRMPSaveChange, setRMPSave } from '../../../util/local-storage-save';
 import { getRandomCityName } from '../../../util/random-save-name';
+import { resolveBoundSaveId } from '../../../util/rmp-sync';
 import InlineEdit from '../../common/inline-edit';
 import ShareModal from './share-modal';
 
@@ -23,12 +24,21 @@ const SavesSection = () => {
     const dispatch = useRootDispatch();
     const {
         isLoggedIn,
+        id: userId,
         token,
         activeSubscriptions,
         currentSaveId,
         saves: saveList,
     } = useRootSelector(state => state.account);
-    const { lastChangedAtTimeStamp } = useRootSelector(state => state.rmpSave);
+    const { baseUserId, baseSaveId } = useRootSelector(state => state.rmpSave);
+
+    const localCurrentSaveId = resolveBoundSaveId({
+        currentUserId: userId,
+        currentSaveId,
+        saves: saveList,
+        baseUserId,
+        baseSaveId,
+    });
 
     const canCreateNewSave =
         isLoggedIn &&
@@ -55,7 +65,7 @@ const SavesSection = () => {
 
     const handleCreateNewSave = async () => {
         const save = await getRMPSave(SAVE_KEY.RMP);
-        if (!isLoggedIn || !save || !token) {
+        if (!isLoggedIn || !save || !token || !userId) {
             showErrorToast(t('Failed to get the RMP save!'));
             return;
         }
@@ -79,104 +89,68 @@ const SavesSection = () => {
                 showErrorToast(await rep.text());
                 return;
             }
-            dispatch(fetchSaveList());
+
+            const savesRep = await dispatch(fetchSaveList());
+            if (savesRep.meta.requestStatus === 'fulfilled') {
+                const payload = savesRep.payload as APISaveList;
+                if (payload.currentSaveId) {
+                    dispatch(setBaseSync({ userId, saveId: payload.currentSaveId, hash }));
+                }
+            }
         } catch (e) {
             showErrorToast((e as Error).message);
         }
     };
+
     const handleSync = async (saveId: number) => {
-        if (!isLoggedIn || !token) return;
-        if (saveId === currentSaveId) {
-            // current sync, either fetch cloud (a) or update cloud (b)
-            setSyncButtonIsLoading(currentSaveId);
-            if (!currentSaveId || isUpdateDisabled(currentSaveId)) {
+        if (!isLoggedIn || !token || !userId) return;
+
+        if (saveId === localCurrentSaveId) {
+            setSyncButtonIsLoading(saveId);
+            if (isUpdateDisabled(saveId)) {
                 showErrorToast(t('Can not sync this save!'));
                 setSyncButtonIsLoading(undefined);
                 return;
             }
 
-            // fetch cloud save metadata
-            const savesRep = await dispatch(fetchSaveList());
-            if (savesRep.meta.requestStatus !== 'fulfilled') {
-                showErrorToast(t('Login status expired.')); // TODO: also might be !200 response
-                setSyncButtonIsLoading(undefined);
-                return;
-            }
-            const savesList = savesRep.payload as APISaveList;
-            const cloudSave = savesList.saves.filter(save => save.id === currentSaveId).at(0);
-            if (!cloudSave) {
-                showErrorToast(t(`Current save id is not in saveList!`));
-                // TODO: ask sever to reconstruct currentSaveId
-                setSyncButtonIsLoading(undefined);
-                return;
-            }
-            const lastUpdateAt = new Date(cloudSave.lastUpdateAt);
-            const lastChangedAt = new Date(lastChangedAtTimeStamp);
-            // a. if cloud save is newer, fetch and set the cloud save to local
-            if (lastChangedAt < lastUpdateAt) {
-                logger.warn(`Save id: ${currentSaveId} is newer in the cloud via local compare.`);
-                // TODO: There is no compare just fetch and set the cloud save to local
-                // might be better to have a dedicated thunk action for this
-                dispatch(syncAfterLogin());
-                setSyncButtonIsLoading(undefined);
-                return;
-            }
-
-            // b. local save is newer, update the cloud save
-            const save = await getRMPSave(SAVE_KEY.RMP);
-            if (!save) {
-                showErrorToast(t('Failed to get the RMP save!'));
-                setSyncButtonIsLoading(undefined);
-                return;
-            }
-            const { data, hash } = save;
-            const rep = await apiFetch(
-                API_ENDPOINT.SAVES + '/' + currentSaveId,
-                {
-                    method: 'PATCH',
-                    body: JSON.stringify({ data, hash }),
-                },
-                token
-            );
-            if (rep.status === 401) {
-                showErrorToast(t('Login status expired.'));
-                setSyncButtonIsLoading(undefined);
-                dispatch(logout());
-                return;
-            }
-            if (rep.status !== 200) {
-                showErrorToast(await rep.text());
-                setSyncButtonIsLoading(undefined);
-                return;
+            const rep = await dispatch(syncAfterLogin());
+            if (rep.meta.requestStatus === 'rejected' && rep.payload) {
+                showErrorToast(String(rep.payload));
             }
             setSyncButtonIsLoading(undefined);
-        } else {
-            // sync another save slot
-            setSyncButtonIsLoading(saveId);
-            const rep = await apiFetch(API_ENDPOINT.SAVES + '/' + saveId, {}, token);
-            if (rep.status === 401) {
-                showErrorToast(t('Login status expired.'));
-                setSyncButtonIsLoading(undefined);
-                dispatch(logout());
-                return;
-            }
-            if (rep.status !== 200) {
-                showErrorToast(await rep.text());
-                setSyncButtonIsLoading(undefined);
-                return;
-            }
-            logger.info(`Set ${SAVE_KEY.RMP} with save id: ${saveId}`);
-            setRMPSave(SAVE_KEY.RMP, await rep.text());
-            dispatch(setLastChangedAtTimeStamp(new Date().valueOf()));
-            notifyRMPSaveChange();
-            setSyncButtonIsLoading(undefined);
+            return;
         }
+
+        setSyncButtonIsLoading(saveId);
+        const saveInfo = saveList.find(save => save.id === saveId);
+        const rep = await apiFetch(API_ENDPOINT.SAVES + '/' + saveId, {}, token);
+        if (rep.status === 401) {
+            showErrorToast(t('Login status expired.'));
+            setSyncButtonIsLoading(undefined);
+            dispatch(logout());
+            return;
+        }
+        if (rep.status !== 200) {
+            showErrorToast(await rep.text());
+            setSyncButtonIsLoading(undefined);
+            return;
+        }
+        logger.info(`Set ${SAVE_KEY.RMP} with save id: ${saveId}`);
+        setRMPSave(SAVE_KEY.RMP, await rep.text());
+        if (saveInfo) {
+            dispatch(setBaseSync({ userId, saveId, hash: saveInfo.hash }));
+        }
+        notifyRMPSaveChange();
+        setSyncButtonIsLoading(undefined);
         dispatch(fetchSaveList());
     };
+
     const handleDeleteSave = async (saveId: number) => {
-        if (!isLoggedIn || !saveId || !token) return;
+        if (!isLoggedIn || !saveId || !token || !userId) return;
+        const isDeletingBoundSave = saveId === localCurrentSaveId;
+
         setDeleteButtonIsLoading(saveId);
-        const rep = await apiFetch(API_ENDPOINT.SAVES + '/' + currentSaveId, { method: 'DELETE' }, token);
+        const rep = await apiFetch(API_ENDPOINT.SAVES + '/' + saveId, { method: 'DELETE' }, token);
         if (rep.status === 401) {
             showErrorToast(t('Login status expired.'));
             setDeleteButtonIsLoading(undefined);
@@ -188,9 +162,49 @@ const SavesSection = () => {
             setDeleteButtonIsLoading(undefined);
             return;
         }
-        dispatch(fetchSaveList());
+
+        const savesRep = await dispatch(fetchSaveList());
+        if (savesRep.meta.requestStatus !== 'fulfilled') {
+            setDeleteButtonIsLoading(undefined);
+            return;
+        }
+
+        if (!isDeletingBoundSave) {
+            setDeleteButtonIsLoading(undefined);
+            return;
+        }
+
+        const payload = savesRep.payload as APISaveList;
+        const replacementSaveId = payload.currentSaveId;
+        const replacementSave = payload.saves.find(save => save.id === replacementSaveId);
+
+        if (!replacementSaveId || !replacementSave) {
+            dispatch(clearBaseSync());
+            setDeleteButtonIsLoading(undefined);
+            return;
+        }
+
+        const replacementRep = await apiFetch(API_ENDPOINT.SAVES + '/' + replacementSaveId, {}, token);
+        if (replacementRep.status === 401) {
+            showErrorToast(t('Login status expired.'));
+            dispatch(logout());
+            setDeleteButtonIsLoading(undefined);
+            return;
+        }
+        if (replacementRep.status !== 200) {
+            showErrorToast(await replacementRep.text());
+            dispatch(clearBaseSync());
+            setDeleteButtonIsLoading(undefined);
+            return;
+        }
+
+        logger.info(`Set ${SAVE_KEY.RMP} with replacement save id: ${replacementSaveId}`);
+        setRMPSave(SAVE_KEY.RMP, await replacementRep.text());
+        dispatch(setBaseSync({ userId, saveId: replacementSaveId, hash: replacementSave.hash }));
+        notifyRMPSaveChange();
         setDeleteButtonIsLoading(undefined);
     };
+
     const handleEditSaveName = async (saveId: number, newName: string) => {
         if (!isLoggedIn || !saveId || !token) return;
         const rep = await apiFetch(
@@ -227,29 +241,29 @@ const SavesSection = () => {
             </RMSectionHeader>
 
             <RMSectionBody direction="column" gap="xs">
-                {saveList?.map(_ => (
-                    <Card key={_.id} withBorder shadow="sm">
+                {saveList?.map(save => (
+                    <Card key={save.id} withBorder shadow="sm">
                         <Group>
                             <InlineEdit
-                                initialValue={_.index}
-                                onSave={val => handleEditSaveName(_.id, val)}
+                                initialValue={save.index}
+                                onSave={val => handleEditSaveName(save.id, val)}
                                 textInputWidth="177px"
                             />
                             <ActionIcon
-                                disabled={isUpdateDisabled(_.id)}
-                                loading={syncButtonIsLoading === _.id}
-                                onClick={() => handleSync(_.id)}
-                                title={_.id === currentSaveId ? t('Sync now') : t('Sync this slot')}
+                                disabled={isUpdateDisabled(save.id)}
+                                loading={syncButtonIsLoading === save.id}
+                                onClick={() => handleSync(save.id)}
+                                title={save.id === localCurrentSaveId ? t('Sync now') : t('Sync this slot')}
                             >
-                                {_.id === currentSaveId ? <MdOutlineSync /> : <MdOutlineSyncAlt />}
+                                {save.id === localCurrentSaveId ? <MdOutlineSync /> : <MdOutlineSyncAlt />}
                             </ActionIcon>
-                            <ActionIcon onClick={() => handleOpenShareModal(_.id)} title={t('Share')}>
+                            <ActionIcon onClick={() => handleOpenShareModal(save.id)} title={t('Share')}>
                                 <MdOutlineShare />
                             </ActionIcon>
                             <ActionIcon
                                 color="red"
-                                loading={deleteButtonIsLoading === _.id}
-                                onClick={() => handleDeleteSave(_.id)}
+                                loading={deleteButtonIsLoading === save.id}
+                                onClick={() => handleDeleteSave(save.id)}
                                 title={t('Delete')}
                             >
                                 <MdDeleteOutline />
@@ -257,14 +271,14 @@ const SavesSection = () => {
                         </Group>
                         <Group justify="space-between" mt="md" mb="md">
                             <Text>
-                                {t('ID')}: {_.id}
+                                {t('ID')}: {save.id}
                             </Text>
                             <Text>
-                                {t('Status')}: {_.id === currentSaveId ? t('Current save') : t('Cloud save')}
+                                {t('Status')}: {save.id === localCurrentSaveId ? t('Current save') : t('Cloud save')}
                             </Text>
                         </Group>
                         <Text>
-                            {t('Last update at')}: {new Date(_.lastUpdateAt).toLocaleString()}
+                            {t('Last update at')}: {new Date(save.lastUpdateAt).toLocaleString()}
                         </Text>
                     </Card>
                 ))}
@@ -272,7 +286,7 @@ const SavesSection = () => {
             <ShareModal
                 opened={shareModalOpened}
                 onClose={() => setShareModalOpened(false)}
-                shareSaveInfo={saveList?.find(s => s.id === shareSaveID)}
+                shareSaveInfo={saveList?.find(save => save.id === shareSaveID)}
             />
         </RMSection>
     );
