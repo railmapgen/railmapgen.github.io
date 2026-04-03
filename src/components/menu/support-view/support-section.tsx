@@ -1,7 +1,8 @@
 import classes from './support-section.module.css';
 import rmgRuntime from '@railmapgen/rmg-runtime';
 import { useTranslation } from 'react-i18next';
-import { IoLogoGithub, IoLogoSlack } from 'react-icons/io5';
+import { IoLogoGithub } from 'react-icons/io5';
+import { SiZulip } from 'react-icons/si';
 import { MdOpenInNew } from 'react-icons/md';
 import { Events } from '../../../util/constants';
 import { RMSection, RMSectionHeader } from '@railmapgen/mantine-components';
@@ -32,17 +33,14 @@ export default function SupportSection() {
                 </Button>
                 <Button
                     variant="default"
-                    leftSection={<IoLogoSlack />}
+                    leftSection={<SiZulip />}
                     rightSection={<MdOpenInNew />}
                     onClick={() => {
-                        window.open(
-                            'https://join.slack.com/t/railmapgenerator/shared_invite/zt-1odhhta3n-DdZF~fnVwo_q0S0RJmgV8A',
-                            '_blank'
-                        );
-                        rmgRuntime.event(Events.JOIN_SLACK);
+                        window.open('https://railmapgen.zulipchat.com/join/psex5yvk5b2g4vaq5chtkkrs/', '_blank');
+                        rmgRuntime.event(Events.JOIN_ZULIP);
                     }}
                 >
-                    {t('Join us on Slack')}
+                    {t('Join our Community')}
                 </Button>
                 <Button
                     variant="default"
