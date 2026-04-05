@@ -64,3 +64,4 @@ jobs:
         uses: railmapgen/releaser-org@main
         with:
           app_name: railmapgen.github.io
+          target_dir: www
