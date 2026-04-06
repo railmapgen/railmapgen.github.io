@@ -40,6 +40,7 @@ export const assetEnablement: Record<string, AssetDetail> = {
         url: '/rmg/',
         assetType: 'app',
         allowMultiInstances: true,
+        supportSafeAreaInset: true,
     },
     rmp: {
         name: 'Rail Map Painter',

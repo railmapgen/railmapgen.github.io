@@ -12,23 +12,18 @@ export default defineConfig({
     base: '/',
     plugins: [react()],
     build: {
-        rollupOptions: {
+        rolldownOptions: {
             input: {
                 main: path.resolve(__dirname, 'index.html'),
                 contributors: path.resolve(__dirname, 'contributors', 'index.html'),
                 demo: path.resolve(__dirname, 'runtime-demo', 'index.html'),
             },
             output: {
-                manualChunks: {
-                    react: [
-                        'react',
-                        'react-dom',
-                        'react-router-dom',
-                        '@reduxjs/toolkit',
-                        'react-redux',
-                        'react-i18next',
+                codeSplitting: {
+                    groups: [
+                        { test: /node_modules\/react/, name: 'react' },
+                        { test: /node_modules\/@mantine/, name: 'mantine' },
                     ],
-                    mantine: ['@mantine/core', '@mantine/hooks', '@railmapgen/mantine-components'],
                 },
             },
         },
