@@ -1,7 +1,7 @@
 import rootReducer, { RootStore } from './index';
 import { createTestStore } from '../test-utils';
 import { LocalStorageKey, WorkspaceTab } from '../util/constants';
-import { initActiveTab, initOpenedTabs, openSearchedApp } from './init';
+import { initActiveTab, initOpenedTabs, initRMPSaveStore, openSearchedApp } from './init';
 import { showDevtools } from './app/app-slice';
 import rmgRuntime from '@railmapgen/rmg-runtime';
 
@@ -102,6 +102,92 @@ describe('ReduxInit', () => {
             const { openedTabs } = mockStore.getState().app;
             expect(openedTabs[0].app).toBe('rmp');
             expect(openedTabs[0].url).toBe('/rmp/?id=123');
+        });
+    });
+
+    describe('ReduxInit - initRMPSaveStore', () => {
+        afterEach(() => {
+            rmgRuntime.storage.clear();
+        });
+
+        it('Can restore base sync metadata from storage', () => {
+            const mockStore = createTestStore();
+            rmgRuntime.storage.set(
+                LocalStorageKey.RMP_SAVE,
+                JSON.stringify({
+                    baseUserId: 11,
+                    baseSaveId: 22,
+                    baseHash: 'hash-22',
+                })
+            );
+
+            initRMPSaveStore(mockStore);
+
+            expect(mockStore.getState().rmpSave.baseUserId).toBe(11);
+            expect(mockStore.getState().rmpSave.baseSaveId).toBe(22);
+            expect(mockStore.getState().rmpSave.baseHash).toBe('hash-22');
+            expect(rmgRuntime.storage.get(LocalStorageKey.RMP_SAVE)).toBe(
+                JSON.stringify({
+                    baseUserId: 11,
+                    baseSaveId: 22,
+                    baseHash: 'hash-22',
+                })
+            );
+        });
+
+        it('Can clean legacy timestamp-based metadata from storage', () => {
+            const mockStore = createTestStore();
+            rmgRuntime.storage.set(
+                LocalStorageKey.RMP_SAVE,
+                JSON.stringify({
+                    lastChangedAtTimeStamp: 1742000000000,
+                    resolveConflictModal: {
+                        isOpen: true,
+                        lastChangedAtTimeStamp: 1742000000000,
+                        lastUpdatedAtTimeStamp: 1742000001000,
+                        cloudData: '{"legacy":true}',
+                    },
+                })
+            );
+
+            initRMPSaveStore(mockStore);
+
+            expect(mockStore.getState().rmpSave.baseUserId).toBeUndefined();
+            expect(mockStore.getState().rmpSave.baseSaveId).toBeUndefined();
+            expect(mockStore.getState().rmpSave.baseHash).toBeUndefined();
+            expect(rmgRuntime.storage.get(LocalStorageKey.RMP_SAVE)).toBe(JSON.stringify({}));
+        });
+
+        it('Can discard unused legacy fields while preserving current base sync metadata', () => {
+            const mockStore = createTestStore();
+            rmgRuntime.storage.set(
+                LocalStorageKey.RMP_SAVE,
+                JSON.stringify({
+                    baseUserId: 11,
+                    baseSaveId: 22,
+                    baseHash: 'hash-22',
+                    lastChangedAtTimeStamp: 1742000000000,
+                    resolveConflictModal: {
+                        isOpen: true,
+                        lastChangedAtTimeStamp: 1742000000000,
+                        lastUpdatedAtTimeStamp: 1742000001000,
+                        cloudData: '{"legacy":true}',
+                    },
+                })
+            );
+
+            initRMPSaveStore(mockStore);
+
+            expect(mockStore.getState().rmpSave.baseUserId).toBe(11);
+            expect(mockStore.getState().rmpSave.baseSaveId).toBe(22);
+            expect(mockStore.getState().rmpSave.baseHash).toBe('hash-22');
+            expect(rmgRuntime.storage.get(LocalStorageKey.RMP_SAVE)).toBe(
+                JSON.stringify({
+                    baseUserId: 11,
+                    baseSaveId: 22,
+                    baseHash: 'hash-22',
+                })
+            );
         });
     });
 });

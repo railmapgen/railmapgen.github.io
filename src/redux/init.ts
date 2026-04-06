@@ -16,7 +16,22 @@ import {
     showDevtools,
 } from './app/app-slice';
 import { RootStore, startRootListening } from './index';
-import { RMPSaveState, setLastChangedAtTimeStamp } from './rmp-save/rmp-save-slice';
+import { RMPSaveState, setBaseSync } from './rmp-save/rmp-save-slice';
+
+type PersistedRMPSaveState = Pick<RMPSaveState, 'baseUserId' | 'baseSaveId' | 'baseHash'>;
+
+const normalizePersistedRMPSaveState = (raw: unknown): PersistedRMPSaveState => {
+    if (!raw || typeof raw !== 'object') {
+        return {};
+    }
+
+    const { baseUserId, baseSaveId, baseHash } = raw as Record<string, unknown>;
+    if (typeof baseUserId === 'number' && typeof baseSaveId === 'number' && typeof baseHash === 'string' && baseHash) {
+        return { baseUserId, baseSaveId, baseHash };
+    }
+
+    return {};
+};
 
 export const initShowDevtools = (store: RootStore) => {
     const lastShowDevTools = Number(rmgRuntime.storage.get(LocalStorageKey.LAST_SHOW_DEVTOOLS));
@@ -107,14 +122,28 @@ export const initRMPSaveStore = (store: RootStore) => {
     const rmpSaveString = rmgRuntime.storage.get(LocalStorageKey.RMP_SAVE);
 
     if (rmpSaveString) {
-        const rmpSaveData = JSON.parse(rmpSaveString) as Pick<RMPSaveState, 'lastChangedAtTimeStamp'>;
-        logger.debug(`Get RMP save data from local storage: ${JSON.stringify(rmpSaveData)}`);
-        store.dispatch(setLastChangedAtTimeStamp(rmpSaveData.lastChangedAtTimeStamp));
+        try {
+            const rmpSaveData = normalizePersistedRMPSaveState(JSON.parse(rmpSaveString));
+            logger.debug(`Get RMP save data from local storage: ${JSON.stringify(rmpSaveData)}`);
+
+            if (rmpSaveData.baseUserId && rmpSaveData.baseSaveId && rmpSaveData.baseHash) {
+                store.dispatch(
+                    setBaseSync({
+                        userId: rmpSaveData.baseUserId,
+                        saveId: rmpSaveData.baseSaveId,
+                        hash: rmpSaveData.baseHash,
+                    })
+                );
+            }
+
+            // Rewrite legacy or mixed-format data so only the active sync fields remain.
+            rmgRuntime.storage.set(LocalStorageKey.RMP_SAVE, JSON.stringify(rmpSaveData));
+        } catch (e) {
+            logger.warn('Invalid RMP save data from local storage. Resetting persisted sync metadata.', e);
+            rmgRuntime.storage.set(LocalStorageKey.RMP_SAVE, JSON.stringify({}));
+        }
     } else {
-        // Default to 0 on fresh start and will be overwritten on login.
-        // (cloud lastUpdateAt must be greater than lastChangedAt(0))
-        logger.warn('No RMP save data from local storage. Setting lastChangedAtTimeStamp to 0.');
-        store.dispatch(setLastChangedAtTimeStamp(0));
+        logger.warn('No RMP save data from local storage. Base sync metadata will be rebuilt on demand.');
     }
 };
 
@@ -181,11 +210,15 @@ export default function initStore(store: RootStore) {
 
     startRootListening({
         predicate: (_action, currentState, previousState) => {
-            return currentState.rmpSave.lastChangedAtTimeStamp !== previousState.rmpSave.lastChangedAtTimeStamp;
+            return (
+                currentState.rmpSave.baseUserId !== previousState.rmpSave.baseUserId ||
+                currentState.rmpSave.baseSaveId !== previousState.rmpSave.baseSaveId ||
+                currentState.rmpSave.baseHash !== previousState.rmpSave.baseHash
+            );
         },
         effect: (_action, listenerApi) => {
-            const { lastChangedAtTimeStamp } = listenerApi.getState().rmpSave;
-            rmgRuntime.storage.set(LocalStorageKey.RMP_SAVE, JSON.stringify({ lastChangedAtTimeStamp }));
+            const { baseUserId, baseSaveId, baseHash } = listenerApi.getState().rmpSave;
+            rmgRuntime.storage.set(LocalStorageKey.RMP_SAVE, JSON.stringify({ baseUserId, baseSaveId, baseHash }));
         },
     });
 
