@@ -59,13 +59,13 @@ export default function DevTeamSection() {
                 <Card
                     component="a"
                     className={classes['dev-card']}
-                    href="https://github.com/xhcminecraft"
+                    href="https://github.com/SS9G-0047"
                     target="_blank"
                     withBorder
                 >
-                    <Avatar src="https://github.com/xhcminecraft.png" size="lg" />
+                    <Avatar src="https://github.com/SS9G-0047.png" size="lg" />
                     <Flex>
-                        <Title order={3}>xhcminecraft</Title>
+                        <Title order={3}>SS9G-0047</Title>
                         <Text span>Author of Rail Sign Generator</Text>
                     </Flex>
                 </Card>
