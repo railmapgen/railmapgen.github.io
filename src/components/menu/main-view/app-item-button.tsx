@@ -84,7 +84,7 @@ export default function AppItemButton(props: AppItemProps) {
                             aria-label={t('New tab')}
                             title={t('New tab')}
                             variant="subtle"
-                            color={isAppActive ? 'white' : 'gray'}
+                            color={isAppActive ? 'white' : 'light'}
                             mr={4}
                             onClick={event => {
                                 event.stopPropagation();
@@ -98,7 +98,7 @@ export default function AppItemButton(props: AppItemProps) {
                         <Menu.Target>
                             <ActionIcon
                                 variant="subtle"
-                                color={isAppActive ? 'white' : 'gray'}
+                                color={isAppActive ? 'white' : 'light'}
                                 onClick={event => event.stopPropagation()}
                             >
                                 <MdMoreHoriz />
@@ -157,7 +157,7 @@ export default function AppItemButton(props: AppItemProps) {
                                 rightSection={
                                     <ActionIcon
                                         variant="subtle"
-                                        color={isTabActive ? 'white' : 'gray'}
+                                        color={isTabActive ? 'white' : 'light'}
                                         aria-label={t('Close tab')}
                                         title={t('Close tab')}
                                         onClick={event => {
