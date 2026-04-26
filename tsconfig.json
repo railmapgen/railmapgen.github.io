@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "target": "es5",
+        "target": "es2015",
         "lib": [
             "dom",
             "dom.iterable",
@@ -12,7 +12,6 @@
         "allowSyntheticDefaultImports": true,
         "strict": true,
         "forceConsistentCasingInFileNames": true,
-        "downlevelIteration": true,
         "module": "esnext",
         "moduleResolution": "bundler",
         "resolveJsonModule": true,
