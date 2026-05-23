@@ -38,7 +38,7 @@ const SubscriptionSection = () => {
                             <Text>{t('With this subscription, the following features are unlocked:')}</Text>
                             <List withPadding>
                                 <List.Item>{t('PRO features')}</List.Item>
-                                <List.Item>{t('Sync 9 more saves')}</List.Item>
+                                <List.Item>{t('Sync 99 more saves')}</List.Item>
                                 <List.Item>{t('Unlimited master nodes')}</List.Item>
                                 <List.Item>{t('Unlimited parallel lines')}</List.Item>
                                 <List.Item>{t('Random station names')}</List.Item>

@@ -17,7 +17,7 @@ import InlineEdit from '../../common/inline-edit';
 import ShareModal from './share-modal';
 
 const MAXIMUM_FREE_SAVE = 1;
-const MAXIMUM_SAVE = 10;
+const MAXIMUM_SAVE = 100;
 
 const SavesSection = () => {
     const { t } = useTranslation();
