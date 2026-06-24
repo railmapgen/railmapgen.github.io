@@ -145,8 +145,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--mantine-color-white);
-    background: var(--mantine-primary-color-filled);
+    color: var(--mantine-primary-color-filled);
+    background: transparent;
 
     svg {
         width: 36px;
