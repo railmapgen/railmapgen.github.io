@@ -27,29 +27,279 @@
 
 .welcome {
     height: 100%;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
+    overflow: auto;
+    padding: calc(env(safe-area-inset-top) + 56px) var(--mantine-spacing-xl)
+        calc(env(safe-area-inset-bottom) + var(--mantine-spacing-xl));
+}
 
-    h1, p {
-        text-align: center;
+.welcome-content {
+    width: min(75%, 1120px);
+    min-width: min(720px, 100%);
+    margin: 0 auto;
+    align-items: stretch;
+    gap: var(--mantine-spacing-xl);
+}
+
+.welcome-heading {
+    align-items: flex-start;
+
+    h1 {
+        font-size: 2.125rem;
+        line-height: 1.15;
+        letter-spacing: 0;
     }
 
     p {
+        max-width: 620px;
+        color: var(--mantine-color-dimmed);
         font-size: var(--mantine-font-size-lg);
+        line-height: 1.45;
     }
 }
 
-.welcome .icons {
-    margin-bottom: var(--mantine-spacing-xs);
+.welcome-app-list {
+    gap: var(--mantine-spacing-md);
+}
 
-    img {
-        width: 120px;
-        padding: var(--mantine-spacing-xs);
-        background: white;
-        border: 1px solid var(--mantine-color-default-border);
-        border-radius: 12px;
+.welcome-app-card {
+    display: grid;
+    grid-template-columns: 112px minmax(0, 1fr) 96px;
+    align-items: center;
+    min-height: 128px;
+    background: var(--mantine-color-body);
+    border: 1px solid var(--mantine-color-default-border);
+    border-left: 5px solid var(--mantine-primary-color-filled);
+    border-radius: 8px;
+    box-shadow: var(--mantine-shadow-xs);
+    cursor: pointer;
+    overflow: hidden;
+    transition:
+        background-color 150ms ease,
+        border-color 150ms ease,
+        box-shadow 150ms ease;
+
+    @mixin hover {
+        background: var(--mantine-primary-color-light);
+        border-color: color-mix(
+            in srgb,
+            var(--mantine-primary-color-filled) 45%,
+            var(--mantine-color-default-border)
+        );
         box-shadow: var(--mantine-shadow-sm);
-        cursor: pointer;
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--mantine-primary-color-filled);
+        outline-offset: 2px;
+    }
+}
+
+.welcome-app-icon {
+    width: 76px;
+    height: 76px;
+    justify-self: start;
+    margin-left: var(--mantine-spacing-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--mantine-primary-color-light);
+    border: 1px solid
+        color-mix(in srgb, var(--mantine-primary-color-filled) 28%, var(--mantine-color-default-border));
+    border-radius: 8px;
+}
+
+.welcome-app-logo {
+    width: 56px;
+    height: 56px;
+    object-fit: contain;
+}
+
+.welcome-app-initials {
+    color: var(--mantine-primary-color-filled);
+    font-size: var(--mantine-font-size-lg);
+    font-weight: 700;
+    letter-spacing: 0;
+}
+
+.welcome-app-copy {
+    min-width: 0;
+    padding: var(--mantine-spacing-lg) var(--mantine-spacing-lg) var(--mantine-spacing-lg) 0;
+
+    h2 {
+        font-size: 1.3rem;
+        line-height: 1.2;
+        letter-spacing: 0;
+    }
+}
+
+.welcome-app-description {
+    color: var(--mantine-color-dimmed);
+    font-size: var(--mantine-font-size-sm);
+    line-height: 1.45;
+}
+
+.welcome-app-open {
+    width: 96px;
+    height: 100%;
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--mantine-color-white);
+    background: var(--mantine-primary-color-filled);
+
+    svg {
+        width: 36px;
+        height: 36px;
+    }
+}
+
+.welcome-app-card.welcome-app-card-mobile {
+    display: block;
+    min-height: 0;
+}
+
+.welcome-app-mobile-summary {
+    min-height: 78px;
+    display: grid;
+    grid-template-columns: 72px minmax(0, 1fr) 64px;
+    align-items: center;
+
+    h2 {
+        min-width: 0;
+        padding-right: var(--mantine-spacing-md);
+        font-size: var(--mantine-font-size-lg);
+        line-height: 1.2;
+        letter-spacing: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .welcome-app-icon {
+        width: 52px;
+        height: 52px;
+        margin-left: var(--mantine-spacing-md);
+    }
+
+    .welcome-app-logo {
+        width: 38px;
+        height: 38px;
+    }
+
+    .welcome-app-open {
+        width: 64px;
+    }
+}
+
+.welcome-app-mobile-detail {
+    min-height: 78px;
+    border-top: 1px solid
+        color-mix(in srgb, var(--mantine-primary-color-filled) 24%, var(--mantine-color-default-border));
+
+    .welcome-app-copy {
+        padding: var(--mantine-spacing-sm) var(--mantine-spacing-md);
+    }
+}
+
+.welcome-app-expand {
+    width: 100%;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--mantine-primary-color-filled);
+    background: var(--mantine-primary-color-light);
+    border: 0;
+    border-top: 1px solid
+        color-mix(in srgb, var(--mantine-primary-color-filled) 24%, var(--mantine-color-default-border));
+    cursor: pointer;
+
+    @mixin hover {
+        background: var(--mantine-primary-color-light-hover);
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--mantine-primary-color-filled);
+        outline-offset: -2px;
+    }
+
+    svg {
+        width: 18px;
+        height: 18px;
+    }
+}
+
+@media (max-width: 48em) {
+    .welcome {
+        padding-right: var(--mantine-spacing-md);
+        padding-left: var(--mantine-spacing-md);
+    }
+
+    .welcome-content {
+        width: min(100%, 720px);
+        min-width: 0;
+        gap: var(--mantine-spacing-lg);
+    }
+
+    .welcome-heading {
+        h1 {
+            font-size: 1.75rem;
+        }
+
+        p {
+            font-size: var(--mantine-font-size-md);
+        }
+    }
+
+    .welcome-app-card {
+        grid-template-columns: 76px minmax(0, 1fr) 84px;
+        min-height: 112px;
+    }
+
+    .welcome-app-card.welcome-app-card-mobile {
+        min-height: 0;
+    }
+
+    .welcome-app-icon {
+        width: 56px;
+        height: 56px;
+        margin-left: var(--mantine-spacing-md);
+    }
+
+    .welcome-app-logo {
+        width: 42px;
+        height: 42px;
+    }
+
+    .welcome-app-copy h2 {
+        font-size: var(--mantine-font-size-lg);
+    }
+
+    .welcome-app-copy {
+        padding: var(--mantine-spacing-md) var(--mantine-spacing-md) var(--mantine-spacing-md) 0;
+    }
+
+    .welcome-app-open {
+        width: 84px;
+
+        svg {
+            width: 32px;
+            height: 32px;
+        }
+    }
+}
+
+@media (max-width: 36em) {
+    .welcome-app-card {
+        grid-template-columns: 64px minmax(0, 1fr) 64px;
+    }
+
+    .welcome-app-open {
+        width: 64px;
+    }
+
+    .welcome-app-description {
+        font-size: var(--mantine-font-size-xs);
     }
 }

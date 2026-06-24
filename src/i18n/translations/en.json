@@ -23,6 +23,16 @@
         "text4": "Please close this modal unless you're certain to do so or are supervised by our developers."
     },
 
+    "WelcomePage": {
+        "subtitle": "Choose from the tools below and create your own rail map.",
+        "rmg": "Create single-line route diagrams and passenger information graphics like those above platform screen doors. Good for clearly showing a line's stations, transfers, directions, first and last trains, and more.",
+        "rmp": "Freely draw a complete rail transit network map. Good for designing urban metro networks, fictional lines, or organizing multiple lines into one clear map.",
+        "rma": "Generate station announcement content for a route. Good for turning station, transfer, and direction information into announcement copy that feels closer to a real ride experience.",
+        "rsg": "Create wayfinding signs and directional information for metro stations. Good for generating directions, station information boards, and display content with the Beijing Subway visual style."
+    },
+
+    "Expand": "Expand",
+    "Collapse": "Collapse",
     "RMP_CLOUD": "Rail Map Painter・Proceed Signal",
     "RMP_EXPORT": "Rail Map Painter・Stop and Proceed"
 }
