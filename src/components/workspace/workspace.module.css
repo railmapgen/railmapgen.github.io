@@ -114,13 +114,6 @@
     object-fit: contain;
 }
 
-.welcome-app-initials {
-    color: var(--mantine-primary-color-filled);
-    font-size: var(--mantine-font-size-lg);
-    font-weight: 700;
-    letter-spacing: 0;
-}
-
 .welcome-app-copy {
     min-width: 0;
     padding: var(--mantine-spacing-lg) var(--mantine-spacing-lg) var(--mantine-spacing-lg) 0;

@@ -14,8 +14,7 @@ type WelcomeAppId = 'rmg' | 'rmp' | 'rma' | 'rsg';
 interface WelcomeApp {
     appId: WelcomeAppId;
     descriptionKey: string;
-    logoSrc?: string;
-    logoText?: string;
+    logoSrc: string;
 }
 
 const welcomeApps: WelcomeApp[] = [
@@ -31,12 +30,12 @@ const welcomeApps: WelcomeApp[] = [
     },
     {
         appId: 'rma',
-        logoText: 'RMA',
+        logoSrc: import.meta.env.BASE_URL + 'rma/logo512.png',
         descriptionKey: 'WelcomePage.rma',
     },
     {
         appId: 'rsg',
-        logoText: 'RSG',
+        logoSrc: import.meta.env.BASE_URL + 'rsg/logo512.png',
         descriptionKey: 'WelcomePage.rsg',
     },
 ];
@@ -44,57 +43,14 @@ const welcomeApps: WelcomeApp[] = [
 interface WelcomeAppCardProps {
     app: WelcomeApp;
     appName: string;
+    isMobilePortrait: boolean;
     onOpenApp: (appId: WelcomeAppId) => void;
     onOpenAppKeyDown: (event: KeyboardEvent<HTMLElement>, appId: WelcomeAppId) => void;
 }
 
-const AppIcon = ({ app }: { app: WelcomeApp }) => (
-    <div className={classes['welcome-app-icon']} aria-hidden>
-        {app.logoSrc ? (
-            <Image src={app.logoSrc} alt="" className={classes['welcome-app-logo']} />
-        ) : (
-            <span className={classes['welcome-app-initials']}>{app.logoText}</span>
-        )}
-    </div>
-);
-
-const AppDescriptions = ({ app }: { app: WelcomeApp }) => {
+const WelcomeAppCard = (props: WelcomeAppCardProps) => {
     const { t } = useTranslation();
-
-    return <Text className={classes['welcome-app-description']}>{t(app.descriptionKey)}</Text>;
-};
-
-const DesktopWelcomeAppCard = (props: WelcomeAppCardProps) => {
-    const { t } = useTranslation();
-    const { app, appName, onOpenApp, onOpenAppKeyDown } = props;
-
-    return (
-        <article
-            className={classes['welcome-app-card']}
-            role="button"
-            tabIndex={0}
-            aria-label={t('Open') + ' ' + appName}
-            title={t('Open') + ' ' + appName}
-            onClick={() => onOpenApp(app.appId)}
-            onKeyDown={event => onOpenAppKeyDown(event, app.appId)}
-        >
-            <AppIcon app={app} />
-
-            <Stack className={classes['welcome-app-copy']} gap={4}>
-                <Title order={2}>{appName}</Title>
-                <AppDescriptions app={app} />
-            </Stack>
-
-            <div className={classes['welcome-app-open']} aria-hidden>
-                <MdChevronRight />
-            </div>
-        </article>
-    );
-};
-
-const MobileWelcomeAppCard = (props: WelcomeAppCardProps) => {
-    const { t } = useTranslation();
-    const { app, appName, onOpenApp, onOpenAppKeyDown } = props;
+    const { app, appName, isMobilePortrait, onOpenApp, onOpenAppKeyDown } = props;
     const [isExpanded, setIsExpanded] = useState(false);
 
     const handleExpandClick = (event: MouseEvent<HTMLButtonElement>) => {
@@ -106,9 +62,15 @@ const MobileWelcomeAppCard = (props: WelcomeAppCardProps) => {
         event.stopPropagation();
     };
 
+    const appIcon = (
+        <div className={classes['welcome-app-icon']} aria-hidden>
+            <Image src={app.logoSrc} alt="" className={classes['welcome-app-logo']} />
+        </div>
+    );
+
     return (
         <article
-            className={classes['welcome-app-card'] + ' ' + classes['welcome-app-card-mobile']}
+            className={classes['welcome-app-card'] + (isMobilePortrait ? ' ' + classes['welcome-app-card-mobile'] : '')}
             role="button"
             tabIndex={0}
             aria-label={t('Open') + ' ' + appName}
@@ -116,35 +78,51 @@ const MobileWelcomeAppCard = (props: WelcomeAppCardProps) => {
             onClick={() => onOpenApp(app.appId)}
             onKeyDown={event => onOpenAppKeyDown(event, app.appId)}
         >
-            <div className={classes['welcome-app-mobile-summary']}>
-                <AppIcon app={app} />
-                <Title ml={10} order={2}>
-                    {appName}
-                </Title>
-                <div className={classes['welcome-app-open']} aria-hidden>
-                    <MdChevronRight />
-                </div>
-            </div>
+            {isMobilePortrait ? (
+                <>
+                    <div className={classes['welcome-app-mobile-summary']}>
+                        {appIcon}
+                        <Title ml={10} order={2}>
+                            {appName}
+                        </Title>
+                        <div className={classes['welcome-app-open']} aria-hidden>
+                            <MdChevronRight />
+                        </div>
+                    </div>
 
-            {isExpanded && (
-                <div className={classes['welcome-app-mobile-detail']}>
+                    {isExpanded && (
+                        <div className={classes['welcome-app-mobile-detail']}>
+                            <div className={classes['welcome-app-copy']}>
+                                <Text className={classes['welcome-app-description']}>{t(app.descriptionKey)}</Text>
+                            </div>
+                        </div>
+                    )}
+
+                    <button
+                        type="button"
+                        className={classes['welcome-app-expand']}
+                        aria-expanded={isExpanded}
+                        aria-label={(isExpanded ? t('Collapse') : t('Expand')) + ' ' + appName}
+                        title={(isExpanded ? t('Collapse') : t('Expand')) + ' ' + appName}
+                        onClick={handleExpandClick}
+                        onKeyDown={handleExpandKeyDown}
+                    >
+                        {isExpanded ? <MdKeyboardArrowUp /> : <MdKeyboardArrowDown />}
+                    </button>
+                </>
+            ) : (
+                <>
+                    {appIcon}
                     <Stack className={classes['welcome-app-copy']} gap={4}>
-                        <AppDescriptions app={app} />
+                        <Title order={2}>{appName}</Title>
+                        <Text className={classes['welcome-app-description']}>{t(app.descriptionKey)}</Text>
                     </Stack>
-                </div>
-            )}
 
-            <button
-                type="button"
-                className={classes['welcome-app-expand']}
-                aria-expanded={isExpanded}
-                aria-label={(isExpanded ? t('Collapse') : t('Expand')) + ' ' + appName}
-                title={(isExpanded ? t('Collapse') : t('Expand')) + ' ' + appName}
-                onClick={handleExpandClick}
-                onKeyDown={handleExpandKeyDown}
-            >
-                {isExpanded ? <MdKeyboardArrowUp /> : <MdKeyboardArrowDown />}
-            </button>
+                    <div className={classes['welcome-app-open']} aria-hidden>
+                        <MdChevronRight />
+                    </div>
+                </>
+            )}
         </article>
     );
 };
@@ -182,19 +160,12 @@ export default function Welcome() {
                             .map(name => t(name))
                             .join(' - ');
 
-                        return isMobilePortrait ? (
-                            <MobileWelcomeAppCard
+                        return (
+                            <WelcomeAppCard
                                 key={app.appId}
                                 app={app}
                                 appName={appName}
-                                onOpenApp={handleOpenApp}
-                                onOpenAppKeyDown={handleOpenAppKeyDown}
-                            />
-                        ) : (
-                            <DesktopWelcomeAppCard
-                                key={app.appId}
-                                app={app}
-                                appName={appName}
+                                isMobilePortrait={isMobilePortrait}
                                 onOpenApp={handleOpenApp}
                                 onOpenAppKeyDown={handleOpenAppKeyDown}
                             />
