@@ -54,6 +54,7 @@ jobs:
           git clone -b gh-pages --depth 1 https://github.com/railmapgen/rmp-gallery.git
           git clone -b gh-pages --depth 1 https://github.com/railmapgen/rmp-designer.git
           git clone -b gh-pages --depth 1 https://github.com/railmapgen/rma.git
+          git clone -b gh-pages --depth 1 https://github.com/railmapgen/rsg.git
       - name: Setup python
         uses: actions/setup-python@v4
         with:
@@ -83,7 +84,8 @@ jobs:
           f=open('ui/rmp/info.json', 'r+');info=json.load(f);info['instance']='Tauri';f.seek(0);json.dump(info,f,indent=2);f.truncate();f.close();
           f=open('ui/rmp-gallery/info.json', 'r+');info=json.load(f);info['instance']='Tauri';f.seek(0);json.dump(info,f,indent=2);f.truncate();f.close();
           f=open('ui/rmp-designer/info.json', 'r+');info=json.load(f);info['instance']='Tauri';f.seek(0);json.dump(info,f,indent=2);f.truncate();f.close();
-          f=open('ui/rma/info.json', 'r+');info=json.load(f);info['instance']='Tauri';f.seek(0);json.dump(info,f,indent=2);f.truncate();f.close();"
+          f=open('ui/rma/info.json', 'r+');info=json.load(f);info['instance']='Tauri';f.seek(0);json.dump(info,f,indent=2);f.truncate();f.close();
+          f=open('ui/rsg/info.json', 'r+');info=json.load(f);info['instance']='Tauri';f.seek(0);json.dump(info,f,indent=2);f.truncate();f.close();"
       - name: Get versions of each project
         run: |
           python3 -c "import urllib.request;import json;import os;
@@ -95,6 +97,7 @@ jobs:
           rmp_gallery=json.loads(urllib.request.urlopen('https://railmapgen.github.io/rmp-gallery/info.json').read())['version'];
           rmp_designer=json.loads(urllib.request.urlopen('https://railmapgen.github.io/rmp-designer/info.json').read())['version'];
           rma=json.loads(urllib.request.urlopen('https://railmapgen.github.io/rma/info.json').read())['version'];
+          rsg=json.loads(urllib.request.urlopen('https://railmapgen.github.io/rsg/info.json').read())['version'];
           f=open(os.getenv('GITHUB_ENV'), 'a');
           f.write(f'railmapgen={railmapgen}\n');
           f.write(f'rmg={rmg}\n');
@@ -104,6 +107,7 @@ jobs:
           f.write(f'rmp_gallery={rmp_gallery}\n');
           f.write(f'rmp_designer={rmp_designer}\n');
           f.write(f'rma={rma}\n');
+          f.write(f'rsg={rsg}\n');
           f.close()"
       - uses: tauri-apps/tauri-action@v0
         env:
@@ -128,6 +132,7 @@ jobs:
             |rmp-gallery         |`${{ env.rmp_gallery }}`  |
             |rmp-designer        |`${{ env.rmp_designer }}` |
             |rma                 |`${{ env.rma }}`          |
+            |rsg                 |`${{ env.rsg }}`          |
           releaseDraft: false
           prerelease: false
           args: --target ${{ matrix.target }}
