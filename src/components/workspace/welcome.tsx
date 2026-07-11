@@ -25,7 +25,7 @@ const welcomeApps: WelcomeApp[] = [
     },
     {
         appId: 'rmp',
-        logoSrc: rmpLogo,
+        logoSrc: import.meta.env.BASE_URL + 'rmp/logo512.png',
         descriptionKey: 'WelcomePage.rmp',
     },
     {
