@@ -1,6 +1,5 @@
 import classes from './workspace.module.css';
 import { useTranslation } from 'react-i18next';
-import rmpLogo from '../../images/rmp-logo512.png';
 import { Image, Stack, Text, Title } from '@mantine/core';
 import { useRootDispatch } from '../../redux';
 import { openApp } from '../../redux/app/app-slice';
