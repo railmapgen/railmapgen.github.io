@@ -191,6 +191,11 @@ export const assetEnablement: Record<string, AssetDetail> = {
         url: 'https://busline.design/',
         assetType: 'link',
     },
+    njmetroRailmapCreator: {
+        name: '南京地铁屏蔽门吊板生成器',
+        url: 'https://njmetro-railmap-creator.umamichi.moe/',
+        assetType: 'link',
+    },
     linesPaper: {
         name: 'LinesPaper线图荟',
         url: 'https://space.bilibili.com/3546659889875715',
