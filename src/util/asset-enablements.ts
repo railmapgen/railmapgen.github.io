@@ -49,7 +49,7 @@ export const assetEnablement: Record<string, AssetDetail> = {
     },
     'rmp-timeline': {
         name: 'RMP Timeline',
-        url: '/rmp/timeline/',
+        url: '/rmp/#/timeline',
         assetType: 'app',
     },
     rma: {
