@@ -47,6 +47,11 @@ export const assetEnablement: Record<string, AssetDetail> = {
         url: '/rmp/',
         assetType: 'app',
     },
+    'rmp-timeline': {
+        name: 'RMP Timeline',
+        url: '/rmp/timeline/',
+        assetType: 'app',
+    },
     rma: {
         name: 'Rail Map Announcer',
         url: '/rma/',
