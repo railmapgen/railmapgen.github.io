@@ -11,7 +11,7 @@
         "@mantine/hooks": "^9.1.0",
         "@railmapgen/mantine-components": "^1.0.0",
         "@railmapgen/rmg-runtime": "^13.1.0",
-        "@railmapgen/rmg-translate": "^3.5.1",
+        "@railmapgen/rmg-translate": "^3.5.2",
         "@reduxjs/toolkit": "^2.11.2",
         "clsx": "^2.1.1",
         "react": "^19.2.5",
