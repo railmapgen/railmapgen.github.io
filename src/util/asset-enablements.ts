@@ -47,11 +47,6 @@ export const assetEnablement: Record<string, AssetDetail> = {
         url: '/rmp/',
         assetType: 'app',
     },
-    'rmp-timeline': {
-        name: 'RMP Timeline',
-        url: '/rmp/#/timeline',
-        assetType: 'app',
-    },
     rma: {
         name: 'Rail Map Announcer',
         url: '/rma/',
@@ -91,6 +86,11 @@ export const assetEnablement: Record<string, AssetDetail> = {
         assetType: 'app',
         allowedInstances: ['Org', 'GitHub', 'GitLab', 'Tauri', 'localhost', 'unknown'],
         supportSafeAreaInset: true,
+    },
+    'rmp-timeline': {
+        name: 'RMP Timeline',
+        url: '/rmp/#/timeline',
+        assetType: 'app',
     },
     'rmp-gallery': {
         name: 'RMP Gallery',
