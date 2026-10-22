@@ -23,6 +23,7 @@
     },
     "devDependencies": {
         "@eslint/js": "^9.39.4",
+        "@tauri-apps/cli": "^2.12.4",
         "@testing-library/jest-dom": "^6.9.1",
         "@testing-library/react": "^16.3.2",
         "@testing-library/user-event": "^14.6.1",
@@ -49,6 +50,7 @@
         "dev": "vite --host",
         "build": "tsc && vite build",
         "test": "vitest run --coverage",
+        "test:scripts": "node --test scripts/generate-tauri-latest-json.test.mjs",
         "lint": "eslint src contributors runtime-demo",
         "lint:fix": "eslint src contributors runtime-demo --fix",
         "preview": "vite preview --host"

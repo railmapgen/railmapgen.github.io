@@ -5,8 +5,30 @@ on:
     # Runs "at 00:00 on day-of-month 1" (see https://crontab.guru)
     - cron: '0 0 1 * *'
 
+concurrency:
+  group: tauri-release
+  cancel-in-progress: false
+
 jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      date: ${{ steps.meta.outputs.date }}
+      tag: ${{ steps.meta.outputs.tag }}
+      version: ${{ steps.meta.outputs.version }}
+    steps:
+      - id: meta
+        run: |
+          python3 - <<'PY' >> "$GITHUB_OUTPUT"
+          from datetime import datetime, timezone
+          d = datetime.now(timezone.utc).date()
+          print(f"date={d:%Y%m%d}")
+          print(f"tag=tauri-{d:%Y%m%d}")
+          print(f"version={d.year - 2000}.{d.month}.{d.day}")
+          PY
+
   publish-tauri:
+    needs: prepare
     permissions:
       contents: write
     strategy:
@@ -59,20 +81,27 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: '3.13'
-      - name: Get date
-        run: python -c "from datetime import date;import os;f=open(os.getenv('GITHUB_ENV'), 'a');f.write('date='+date.today().strftime('%Y%m%d'));f.close()"
       - name: Use date as version in tauri's package
         working-directory: ./tauri
+        env:
+          APP_VERSION: ${{ needs.prepare.outputs.version }}
         run: |
-          python -c "from datetime import date;import json;
+          python -c "import json,os;
           f=open('tauri.conf.json', 'r+');
           conf=json.load(f);
-          d=date.today()
-          conf['version']=f'{d.year-2000}.{d.month}.{d.day}';
+          conf['version']=os.environ['APP_VERSION'];
           f.seek(0);
           json.dump(conf,f,indent=2);
           f.truncate();
           f.close()"
+      - name: Check updater signing secrets
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+        run: |
+          test -n "$TAURI_SIGNING_PRIVATE_KEY" || {
+            echo "::error::TAURI_SIGNING_PRIVATE_KEY is not configured"
+            exit 1
+          }
       - name: Update instance in info.json
         working-directory: ./tauri
         run: |
@@ -112,9 +141,11 @@ jobs:
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         with:
-          tagName: tauri-${{ env.date }}
-          releaseName: Rail Map Toolkit Desktop Application ${{ env.date }}
+          tagName: ${{ needs.prepare.outputs.tag }}
+          releaseName: Rail Map Toolkit Desktop Application ${{ needs.prepare.outputs.date }}
           releaseBody: |
             This application bundles all necessary resources into a single executable file, providing a seamless and self-contained experience whether you're offline or behind restrictive networks.
             
@@ -135,4 +166,62 @@ jobs:
             |rsg                 |`${{ env.rsg }}`          |
           releaseDraft: false
           prerelease: false
+          uploadUpdaterJson: false
+          uploadUpdaterSignatures: true
           args: --target ${{ matrix.target }}
+
+  finalize-updater-json:
+    needs: [prepare, publish-tauri]
+    if: ${{ needs.publish-tauri.result == 'success' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Download signatures and release metadata
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ needs.prepare.outputs.tag }}
+        run: |
+          mkdir -p updater-sigs
+          gh release download "$TAG" --pattern '*.sig' --dir updater-sigs --clobber
+          gh release view "$TAG" --json body --jq .body > release-notes.md
+          gh release view "$TAG" --json assets --jq '.assets[].name' > release-assets.txt
+      - name: Generate latest.json
+        env:
+          TAG: ${{ needs.prepare.outputs.tag }}
+          VERSION: ${{ needs.prepare.outputs.version }}
+        run: |
+          node scripts/generate-tauri-latest-json.mjs \
+            --repo "$GITHUB_REPOSITORY" \
+            --tag "$TAG" \
+            --version "$VERSION" \
+            --sig-dir updater-sigs \
+            --notes-file release-notes.md \
+            --assets-file release-assets.txt \
+            --output latest.json
+      - name: Upload latest.json
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ needs.prepare.outputs.tag }}
+        run: gh release upload "$TAG" latest.json --clobber
+      - name: Verify public manifest
+        run: |
+          curl -fsSL --retry 5 --retry-delay 5 \
+            "https://github.com/$GITHUB_REPOSITORY/releases/latest/download/latest.json" \
+            -o remote-latest.json
+          node scripts/generate-tauri-latest-json.mjs --verify remote-latest.json
+          if grep -q 'api.github.com' remote-latest.json; then
+            echo "::error::latest.json contains a GitHub API URL"
+            exit 1
+          fi
+      - name: Smoke check via ghfast (non-blocking)
+        continue-on-error: true
+        run: |
+          curl -fsSL --retry 2 --retry-delay 5 \
+            "https://ghfast.top/https://github.com/$GITHUB_REPOSITORY/releases/latest/download/latest.json" \
+            -o ghfast-latest.json
+          cmp latest.json ghfast-latest.json
