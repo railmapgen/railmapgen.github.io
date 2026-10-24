@@ -16,6 +16,7 @@ export default defineConfig({
             input: {
                 main: path.resolve(__dirname, 'index.html'),
                 contributors: path.resolve(__dirname, 'contributors', 'index.html'),
+                download: path.resolve(__dirname, 'download', 'index.html'),
                 demo: path.resolve(__dirname, 'runtime-demo', 'index.html'),
             },
             output: {

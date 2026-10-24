@@ -1,4 +1,11 @@
 {
+    "DownloadPage": {
+        "title": "你所热爱的，现在也在本地。",
+        "subtitle": "将线路图工具包带到桌面，让创作随时继续。",
+        "screenshot": "地铁线路图工具包中使用地铁线路图绘制器绘制的线网图",
+        "comingSoon": "敬请期待"
+    },
+
     "CookiesModal": {
         "header": "本网站的 Cookies",
         "text1": "在 RMG，我们使用 Cookies 来确保本网站及服务可以正常运作。这些 Cookies 是必需的，因此已默认启动。",

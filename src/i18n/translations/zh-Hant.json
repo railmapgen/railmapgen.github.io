@@ -1,4 +1,11 @@
 {
+    "DownloadPage": {
+        "title": "你所熱愛的，現在也在本地。",
+        "subtitle": "將路綫圖工具組帶到桌面，讓創作隨時繼續。",
+        "screenshot": "地鐵路綫圖工具組中使用地鐵路綫圖繪製器繪製的路網圖",
+        "comingSoon": "敬請期待"
+    },
+
     "CookiesModal": {
         "header": "本網站的 Cookies",
         "text1": "在 RMG，我們使用 Cookies 以確保本網站及服務可以正常運作。這些 Cookies 是必需的，因此已預設啟用。",

@@ -49,8 +49,8 @@
         "dev": "vite --host",
         "build": "tsc && vite build",
         "test": "vitest run --coverage",
-        "lint": "eslint src contributors runtime-demo",
-        "lint:fix": "eslint src contributors runtime-demo --fix",
+        "lint": "eslint src contributors download runtime-demo",
+        "lint:fix": "eslint src contributors download runtime-demo --fix",
         "preview": "vite preview --host"
     },
     "version": "3.2.41"

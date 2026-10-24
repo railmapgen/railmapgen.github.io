@@ -1,0 +1,119 @@
+.page {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+    padding: clamp(24px, 4vw, 64px);
+    padding-bottom: max(env(safe-area-inset-bottom), 32px);
+}
+
+.hero {
+    display: grid;
+    grid-template-areas:
+        'copy preview'
+        'downloads preview';
+    grid-template-columns: minmax(300px, 0.9fr) minmax(0, 1.2fr);
+    column-gap: clamp(24px, 4vw, 64px);
+    row-gap: 32px;
+    align-content: center;
+    width: 100%;
+    min-height: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+}
+
+.copy {
+    grid-area: copy;
+}
+
+.eyebrow {
+    color: var(--mantine-primary-color-filled);
+    font-size: var(--mantine-font-size-sm);
+    font-weight: 600;
+    margin-bottom: 16px;
+}
+
+.title {
+    font-size: clamp(2rem, 3.6vw, 3.5rem);
+    line-height: 1.2;
+    text-wrap: balance;
+    letter-spacing: -0.025em;
+}
+
+.subtitle {
+    margin-top: 20px;
+    font-size: var(--mantine-font-size-lg);
+    line-height: 1.7;
+    color: var(--mantine-color-dimmed);
+}
+
+.preview {
+    grid-area: preview;
+    align-self: center;
+    min-width: 0;
+    border: 1px solid var(--mantine-color-default-border);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--mantine-shadow-xl);
+
+    img {
+        display: block;
+        width: 100%;
+        height: auto;
+    }
+}
+
+.downloads {
+    grid-area: downloads;
+    min-width: 0;
+}
+
+.platform {
+    display: grid;
+    grid-template-columns: 110px minmax(0, 1fr);
+    align-items: center;
+    gap: 12px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--mantine-color-default-border);
+
+    &:last-child {
+        border-bottom: 0;
+    }
+}
+
+.platform-name {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    svg {
+        flex-shrink: 0;
+    }
+}
+
+.buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+@media (max-width: 48em) {
+    .page {
+        padding: 32px 20px max(env(safe-area-inset-bottom), 24px);
+    }
+
+    .hero {
+        grid-template-areas:
+            'copy'
+            'preview'
+            'downloads';
+        grid-template-columns: minmax(0, 1fr);
+        align-content: start;
+        gap: 28px;
+        max-width: 600px;
+    }
+
+    .subtitle {
+        font-size: var(--mantine-font-size-md);
+        margin-top: 16px;
+    }
+}

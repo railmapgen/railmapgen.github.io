@@ -1,4 +1,11 @@
 {
+    "DownloadPage": {
+        "title": "Everything you love. Now on your desktop.",
+        "subtitle": "Bring Rail Map Toolkit to your desktop and keep creating, wherever you are.",
+        "screenshot": "Rail Map Toolkit displaying a rail network map in Rail Map Painter",
+        "comingSoon": "Coming soon"
+    },
+
     "CookiesModal": {
         "header": "Cookies on this website",
         "text1": "At RMG we use cookies to help ensure that our website and services are able to function properly. These cookies are necessary and so are set automatically.",
