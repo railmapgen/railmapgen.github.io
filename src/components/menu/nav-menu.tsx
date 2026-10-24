@@ -8,10 +8,10 @@ import {
     MdOutlineApps,
     MdOutlineBuild,
     MdOutlineHelpOutline,
-    MdOutlineLanguage,
     MdOutlineLink,
     MdOutlinePeopleOutline,
     MdOutlineSettings,
+    MdOutlineTranslate,
     MdWarning,
 } from 'react-icons/md';
 import { useSearchParams } from 'react-router-dom';
@@ -93,7 +93,7 @@ export default function NavMenu() {
             },
         },
         { key: 'support', label: t('Help & support'), Icon: <MdOutlineHelpOutline size={22} /> },
-        { key: 'language', label: t('Language'), Icon: <MdOutlineLanguage size={22} /> },
+        { key: 'language', label: t('Language'), Icon: <MdOutlineTranslate size={22} /> },
         { key: 'settings', label: t('Settings'), Icon: <MdOutlineSettings size={22} /> },
     ];
 
