@@ -7,7 +7,6 @@ import { hideDevtools, isShowDevtools, requireRefresh, showDevtools } from '../.
 import LocalStorageModal from '../modal/local-storage-modal';
 import { RMLabelledSegmentedControl, RMSection, RMSectionHeader } from '@railmapgen/mantine-components';
 import { Alert, Button, MantineColorScheme, Stack, Switch, Title, useMantineColorScheme } from '@mantine/core';
-import LanguageSelect from '../common/language-select';
 import { MdOutlineInfo, MdOutlineSaveAlt } from 'react-icons/md';
 
 export default function SettingsView() {
@@ -51,7 +50,6 @@ export default function SettingsView() {
             </RMSectionHeader>
 
             <Stack gap="xs" py="xs">
-                <LanguageSelect />
                 <RMLabelledSegmentedControl
                     size="sm"
                     label={t('Appearance')}
