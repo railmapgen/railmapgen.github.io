@@ -1,0 +1,228 @@
+name: Build unsigned iOS IPA
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'tauri/**'
+      - 'package.json'
+      - '.github/workflows/build-tauri-ios.yml'
+  push:
+    branches: ['main', 'codex/**']
+    paths:
+      - 'tauri/**'
+      - 'package.json'
+      - '.github/workflows/build-tauri-ios.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: macos-15
+    timeout-minutes: 60
+    env:
+      CARGO_BUILD_JOBS: '3'
+      CARGO_INCREMENTAL: '0'
+      CARGO_PROFILE_RELEASE_DEBUG: '0'
+      CARGO_PROFILE_RELEASE_STRIP: symbols
+      CARGO_TERM_COLOR: never
+      HOMEBREW_NO_AUTO_UPDATE: '1'
+      HOMEBREW_NO_INSTALL_CLEANUP: '1'
+    defaults:
+      run:
+        shell: bash
+        working-directory: tauri
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.14.0'
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: '1.93.1'
+          targets: aarch64-apple-ios
+      - name: Install native build tools
+        run: |
+          mkdir -p .build/logs .build/artifacts
+          {
+            sudo xcode-select --switch /Applications/Xcode_16.4.app/Contents/Developer
+            xcodebuild -version
+            brew install xcodegen cocoapods libimobiledevice
+            npm install --prefix .build/tauri-cli --no-save --package-lock=false @tauri-apps/cli@2.12.4
+            node .build/tauri-cli/node_modules/@tauri-apps/cli/tauri.js --version
+            rustc --version
+          } 2>&1 | tee .build/logs/tools.log
+          # CARGO_* settings survive the CLI's Xcode environment filtering.
+          printf 'CARGO_TARGET_AARCH64_APPLE_IOS_RUSTFLAGS=--remap-path-prefix=%s=/toolchain --remap-path-prefix=%s=/src\n' \
+            "$HOME" "$GITHUB_WORKSPACE" >> "$GITHUB_ENV"
+      - name: Test bundle resource loading
+        run: |
+          rustc --edition 2021 --test src/ios_asset_files.rs -o .build/ios-asset-tests
+          .build/ios-asset-tests
+      - name: Prepare published offline applications
+        run: |
+          python3 - <<'PY' 2>&1 | tee .build/logs/resources.log
+          import json
+          import pathlib
+          import shutil
+          import subprocess
+
+          version = json.loads(pathlib.Path('../package.json').read_text())['version']
+          config_path = pathlib.Path('tauri.conf.json')
+          config = json.loads(config_path.read_text())
+          config['version'] = version
+          config_path.write_text(json.dumps(config, indent=2) + '\n')
+          components = ['railmapgen.github.io', 'rmg', 'rmg-palette', 'rmg-templates',
+                        'rmp', 'rmp-gallery', 'rmp-designer', 'rma', 'rsg']
+          sources = []
+          for component in components:
+              destination = pathlib.Path('ui') / ('' if component == components[0] else component)
+              url = f'https://github.com/railmapgen/{component}.git'
+              subprocess.run(['git', 'clone', '--depth', '1', '--single-branch',
+                              '--branch', 'gh-pages', '--no-tags', url, str(destination)], check=True)
+              commit = subprocess.check_output(
+                  ['git', '-C', str(destination), 'rev-parse', 'HEAD'], text=True).strip()
+              info_path = destination / 'info.json'
+              info = json.loads(info_path.read_text())
+              info['instance'] = 'Tauri'
+              info_path.write_text(json.dumps(info, indent=2) + '\n')
+              shutil.rmtree(destination / '.git')
+              assert (destination / 'index.html').is_file(), f'Missing frontend: {component}'
+              sources.append({'repository': url, 'commit': commit, 'version': info.get('version')})
+          assert not list(pathlib.Path('ui').rglob('.git')), 'Unexpected bundled Git metadata'
+          pathlib.Path('.build/artifacts/ui-sources.json').write_text(
+              json.dumps({'appVersion': version, 'sources': sources}, indent=2) + '\n')
+          PY
+      - name: Generate the iOS project and icons
+        run: |
+          {
+            cli="$PWD/.build/tauri-cli/node_modules/@tauri-apps/cli/tauri.js"
+            node "$cli" ios init --ci --skip-targets-install
+            node "$cli" icon icons/icon512.png --output .build/icons
+            python3 - <<'PY'
+          import pathlib
+          import re
+          import shutil
+
+          project = pathlib.Path('gen/apple/project.yml')
+          contents = project.read_text()
+          command = re.compile(r'^(?P<indent>[ \t]*)[^\n]*\bios\s+xcode-script(?P<args>[^\n]*)$', re.M)
+          assert len(list(command.finditer(contents))) == 1, 'Expected one generated Rust build phase'
+          # Resolve the checkout at build time, without an absolute runner path
+          # or a dependency on any local helper script.
+          prefix = [
+              'rmt_workspace=$(CDPATH= cd -- "${SRCROOT}/../../.." && pwd)',
+              'export CARGO_TARGET_AARCH64_APPLE_IOS_RUSTFLAGS="--remap-path-prefix=${HOME}=/toolchain --remap-path-prefix=${rmt_workspace}=/src"',
+              'node "${SRCROOT}/../../.build/tauri-cli/node_modules/@tauri-apps/cli/tauri.js" ios xcode-script',
+          ]
+          def build_phase(match):
+              lines = prefix[:-1] + [prefix[-1] + match['args']]
+              return '\n'.join(match['indent'] + line for line in lines)
+          contents = command.sub(build_phase, contents)
+          project.write_text(contents)
+          icon_set = pathlib.Path('gen/apple/Assets.xcassets/AppIcon.appiconset')
+          icons = list(pathlib.Path('.build/icons/ios').glob('*.png'))
+          assert icons and (icon_set / 'Contents.json').is_file(), 'Missing iOS icon catalog'
+          for icon in icons:
+              shutil.copy2(icon, icon_set / icon.name)
+          PY
+            xcodegen generate --spec gen/apple/project.yml
+          } 2>&1 | tee .build/logs/init.log
+      - name: Build release IPA without signing
+        run: |
+          node .build/tauri-cli/node_modules/@tauri-apps/cli/tauri.js \
+            ios build --target aarch64 --ci --no-sign 2>&1 | tee .build/logs/build.log
+          git diff --exit-code -- Cargo.lock
+      - name: Verify device payload and privacy
+        run: |
+          python3 - <<'PY' 2>&1 | tee .build/logs/verify.log
+          import os
+          import pathlib
+          import plistlib
+          import re
+          import shutil
+          import subprocess
+          import zipfile
+
+          build = pathlib.Path('gen/apple/build')
+          apps = list(build.glob('*.xcarchive/Products/Applications/*.app'))
+          ipas = list(build.rglob('*.ipa'))
+          assert len(apps) == len(ipas) == 1, 'Expected one device archive and one IPA'
+          app = apps[0]
+          info = plistlib.loads((app / 'Info.plist').read_bytes())
+          executable = app / info['CFBundleExecutable']
+          assert subprocess.check_output(['xcrun', 'lipo', '-archs', str(executable)], text=True).strip() == 'arm64'
+          platform = subprocess.check_output(['xcrun', 'vtool', '-show-build', str(executable)], text=True)
+          assert re.search(r'^\s*platform IOS\s*$', platform, re.M), 'Not an iPhone device binary'
+          required = ['index.html'] + [f'{name}/index.html' for name in
+                      ['rmg', 'rmg-palette', 'rmg-templates', 'rmp', 'rmp-gallery', 'rmp-designer', 'rma', 'rsg']]
+          assert all((app / 'assets/ui' / path).is_file() for path in required), 'Missing bundled application'
+          private_suffixes = {'.p12', '.pfx', '.p8', '.pem', '.key', '.mobileprovision', '.provisionprofile'}
+          macho = {bytes.fromhex(value) for value in
+                   ['feedface', 'cefaedfe', 'feedfacf', 'cffaedfe', 'cafebabe', 'bebafeca', 'cafebabf', 'bfbafeca']}
+          for path in app.rglob('*'):
+              assert path.suffix.lower() not in private_suffixes, f'Private signing material: {path.name}'
+              assert not path.name.endswith(('.dSYM', '.bcsymbolmap')), 'Unexpected debug symbols in app'
+              if not path.is_file():
+                  continue
+              with path.open('rb') as stream:
+                  is_binary = stream.read(4) in macho
+              if is_binary:
+                  data = path.read_bytes()
+                  assert all(os.environ[key].encode() not in data for key in ['HOME', 'GITHUB_WORKSPACE']), 'Runner path leaked into binary'
+                  signature = subprocess.run(['codesign', '-dv', '--verbose=4', str(path)],
+                                             text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                  assert not re.search(r'^Authority=', signature.stdout, re.M), 'Certificate authority in unsigned payload'
+                  assert not re.search(r'^TeamIdentifier=(?!not set\s*$).+', signature.stdout, re.M), 'Signing team in unsigned payload'
+                  assert signature.returncode == 0 or 'not signed at all' in signature.stdout, 'Unable to inspect binary signature'
+          with zipfile.ZipFile(ipas[0]) as archive:
+              names = archive.namelist()
+              root = f'Payload/{app.name}/'
+              assert all(name.startswith('Payload/') and '..' not in pathlib.PurePosixPath(name).parts for name in names), 'Unexpected IPA layout'
+              assert all(root + 'assets/ui/' + path in names for path in required), 'Missing IPA application resources'
+              assert not any(pathlib.PurePosixPath(name).suffix.lower() in private_suffixes for name in names), 'Private signing material in IPA'
+              assert archive.read(root + info['CFBundleExecutable']) == executable.read_bytes(), 'IPA does not match verified device binary'
+          output = pathlib.Path('.build/artifacts/Rail-Map-Toolkit-ios-unsigned.ipa')
+          shutil.copy2(ipas[0], output)
+          print('Verified arm64 iPhone IPA, bundled applications, unsigned identity and path privacy.')
+          PY
+          cd .build/artifacts
+          shasum -a 256 Rail-Map-Toolkit-ios-unsigned.ipa ui-sources.json > SHA256SUMS
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Rail-Map-Toolkit-ios-unsigned
+          path: |
+            tauri/.build/artifacts/*.ipa
+            tauri/.build/artifacts/ui-sources.json
+            tauri/.build/artifacts/SHA256SUMS
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 14
+      - name: Prepare diagnostic logs
+        if: always()
+        run: |
+          python3 - <<'PY'
+          import os
+          import pathlib
+          import re
+
+          root = pathlib.Path('.build/logs')
+          output = root / 'public'
+          output.mkdir(parents=True, exist_ok=True)
+          for log in root.glob('*.log'):
+              text = log.read_text(errors='replace')
+              for key, replacement in [('GITHUB_WORKSPACE', '/src'), ('HOME', '/toolchain')]:
+                  text = text.replace(os.environ[key], replacement)
+              text = re.sub(r'[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}', '[redacted-email]', text)
+              (output / log.name).write_text(text)
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ios-build-logs
+          path: tauri/.build/logs/public/*.log
+          if-no-files-found: ignore
+          retention-days: 7

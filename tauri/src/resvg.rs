@@ -55,7 +55,7 @@ pub async fn render_image(
         .set_title("Save PNG")
         .save_file(|file_path| {
             if let Some(valid_path) = file_path {
-                if let Some(path) = valid_path.as_path() {
+                if let Ok(path) = valid_path.into_path() {
                     std::fs::write(path, png_bytes).expect("Failed to write PNG file");
                 }
             }
