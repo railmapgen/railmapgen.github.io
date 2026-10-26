@@ -1,5 +1,6 @@
-import { Button, Text, Title } from '@mantine/core';
+import { Button, NativeSelect, Text, Title } from '@mantine/core';
 import { RMMantineProvider, RMWindow, RMWindowHeader } from '@railmapgen/mantine-components';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FaAndroid, FaApple, FaLinux, FaWindows } from 'react-icons/fa';
 import { MdDownload } from 'react-icons/md';
@@ -32,9 +33,20 @@ const desktopPlatforms = [
 
 export default function AppRoot() {
     const { t } = useTranslation();
-    const now = new Date();
-    const tag = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}01`;
-    const version = `${String(now.getFullYear()).slice(-2)}.${now.getMonth() + 1}.1`;
+    const [versions] = useState(() => {
+        const now = new Date(Date.now() + 12 * 60 * 60 * 1000);
+        return Array.from({ length: 12 }, (_, index) => {
+            const date = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - index, 1));
+            const year = date.getUTCFullYear();
+            const month = date.getUTCMonth() + 1;
+            return {
+                tag: `${year}${String(month).padStart(2, '0')}01`,
+                version: `${String(year).slice(-2)}.${month}.1`,
+            };
+        });
+    });
+    const [selectedTag, setSelectedTag] = useState(versions[0].tag);
+    const { tag, version } = versions.find(({ tag }) => tag === selectedTag)!;
     const downloadBase = `https://ghfast.top/https://github.com/railmapgen/railmapgen.github.io/releases/download/tauri-${tag}/Rail.Map.Toolkit_${version}_`;
 
     return (
@@ -97,6 +109,20 @@ export default function AppRoot() {
                                     </Text>
                                 </section>
                             ))}
+                            <div className={classes['version-selector']}>
+                                <NativeSelect
+                                    aria-label={t('DownloadPage.version')}
+                                    value={selectedTag}
+                                    onChange={event => setSelectedTag(event.currentTarget.value)}
+                                    data={versions.map(({ tag, version }) => ({
+                                        value: tag,
+                                        label: `${t('DownloadPage.version')} ${version}`,
+                                    }))}
+                                    size="xs"
+                                    variant="unstyled"
+                                    classNames={{ input: classes['version-input'] }}
+                                />
+                            </div>
                         </div>
                     </div>
                 </main>

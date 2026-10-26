@@ -9,20 +9,20 @@
 .hero {
     display: grid;
     grid-template-areas:
-        'copy preview'
-        'downloads preview';
-    grid-template-columns: minmax(300px, 0.9fr) minmax(0, 1.2fr);
-    column-gap: clamp(24px, 4vw, 64px);
-    row-gap: 32px;
-    align-content: center;
+        'copy'
+        'preview'
+        'downloads';
+    grid-template-columns: minmax(0, 1fr);
+    gap: 32px;
+    align-content: start;
     width: 100%;
-    min-height: 100%;
-    max-width: 1440px;
+    max-width: 1000px;
     margin: 0 auto;
 }
 
 .copy {
     grid-area: copy;
+    text-align: center;
 }
 
 .eyebrow {
@@ -65,6 +65,9 @@
 .downloads {
     grid-area: downloads;
     min-width: 0;
+    width: 100%;
+    max-width: 560px;
+    justify-self: center;
 }
 
 .platform {
@@ -75,7 +78,7 @@
     padding: 14px 0;
     border-bottom: 1px solid var(--mantine-color-default-border);
 
-    &:last-child {
+    &:last-of-type {
         border-bottom: 0;
     }
 }
@@ -96,18 +99,23 @@
     gap: 8px;
 }
 
+.version-selector {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 12px;
+}
+
+.version-input {
+    color: var(--mantine-color-dimmed);
+    cursor: pointer;
+}
+
 @media (max-width: 48em) {
     .page {
         padding: 32px 20px max(env(safe-area-inset-bottom), 24px);
     }
 
     .hero {
-        grid-template-areas:
-            'copy'
-            'preview'
-            'downloads';
-        grid-template-columns: minmax(0, 1fr);
-        align-content: start;
         gap: 28px;
         max-width: 600px;
     }

@@ -3,7 +3,8 @@
         "title": "Everything you love. Now on your desktop.",
         "subtitle": "Bring Rail Map Toolkit to your desktop and keep creating, wherever you are.",
         "screenshot": "Rail Map Toolkit displaying a rail network map in Rail Map Painter",
-        "comingSoon": "Coming soon"
+        "comingSoon": "Coming soon",
+        "version": "Version"
     },
 
     "CookiesModal": {

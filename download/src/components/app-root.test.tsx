@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom';
 import { cleanup, render, screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { I18nextProvider } from 'react-i18next';
 import i18n from '../../../src/i18n/config';
 import AppRoot from './app-root';
@@ -11,9 +12,12 @@ describe('Desktop download page', () => {
     });
 
     it.each([
-        { date: '2026-10-24T12:00:00', tag: '20261001', version: '26.10.1' },
-        { date: '2027-01-01T12:00:00', tag: '20270101', version: '27.1.1' },
-    ])('Offers all published architectures for $tag', ({ date, tag, version }) => {
+        { date: '2026-10-24T12:00:00Z', tag: '20261001', version: '26.10.1' },
+        { date: '2026-10-31T11:59:59Z', tag: '20261001', version: '26.10.1' },
+        { date: '2026-10-31T12:00:00Z', tag: '20261101', version: '26.11.1' },
+        { date: '2026-12-31T11:59:59Z', tag: '20261201', version: '26.12.1' },
+        { date: '2026-12-31T12:00:00Z', tag: '20270101', version: '27.1.1' },
+    ])('Uses the UTC+12 monthly release at $date', ({ date, tag, version }) => {
         vi.useFakeTimers({ toFake: ['Date'] });
         vi.setSystemTime(new Date(date));
         render(
@@ -44,5 +48,37 @@ describe('Desktop download page', () => {
         expect(screen.getByRole('img')).toHaveAccessibleName(
             'Rail Map Toolkit displaying a rail network map in Rail Map Painter'
         );
+    });
+
+    it('Switches all download links to an earlier monthly version, including across years', async () => {
+        vi.useFakeTimers({ toFake: ['Date'] });
+        vi.setSystemTime(new Date('2027-01-15T00:00:00Z'));
+        const user = userEvent.setup();
+        render(
+            <I18nextProvider i18n={i18n}>
+                <AppRoot />
+            </I18nextProvider>
+        );
+
+        const versionSelect = screen.getByRole('combobox', { name: 'Version' });
+        const options = within(versionSelect).getAllByRole('option');
+        expect(options).toHaveLength(12);
+        expect(options[0]).toHaveTextContent('27.1.1');
+        expect(options[11]).toHaveTextContent('26.2.1');
+        expect(versionSelect).toHaveValue('20270101');
+
+        const latestLinks = screen.getAllByRole('link').map(link => link.getAttribute('href')!);
+        await user.selectOptions(versionSelect, '20261201');
+        for (const [index, link] of screen.getAllByRole('link').entries()) {
+            expect(link).toHaveAttribute(
+                'href',
+                latestLinks[index].replace('tauri-20270101', 'tauri-20261201').replace('_27.1.1_', '_26.12.1_')
+            );
+        }
+
+        await user.selectOptions(versionSelect, '20270101');
+        for (const [index, link] of screen.getAllByRole('link').entries()) {
+            expect(link).toHaveAttribute('href', latestLinks[index]);
+        }
     });
 });
