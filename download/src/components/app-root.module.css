@@ -25,13 +25,6 @@
     text-align: center;
 }
 
-.eyebrow {
-    color: var(--mantine-primary-color-filled);
-    font-size: var(--mantine-font-size-sm);
-    font-weight: 600;
-    margin-bottom: 16px;
-}
-
 .title {
     font-size: clamp(2rem, 3.6vw, 3.5rem);
     line-height: 1.2;
@@ -99,15 +92,8 @@
     gap: 8px;
 }
 
-.version-selector {
-    display: flex;
-    justify-content: flex-end;
+.version {
     margin-top: 12px;
-}
-
-.version-input {
-    color: var(--mantine-color-dimmed);
-    cursor: pointer;
 }
 
 @media (max-width: 48em) {

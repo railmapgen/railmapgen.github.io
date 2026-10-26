@@ -1,6 +1,5 @@
 import '@testing-library/jest-dom';
 import { cleanup, render, screen, within } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { I18nextProvider } from 'react-i18next';
 import i18n from '../../../src/i18n/config';
 import AppRoot from './app-root';
@@ -38,6 +37,7 @@ describe('Desktop download page', () => {
         for (const { name, file } of expectedLinks) {
             expect(screen.getByRole('link', { name })).toHaveAttribute('href', base + file);
         }
+        expect(screen.getByText(`Version ${version}`)).toBeVisible();
 
         for (const platform of ['Android', 'iOS']) {
             const row = within(screen.getByRole('region', { name: platform }));
@@ -48,37 +48,5 @@ describe('Desktop download page', () => {
         expect(screen.getByRole('img')).toHaveAccessibleName(
             'Rail Map Toolkit displaying a rail network map in Rail Map Painter'
         );
-    });
-
-    it('Switches all download links to an earlier monthly version, including across years', async () => {
-        vi.useFakeTimers({ toFake: ['Date'] });
-        vi.setSystemTime(new Date('2027-01-15T00:00:00Z'));
-        const user = userEvent.setup();
-        render(
-            <I18nextProvider i18n={i18n}>
-                <AppRoot />
-            </I18nextProvider>
-        );
-
-        const versionSelect = screen.getByRole('combobox', { name: 'Version' });
-        const options = within(versionSelect).getAllByRole('option');
-        expect(options).toHaveLength(12);
-        expect(options[0]).toHaveTextContent('27.1.1');
-        expect(options[11]).toHaveTextContent('26.2.1');
-        expect(versionSelect).toHaveValue('20270101');
-
-        const latestLinks = screen.getAllByRole('link').map(link => link.getAttribute('href')!);
-        await user.selectOptions(versionSelect, '20261201');
-        for (const [index, link] of screen.getAllByRole('link').entries()) {
-            expect(link).toHaveAttribute(
-                'href',
-                latestLinks[index].replace('tauri-20270101', 'tauri-20261201').replace('_27.1.1_', '_26.12.1_')
-            );
-        }
-
-        await user.selectOptions(versionSelect, '20270101');
-        for (const [index, link] of screen.getAllByRole('link').entries()) {
-            expect(link).toHaveAttribute('href', latestLinks[index]);
-        }
     });
 });
