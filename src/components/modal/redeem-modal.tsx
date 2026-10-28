@@ -7,6 +7,8 @@ import { fetchSubscription, logout } from '../../redux/account/account-slice';
 import { addNotification } from '../../redux/notification/notification-slice';
 import { apiFetch } from '../../util/api';
 import { API_ENDPOINT } from '../../util/constants';
+import rmgRuntime from '@railmapgen/rmg-runtime';
+import { SUBSCRIPTION_REDEEMED } from '../../util/subscription-redemption';
 
 const RedeemModal = (props: { opened: boolean; onClose: () => void }) => {
     const { t } = useTranslation();
@@ -15,6 +17,7 @@ const RedeemModal = (props: { opened: boolean; onClose: () => void }) => {
     const dispatch = useRootDispatch();
 
     const [CDKey, setCDKey] = React.useState('');
+    const [isRedeeming, setIsRedeeming] = React.useState(false);
 
     const showErrorToast = (msg: string) =>
         dispatch(
@@ -27,25 +30,32 @@ const RedeemModal = (props: { opened: boolean; onClose: () => void }) => {
         );
 
     const handleRedeem = async (CDKey: string) => {
-        if (!isLoggedIn) return;
-        const rep = await apiFetch(
-            API_ENDPOINT.SUBSCRIPTION_REDEEM,
-            { method: 'POST', body: JSON.stringify({ cdkey: CDKey.trim() }) },
-            token
-        );
-        if (rep.status === 401) {
-            showErrorToast(t('Login status expired.'));
-            dispatch(logout());
-            return;
+        if (!isLoggedIn || isRedeeming) return;
+        setIsRedeeming(true);
+        try {
+            const rep = await apiFetch(
+                API_ENDPOINT.SUBSCRIPTION_REDEEM,
+                { method: 'POST', body: JSON.stringify({ cdkey: CDKey.trim() }) },
+                token
+            );
+            if (rep.status === 401) {
+                showErrorToast(t('Login status expired.'));
+                dispatch(logout());
+                return;
+            }
+            if (rep.status !== 202) {
+                const msg = (await rep.json()).message;
+                showErrorToast(t(msg));
+                return;
+            }
+            dispatch(fetchSubscription());
+            rmgRuntime.postEvent(SUBSCRIPTION_REDEEMED, undefined);
+            onClose();
+        } catch (error) {
+            showErrorToast(error instanceof Error ? error.message : t('Unable to redeem'));
+        } finally {
+            setIsRedeeming(false);
         }
-        if (rep.status !== 202) {
-            const msg = (await rep.json()).message;
-            showErrorToast(t(msg));
-            return;
-        }
-        dispatch(fetchSubscription());
-        // TODO: let RMP refresh its subscription status
-        onClose();
     };
 
     return (
@@ -71,13 +81,16 @@ const RedeemModal = (props: { opened: boolean; onClose: () => void }) => {
 
             <Group align="flex-end" gap="sm" mt="xs" mb="md">
                 <TextInput
+                    data-autofocus
                     label={t('CDKey')}
                     placeholder={t('Enter your CDKey here')}
                     value={CDKey}
                     onChange={({ currentTarget: { value } }) => setCDKey(value)}
                     style={{ minWidth: 240, flex: 1 }}
                 />
-                <Button onClick={() => handleRedeem(CDKey)}>{t('Redeem')}</Button>
+                <Button loading={isRedeeming} onClick={() => handleRedeem(CDKey)}>
+                    {t('Redeem')}
+                </Button>
             </Group>
         </Modal>
     );

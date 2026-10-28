@@ -1,9 +1,9 @@
 import { Alert, Button, Card, List, Stack, Text, Title } from '@mantine/core';
 import { RMSection, RMSectionBody, RMSectionHeader } from '@railmapgen/mantine-components';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { MdWarning } from 'react-icons/md';
-import { useRootSelector } from '../../../redux';
+import { useRootDispatch, useRootSelector } from '../../../redux';
+import { setIsRedeemModalOpen } from '../../../redux/app/app-slice';
 import RedeemModal from '../../modal/redeem-modal';
 
 const DAYS_TO_REMIND_RENEW = 90;
@@ -13,7 +13,8 @@ const SubscriptionSection = () => {
     const { t } = useTranslation();
 
     const { activeSubscriptions } = useRootSelector(state => state.account);
-    const [isRedeemModalOpen, setIsRedeemModalOpen] = React.useState(false);
+    const dispatch = useRootDispatch();
+    const isRedeemModalOpen = useRootSelector(state => state.app.isRedeemModalOpen);
 
     const noneSubscription = !activeSubscriptions.RMP_CLOUD && !activeSubscriptions.RMP_EXPORT;
 
@@ -23,7 +24,7 @@ const SubscriptionSection = () => {
                 <Title order={3} size="h5">
                     {t('All subscriptions')}
                 </Title>
-                <Button variant="subtle" size="xs" ml="auto" onClick={() => setIsRedeemModalOpen(true)}>
+                <Button variant="subtle" size="xs" ml="auto" onClick={() => dispatch(setIsRedeemModalOpen(true))}>
                     {t('Redeem')}
                 </Button>
             </RMSectionHeader>
@@ -66,7 +67,7 @@ const SubscriptionSection = () => {
                                 <Text>
                                     {t('Expires at:')} {new Date(expires).toLocaleString()}
                                 </Text>
-                                <Button color="blue" onClick={() => setIsRedeemModalOpen(true)}>
+                                <Button color="blue" onClick={() => dispatch(setIsRedeemModalOpen(true))}>
                                     {t('Renew')}
                                 </Button>
                                 {new Date(expires).getTime() - new Date().getTime() < MILLISECONDS_TO_REMIND_RENEW && (
@@ -81,7 +82,7 @@ const SubscriptionSection = () => {
                     ))}
             </RMSectionBody>
 
-            <RedeemModal opened={isRedeemModalOpen} onClose={() => setIsRedeemModalOpen(false)} />
+            <RedeemModal opened={isRedeemModalOpen} onClose={() => dispatch(setIsRedeemModalOpen(false))} />
         </RMSection>
     );
 };
