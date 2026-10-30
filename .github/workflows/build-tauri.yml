@@ -49,6 +49,9 @@ jobs:
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
       - name: Install Rust stable
         uses: dtolnay/rust-toolchain@stable
         with:
@@ -56,9 +59,8 @@ jobs:
       - name: Rust cache
         uses: swatinem/rust-cache@v2
         with:
+          workspaces: tauri -> target
           key: ${{ runner.os }}-cargo-${{ hashFiles('tauri/Cargo.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-cargo-
       - name: install dependencies (ubuntu only)
         if: matrix.platform == 'ubuntu-latest'
         run: |
@@ -95,6 +97,7 @@ jobs:
           f.truncate();
           f.close()"
       - name: Check updater signing secrets
+        shell: bash
         env:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
         run: |
@@ -144,6 +147,9 @@ jobs:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         with:
+          projectPath: ./tauri
+          # Fetch the pinned CLI only on the runner; no root npm script or install is needed.
+          tauriScript: npx --yes --package @tauri-apps/cli@2.12.4 tauri
           tagName: ${{ needs.prepare.outputs.tag }}
           releaseName: Rail Map Toolkit Desktop Application ${{ needs.prepare.outputs.date }}
           releaseBody: |
@@ -166,8 +172,8 @@ jobs:
             |rsg                 |`${{ env.rsg }}`          |
           releaseDraft: false
           prerelease: false
-          uploadUpdaterJson: false
-          uploadUpdaterSignatures: true
+          # Signatures are uploaded as build artifacts; the final job generates latest.json.
+          includeUpdaterJson: false
           args: --target ${{ matrix.target }}
 
   finalize-updater-json:
