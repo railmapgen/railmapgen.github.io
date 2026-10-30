@@ -64,7 +64,14 @@ function validateManifest(manifest) {
   assert(typeof manifest.notes === 'string', 'Manifest notes must be a string');
   assert(typeof manifest.pub_date === 'string' && !Number.isNaN(Date.parse(manifest.pub_date)), 'Manifest pub_date must be an ISO date');
   assert(manifest.platforms && typeof manifest.platforms === 'object', 'Manifest platforms are required');
-  assert(JSON.stringify(Object.keys(manifest.platforms).sort()) === JSON.stringify([...REQUIRED_PLATFORMS].sort()), 'Manifest must contain exactly the five required platforms');
+  const actualPlatforms = Object.keys(manifest.platforms);
+  const missing = REQUIRED_PLATFORMS.filter((platform) => !actualPlatforms.includes(platform));
+  const unexpected = actualPlatforms.filter((platform) => !REQUIRED_PLATFORMS.includes(platform));
+  const details = [
+    missing.length && `missing: ${missing.join(', ')}`,
+    unexpected.length && `unexpected: ${unexpected.join(', ')}`,
+  ].filter(Boolean).join('; ');
+  assert(!missing.length && !unexpected.length, `Manifest must contain exactly the five required platforms (${details})`);
   for (const platform of REQUIRED_PLATFORMS) {
     const entry = manifest.platforms[platform];
     assert(entry && typeof entry.signature === 'string' && entry.signature.trim(), `Missing signature for ${platform}`);
@@ -113,7 +120,15 @@ function generateManifest(options) {
     pub_date: new Date().toISOString(),
     platforms,
   };
-  validateManifest(manifest);
+  try {
+    validateManifest(manifest);
+  } catch (error) {
+    throw new Error([
+      error.message,
+      `Release assets: ${assets.join(', ') || '(none)'}`,
+      `Downloaded signatures: ${signatureFiles.join(', ') || '(none)'}`,
+    ].join('\n'));
+  }
   fs.writeFileSync(options.output, `${JSON.stringify(manifest, null, 2)}\n`);
   return manifest;
 }

@@ -9,7 +9,7 @@
     "createUpdaterArtifacts": true,
     "category": "DeveloperTool",
     "copyright": "",
-    "targets": ["appimage", "nsis", "dmg"],
+    "targets": ["appimage", "nsis", "app", "dmg"],
     "externalBin": [],
     "icon": [
       "icons/icon192.png",
