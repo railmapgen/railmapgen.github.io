@@ -46,7 +46,11 @@
     border: 1px solid var(--mantine-color-default-border);
     border-radius: 12px;
     overflow: hidden;
-    box-shadow: var(--mantine-shadow-xl);
+    box-shadow: 0 0 24px 4px rgba(0, 0, 0, 0.16);
+
+    @mixin dark {
+        box-shadow: 0 0 24px 4px rgba(0, 0, 0, 0.45);
+    }
 
     img {
         display: block;
