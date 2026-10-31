@@ -1,6 +1,7 @@
 mod resvg;
 mod svg_transform;
 mod updater;
+mod updater_download;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {

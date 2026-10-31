@@ -56,6 +56,12 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           target: ${{ matrix.target }}
+      - name: Test updater download URLs
+        if: matrix.platform == 'ubuntu-latest'
+        shell: bash
+        run: |
+          rustc --edition=2021 --test tauri/src/updater_download.rs -o "$RUNNER_TEMP/updater-download-tests"
+          "$RUNNER_TEMP/updater-download-tests"
       - name: Rust cache
         uses: swatinem/rust-cache@v2
         with:
@@ -224,10 +230,10 @@ jobs:
             echo "::error::latest.json contains a GitHub API URL"
             exit 1
           fi
-      - name: Smoke check via ghfast (non-blocking)
+      - name: Smoke check via monlor (non-blocking)
         continue-on-error: true
         run: |
-          curl -fsSL --retry 2 --retry-delay 5 \
-            "https://ghfast.top/https://github.com/$GITHUB_REPOSITORY/releases/latest/download/latest.json" \
-            -o ghfast-latest.json
-          cmp latest.json ghfast-latest.json
+          curl -fsSL --connect-timeout 15 --max-time 30 --retry 2 --retry-delay 5 \
+            "https://gh.monlor.com/https://github.com/$GITHUB_REPOSITORY/releases/latest/download/latest.json" \
+            -o monlor-latest.json
+          cmp latest.json monlor-latest.json

@@ -10,6 +10,9 @@ const REQUIRED_PLATFORMS = [
   'linux-x86_64',
 ];
 
+const DOWNLOAD_MIRROR = 'https://gh.monlor.com/';
+const LEGACY_DOWNLOAD_MIRROR = 'https://ghfast.top/';
+
 const USAGE = `Usage:
   node scripts/generate-tauri-latest-json.mjs --repo owner/repo --tag tag --version 1.2.3 \
     --sig-dir updater-sigs --assets-file release-assets.txt --notes-file release-notes.md --output latest.json
@@ -58,6 +61,19 @@ function readLines(filePath) {
   return fs.readFileSync(filePath, 'utf8').split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
 }
 
+function isReleaseAssetUrl(value) {
+  if (typeof value !== 'string' || value !== value.trim() || value.includes('\\')) return false;
+  try {
+    const mirror = [DOWNLOAD_MIRROR, LEGACY_DOWNLOAD_MIRROR].find((prefix) => value.startsWith(prefix));
+    const url = new URL(mirror ? value.slice(mirror.length) : value);
+    if (url.origin !== 'https://github.com' || url.username || url.password) return false;
+    const parts = url.pathname.slice(1).split('/');
+    return parts.length === 6 && parts.every(Boolean) && parts[2] === 'releases' && parts[3] === 'download';
+  } catch {
+    return false;
+  }
+}
+
 function validateManifest(manifest) {
   assert(manifest && typeof manifest === 'object', 'Manifest must be an object');
   assertVersion(manifest.version);
@@ -75,8 +91,7 @@ function validateManifest(manifest) {
   for (const platform of REQUIRED_PLATFORMS) {
     const entry = manifest.platforms[platform];
     assert(entry && typeof entry.signature === 'string' && entry.signature.trim(), `Missing signature for ${platform}`);
-    assert(typeof entry.url === 'string' && entry.url.startsWith('https://ghfast.top/https://github.com/'), `Invalid ghfast URL for ${platform}`);
-    assert(!entry.url.includes('api.github.com'), `Manifest URL must not contain api.github.com: ${platform}`);
+    assert(isReleaseAssetUrl(entry.url), `Invalid updater download URL for ${platform}: expected a GitHub release asset URL, optionally prefixed with ${DOWNLOAD_MIRROR} or ${LEGACY_DOWNLOAD_MIRROR}`);
   }
   return manifest;
 }
@@ -110,7 +125,7 @@ function generateManifest(options) {
     const encodedAssetName = encodeURIComponent(assetName);
     platforms[platform] = {
       signature,
-      url: `https://ghfast.top/https://github.com/${options.repo}/releases/download/${encodeURIComponent(options.tag)}/${encodedAssetName}`,
+      url: `${DOWNLOAD_MIRROR}https://github.com/${options.repo}/releases/download/${encodeURIComponent(options.tag)}/${encodedAssetName}`,
     };
   }
 

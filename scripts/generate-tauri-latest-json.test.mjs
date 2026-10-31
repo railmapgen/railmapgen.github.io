@@ -44,7 +44,7 @@ function manifestOptions(files) {
   };
 }
 
-test('generates all five platforms from release asset names with ghfast URLs and trimmed signatures', (t) => {
+test('generates all five platforms from release asset names with monlor URLs and trimmed signatures', (t) => {
   const files = fixture(t);
   const options = manifestOptions(files);
   const manifest = generateManifest(options);
@@ -53,7 +53,7 @@ test('generates all five platforms from release asset names with ghfast URLs and
     'darwin-aarch64', 'darwin-x86_64', 'linux-x86_64', 'windows-aarch64', 'windows-x86_64',
   ]);
   assert.equal(manifest.platforms['darwin-aarch64'].signature, 'signature-0');
-  assert.equal(manifest.platforms['darwin-x86_64'].url, 'https://ghfast.top/https://github.com/railmapgen/railmapgen.github.io/releases/download/tauri-20261022/Rail.Map.Toolkit_x64.app.tar.gz');
+  assert.equal(manifest.platforms['darwin-x86_64'].url, 'https://gh.monlor.com/https://github.com/railmapgen/railmapgen.github.io/releases/download/tauri-20261022/Rail.Map.Toolkit_x64.app.tar.gz');
   assert.match(manifest.platforms['windows-x86_64'].url, /x64-setup\.exe$/);
   assert.doesNotMatch(JSON.stringify(manifest), /api\.github\.com/);
   assert.deepEqual(JSON.parse(fs.readFileSync(options.output, 'utf8')), manifest);
@@ -100,13 +100,60 @@ test('rejects a manifest missing a platform', () => {
   }), /exactly the five required platforms/);
 });
 
-test('rejects API URLs during verification', () => {
-  assert.throws(() => validateManifest({
+function manifestWithUrl(url) {
+  return {
     version: '26.10.22',
     notes: '',
     pub_date: new Date().toISOString(),
     platforms: Object.fromEntries([
       ['darwin-aarch64', 'a'], ['darwin-x86_64', 'b'], ['windows-x86_64', 'c'], ['windows-aarch64', 'd'], ['linux-x86_64', 'e'],
-    ].map(([platform, signature]) => [platform, { signature, url: 'https://api.github.com/bad' }])),
-  }), /ghfast URL/);
+    ].map(([platform, signature]) => [platform, { signature, url }])),
+  };
+}
+
+test('accepts monlor, direct GitHub, and legacy ghfast release asset URLs', () => {
+  const assetUrl = 'https://github.com/railmapgen/railmapgen.github.io/releases/download/tauri-20261031/Rail.Map.Toolkit_aarch64.app.tar.gz';
+  for (const prefix of ['https://gh.monlor.com/', '', 'https://ghfast.top/']) {
+    assert.doesNotThrow(() => validateManifest(manifestWithUrl(`${prefix}${assetUrl}`)));
+  }
+});
+
+test('preserves encoded tags and filenames in generated monlor URLs', (t) => {
+  const files = fixture(t);
+  const originalAsset = 'Rail.Map.Toolkit_x64.app.tar.gz';
+  const asset = 'Rail Map Toolkit + test_x64.app.tar.gz';
+  fs.renameSync(path.join(files.signatures, `${originalAsset}.sig`), path.join(files.signatures, `${asset}.sig`));
+  fs.writeFileSync(files.assetsFile, fs.readFileSync(files.assetsFile, 'utf8').replaceAll(originalAsset, asset));
+  const manifest = generateManifest({ ...manifestOptions(files), tag: 'release/test build' });
+  const expected = 'https://gh.monlor.com/https://github.com/railmapgen/railmapgen.github.io/releases/download/release%2Ftest%20build/Rail%20Map%20Toolkit%20%2B%20test_x64.app.tar.gz';
+  assert.equal(manifest.platforms['darwin-x86_64'].url, expected);
+});
+
+test('rejects API, spoofed hosts, insecure URLs, credentials, and incomplete asset paths', () => {
+  const path = '/railmapgen/railmapgen.github.io/releases/download/tag/app.tar.gz';
+  const invalidUrls = [
+    `https://api.github.com${path}`,
+    `https://github.com.evil.example${path}`,
+    `http://github.com${path}`,
+    `https://user:password@github.com${path}`,
+    `https://github.com:444${path}`,
+    `https://gh.monlor.com.evil.example/https://github.com${path}`,
+    `https://gh.monlor.com@evil.example/https://github.com${path}`,
+    `http://gh.monlor.com/https://github.com${path}`,
+    `https://gh.monlor.com/http://github.com${path}`,
+    `https://gh.monlor.com/https://user@github.com${path}`,
+    `https://gh.monlor.com/https://api.github.com${path}`,
+    `https://ghfast.top/https://github.com.evil.example${path}`,
+    'https://github.com/railmapgen/railmapgen.github.io/releases/latest',
+    'https://github.com/railmapgen/releases/download/tag/app.tar.gz',
+    'https://github.com/railmapgen/railmapgen.github.io/releases/download//app.tar.gz',
+    'https://github.com/railmapgen/railmapgen.github.io/releases/download/tag/',
+    'https://github.com/railmapgen/railmapgen.github.io/releases/download/tag',
+    'https://github.com\\railmapgen/railmapgen.github.io/releases/download/tag/app.tar.gz',
+    ` ${'https://github.com'}${path}`,
+    'not a URL',
+  ];
+  for (const url of invalidUrls) {
+    assert.throws(() => validateManifest(manifestWithUrl(url)), /Invalid updater download URL/, url);
+  }
 });

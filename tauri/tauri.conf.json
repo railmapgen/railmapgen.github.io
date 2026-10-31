@@ -48,7 +48,7 @@
     "updater": {
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEVCN0M4OUE3MzA3RjlGNTQKUldSVW4zOHdwNGw4NjJJcEZHMTB2VmlzZzlTZVoydkhGQm5raHZzUU5TUm8zcEhqdjgwblRqZ0wK",
       "endpoints": [
-        "https://ghfast.top/https://github.com/railmapgen/railmapgen.github.io/releases/latest/download/latest.json",
+        "https://gh.monlor.com/https://github.com/railmapgen/railmapgen.github.io/releases/latest/download/latest.json",
         "https://github.com/railmapgen/railmapgen.github.io/releases/latest/download/latest.json"
       ],
       "windows": {

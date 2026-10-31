@@ -19,3 +19,13 @@ jobs:
           npm run lint
           npm run test
           npm run test:scripts
+
+  updater-download:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Test updater download URLs
+        run: |
+          rustc --edition=2021 --test tauri/src/updater_download.rs -o "$RUNNER_TEMP/updater-download-tests"
+          "$RUNNER_TEMP/updater-download-tests"
