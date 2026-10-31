@@ -37,7 +37,7 @@ export default function AppRoot() {
     const month = now.getUTCMonth() + 1;
     const tag = `${year}${String(month).padStart(2, '0')}01`;
     const version = `${String(year).slice(-2)}.${month}.1`;
-    const downloadBase = `https://ghfast.top/https://github.com/railmapgen/railmapgen.github.io/releases/download/tauri-${tag}/Rail.Map.Toolkit_${version}_`;
+    const downloadBase = `https://gh.monlor.com/https://github.com/railmapgen/railmapgen.github.io/releases/download/tauri-${tag}/Rail.Map.Toolkit_${version}_`;
 
     return (
         <RMMantineProvider>

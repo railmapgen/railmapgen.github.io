@@ -25,7 +25,7 @@ describe('Desktop download page', () => {
             </I18nextProvider>
         );
 
-        const base = `https://ghfast.top/https://github.com/railmapgen/railmapgen.github.io/releases/download/tauri-${tag}/Rail.Map.Toolkit_${version}_`;
+        const base = `https://gh.monlor.com/https://github.com/railmapgen/railmapgen.github.io/releases/download/tauri-${tag}/Rail.Map.Toolkit_${version}_`;
         const expectedLinks = [
             { name: 'Download Windows x64', file: 'x64-setup.exe' },
             { name: 'Download Windows ARM64', file: 'arm64-setup.exe' },
