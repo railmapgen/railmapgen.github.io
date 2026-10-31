@@ -1,0 +1,117 @@
+.page {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+    padding: clamp(24px, 4vw, 64px);
+    padding-bottom: max(env(safe-area-inset-bottom), 32px);
+}
+
+.hero {
+    display: grid;
+    grid-template-areas:
+        'copy'
+        'preview'
+        'downloads';
+    grid-template-columns: minmax(0, 1fr);
+    gap: 32px;
+    align-content: start;
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.copy {
+    grid-area: copy;
+    text-align: center;
+}
+
+.title {
+    font-size: clamp(2rem, 3.6vw, 3.5rem);
+    line-height: 1.2;
+    text-wrap: balance;
+    letter-spacing: -0.025em;
+}
+
+.subtitle {
+    margin-top: 20px;
+    font-size: var(--mantine-font-size-lg);
+    line-height: 1.7;
+    color: var(--mantine-color-dimmed);
+}
+
+.preview {
+    grid-area: preview;
+    align-self: center;
+    min-width: 0;
+    border: 1px solid var(--mantine-color-default-border);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 0 24px 4px rgba(0, 0, 0, 0.16);
+
+    @mixin dark {
+        box-shadow: 0 0 24px 4px rgba(0, 0, 0, 0.45);
+    }
+
+    img {
+        display: block;
+        width: 100%;
+        height: auto;
+    }
+}
+
+.downloads {
+    grid-area: downloads;
+    min-width: 0;
+    width: 100%;
+    max-width: 560px;
+    justify-self: center;
+}
+
+.platform {
+    display: grid;
+    grid-template-columns: 110px minmax(0, 1fr);
+    align-items: center;
+    gap: 12px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--mantine-color-default-border);
+
+    &:last-of-type {
+        border-bottom: 0;
+    }
+}
+
+.platform-name {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    svg {
+        flex-shrink: 0;
+    }
+}
+
+.buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.version {
+    margin-top: 12px;
+}
+
+@media (max-width: 48em) {
+    .page {
+        padding: 32px 20px max(env(safe-area-inset-bottom), 24px);
+    }
+
+    .hero {
+        gap: 28px;
+        max-width: 600px;
+    }
+
+    .subtitle {
+        font-size: var(--mantine-font-size-md);
+        margin-top: 16px;
+    }
+}

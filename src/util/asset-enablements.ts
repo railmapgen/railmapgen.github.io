@@ -20,20 +20,6 @@ interface AssetDetail {
     supportSafeAreaInset?: boolean;
 }
 
-const getTauriUrl = () => {
-    const baseUrl = 'https://ghfast.top/https://github.com/railmapgen/railmapgen.github.io/releases/download';
-    const d = new Date();
-    const tag = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}01`;
-    const ver = `${String(d.getFullYear()).slice(-2)}.${d.getMonth() + 1}.1`;
-    const platform = navigator.platform;
-    const suffix = platform.includes('Linux')
-        ? 'amd64.AppImage'
-        : platform.includes('Mac')
-          ? 'aarch64.dmg'
-          : 'x64-setup.exe';
-    return baseUrl + `/tauri-${tag}/Rail.Map.Toolkit_${ver}_${suffix}`;
-};
-
 export const assetEnablement: Record<string, AssetDetail> = {
     rmg: {
         name: 'Rail Map Generator',
@@ -176,9 +162,10 @@ export const assetEnablement: Record<string, AssetDetail> = {
     },
     tauri: {
         name: 'Download desktop app',
-        url: getTauriUrl(),
+        url: '/download/',
         assetType: 'link',
         allowedInstances: ['Org', 'GitHub', 'GitLab', 'localhost', 'unknown'],
+        supportSafeAreaInset: true,
     },
     'community-review': {
         name: 'Community review',
@@ -215,6 +202,7 @@ export const assetEnablement: Record<string, AssetDetail> = {
 
 export const tempAssets: Record<string, string> = {
     contributors: '/contributors/',
+    tauri: '/download/',
 };
 
 export const getAvailableAsset = (assetType: AssetType, env: RmgEnv, instance: RmgInstance): string[] => {
