@@ -7,6 +7,9 @@ on:
       - '.github/workflows/build-tauri.yml'
       - '.github/workflows/tauri-code-check.yml'
 
+permissions:
+  contents: read
+
 jobs:
   latest-json:
     runs-on: ubuntu-latest
