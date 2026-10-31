@@ -7,7 +7,7 @@ license = "GPL-3.0-only"
 repository = "https://github.com/railmapgen/railmapgen.github.io/"
 default-run = "railmapgen"
 edition = "2021"
-rust-version = "1.60"
+rust-version = "1.90"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -21,6 +21,7 @@ tauri = { version = "2", features = [] }
 tauri-plugin-http = { version = "2", features = ["unsafe-headers"] }
 resvg = "0.45.1"
 tauri-plugin-dialog = "2"
+tauri-plugin-updater = "2"
 xmltree = "0.11.0"
 
 [features]
