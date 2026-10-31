@@ -111,9 +111,9 @@ function manifestWithUrl(url) {
   };
 }
 
-test('accepts monlor, direct GitHub, and legacy ghfast release asset URLs', () => {
+test('accepts monlor and direct GitHub release asset URLs', () => {
   const assetUrl = 'https://github.com/railmapgen/railmapgen.github.io/releases/download/tauri-20261031/Rail.Map.Toolkit_aarch64.app.tar.gz';
-  for (const prefix of ['https://gh.monlor.com/', '', 'https://ghfast.top/']) {
+  for (const prefix of ['https://gh.monlor.com/', '']) {
     assert.doesNotThrow(() => validateManifest(manifestWithUrl(`${prefix}${assetUrl}`)));
   }
 });
@@ -143,7 +143,6 @@ test('rejects API, spoofed hosts, insecure URLs, credentials, and incomplete ass
     `https://gh.monlor.com/http://github.com${path}`,
     `https://gh.monlor.com/https://user@github.com${path}`,
     `https://gh.monlor.com/https://api.github.com${path}`,
-    `https://ghfast.top/https://github.com.evil.example${path}`,
     'https://github.com/railmapgen/railmapgen.github.io/releases/latest',
     'https://github.com/railmapgen/releases/download/tag/app.tar.gz',
     'https://github.com/railmapgen/railmapgen.github.io/releases/download//app.tar.gz',

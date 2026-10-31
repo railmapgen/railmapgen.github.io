@@ -193,6 +193,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
+      - name: Test latest.json generator
+        run: node --test tauri/scripts/generate-tauri-latest-json.node-test.mjs
       - name: Download signatures and release metadata
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -207,7 +209,7 @@ jobs:
           TAG: ${{ needs.prepare.outputs.tag }}
           VERSION: ${{ needs.prepare.outputs.version }}
         run: |
-          node scripts/generate-tauri-latest-json.mjs \
+          node tauri/scripts/generate-tauri-latest-json.mjs \
             --repo "$GITHUB_REPOSITORY" \
             --tag "$TAG" \
             --version "$VERSION" \
@@ -222,18 +224,24 @@ jobs:
         run: gh release upload "$TAG" latest.json --clobber
       - name: Verify public manifest
         run: |
-          curl -fsSL --retry 5 --retry-delay 5 \
-            "https://github.com/$GITHUB_REPOSITORY/releases/latest/download/latest.json" \
-            -o remote-latest.json
-          node scripts/generate-tauri-latest-json.mjs --verify remote-latest.json
+          for url in \
+            "https://gh.monlor.com/https://github.com/$GITHUB_REPOSITORY/releases/latest/download/latest.json" \
+            "https://github.com/$GITHUB_REPOSITORY/releases/latest/download/latest.json"; do
+            if curl -fsSL --retry 5 --retry-delay 5 "$url" -o remote-latest.json; then
+              echo "Verified manifest via $url"
+              break
+            fi
+          done
+          test -s remote-latest.json
+          node tauri/scripts/generate-tauri-latest-json.mjs --verify remote-latest.json
           if grep -q 'api.github.com' remote-latest.json; then
             echo "::error::latest.json contains a GitHub API URL"
             exit 1
           fi
-      - name: Smoke check via monlor (non-blocking)
+      - name: Smoke check via GitHub (non-blocking)
         continue-on-error: true
         run: |
           curl -fsSL --connect-timeout 15 --max-time 30 --retry 2 --retry-delay 5 \
-            "https://gh.monlor.com/https://github.com/$GITHUB_REPOSITORY/releases/latest/download/latest.json" \
-            -o monlor-latest.json
-          cmp latest.json monlor-latest.json
+            "https://github.com/$GITHUB_REPOSITORY/releases/latest/download/latest.json" \
+            -o github-latest.json
+          cmp latest.json github-latest.json

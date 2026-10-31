@@ -3,17 +3,13 @@
 // /tmp/updater-download-tests
 
 const MIRROR_PREFIX: &str = "https://gh.monlor.com/";
-const LEGACY_MIRROR_PREFIX: &str = "https://ghfast.top/";
 const RELEASE_DOWNLOAD_PREFIX: &str =
     "https://github.com/railmapgen/railmapgen.github.io/releases/download/";
 
 /// Prefer Monlor, then GitHub, for this repository's release assets.
 /// Unknown URLs stay untouched; URL bytes are preserved rather than decoded.
 pub fn download_urls(url: &str) -> Vec<String> {
-    let github_url = url
-        .strip_prefix(MIRROR_PREFIX)
-        .or_else(|| url.strip_prefix(LEGACY_MIRROR_PREFIX))
-        .unwrap_or(url);
+    let github_url = url.strip_prefix(MIRROR_PREFIX).unwrap_or(url);
 
     if !is_release_asset_url(github_url) {
         return vec![url.to_owned()];
@@ -67,12 +63,6 @@ mod tests {
     }
 
     #[test]
-    fn legacy_ghfast_asset_migrates_to_monlor_then_direct() {
-        let legacy = format!("https://ghfast.top/{GITHUB}");
-        assert_eq!(download_urls(&legacy), vec![MONLOR, GITHUB]);
-    }
-
-    #[test]
     fn encoded_path_and_query_bytes_are_preserved() {
         let github = "https://github.com/railmapgen/railmapgen.github.io/releases/download/tauri%2F20261031/Rail%20Map%2BToolkit.app.tar.gz?download=1&name=%2f%2F#section";
         let mirror = format!("https://gh.monlor.com/{github}");
@@ -98,7 +88,6 @@ mod tests {
             "https://github.com/other/railmapgen.github.io/releases/download/tag/app.tar.gz",
             "https://github.com/railmapgen/railmapgen.github.io.evil/releases/download/tag/app.tar.gz",
             "https://gh.monlor.com/https://github.com/other/repo/releases/download/tag/app.tar.gz",
-            "https://ghfast.top/https://github.com/other/repo/releases/download/tag/app.tar.gz",
         ] {
             assert_eq!(download_urls(url), vec![url]);
         }
@@ -110,7 +99,7 @@ mod tests {
             "http://github.com/railmapgen/railmapgen.github.io/releases/download/tag/app.tar.gz",
             "https://gh.monlor.com/http://github.com/railmapgen/railmapgen.github.io/releases/download/tag/app.tar.gz",
             "http://gh.monlor.com/https://github.com/railmapgen/railmapgen.github.io/releases/download/tag/app.tar.gz",
-            "https://gh.monlor.com/https://ghfast.top/https://github.com/railmapgen/railmapgen.github.io/releases/download/tag/app.tar.gz",
+            "https://gh.monlor.com/https://gh.monlor.com/https://github.com/railmapgen/railmapgen.github.io/releases/download/tag/app.tar.gz",
         ] {
             assert_eq!(download_urls(url), vec![url]);
         }

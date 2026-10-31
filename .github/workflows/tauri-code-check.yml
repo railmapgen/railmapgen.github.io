@@ -1,0 +1,29 @@
+name: Tauri Code Quality Check
+
+on:
+  pull_request:
+    paths:
+      - 'tauri/**'
+      - '.github/workflows/build-tauri.yml'
+      - '.github/workflows/tauri-code-check.yml'
+
+jobs:
+  latest-json:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Test latest.json generator
+        run: node --test tauri/scripts/generate-tauri-latest-json.node-test.mjs
+
+  updater-download:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Test updater download URLs
+        run: |
+          rustc --edition=2021 --test tauri/src/updater_download.rs -o "$RUNNER_TEMP/updater-download-tests"
+          "$RUNNER_TEMP/updater-download-tests"

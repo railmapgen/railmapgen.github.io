@@ -11,12 +11,11 @@ const REQUIRED_PLATFORMS = [
 ];
 
 const DOWNLOAD_MIRROR = 'https://gh.monlor.com/';
-const LEGACY_DOWNLOAD_MIRROR = 'https://ghfast.top/';
 
 const USAGE = `Usage:
-  node scripts/generate-tauri-latest-json.mjs --repo owner/repo --tag tag --version 1.2.3 \
+  node tauri/scripts/generate-tauri-latest-json.mjs --repo owner/repo --tag tag --version 1.2.3 \
     --sig-dir updater-sigs --assets-file release-assets.txt --notes-file release-notes.md --output latest.json
-  node scripts/generate-tauri-latest-json.mjs --verify latest.json`;
+  node tauri/scripts/generate-tauri-latest-json.mjs --verify latest.json`;
 
 function parseArgs(argv) {
   const args = {};
@@ -64,8 +63,7 @@ function readLines(filePath) {
 function isReleaseAssetUrl(value) {
   if (typeof value !== 'string' || value !== value.trim() || value.includes('\\')) return false;
   try {
-    const mirror = [DOWNLOAD_MIRROR, LEGACY_DOWNLOAD_MIRROR].find((prefix) => value.startsWith(prefix));
-    const url = new URL(mirror ? value.slice(mirror.length) : value);
+    const url = new URL(value.startsWith(DOWNLOAD_MIRROR) ? value.slice(DOWNLOAD_MIRROR.length) : value);
     if (url.origin !== 'https://github.com' || url.username || url.password) return false;
     const parts = url.pathname.slice(1).split('/');
     return parts.length === 6 && parts.every(Boolean) && parts[2] === 'releases' && parts[3] === 'download';
@@ -91,7 +89,7 @@ function validateManifest(manifest) {
   for (const platform of REQUIRED_PLATFORMS) {
     const entry = manifest.platforms[platform];
     assert(entry && typeof entry.signature === 'string' && entry.signature.trim(), `Missing signature for ${platform}`);
-    assert(isReleaseAssetUrl(entry.url), `Invalid updater download URL for ${platform}: expected a GitHub release asset URL, optionally prefixed with ${DOWNLOAD_MIRROR} or ${LEGACY_DOWNLOAD_MIRROR}`);
+    assert(isReleaseAssetUrl(entry.url), `Invalid updater download URL for ${platform}: expected a GitHub release asset URL, optionally prefixed with ${DOWNLOAD_MIRROR}`);
   }
   return manifest;
 }
