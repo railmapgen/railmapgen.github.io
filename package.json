@@ -11,7 +11,7 @@
         "@mantine/hooks": "^9.1.0",
         "@railmapgen/mantine-components": "^1.0.0",
         "@railmapgen/rmg-runtime": "^13.1.0",
-        "@railmapgen/rmg-translate": "^3.5.2",
+        "@railmapgen/rmg-translate": "^3.5.3",
         "@reduxjs/toolkit": "^2.11.2",
         "clsx": "^2.1.1",
         "react": "^19.2.5",
@@ -55,5 +55,5 @@
         "lint:fix": "eslint src contributors runtime-demo --fix",
         "preview": "vite preview --host"
     },
-    "version": "3.2.41"
+    "version": "3.2.42"
 }

@@ -11,6 +11,7 @@ import {
     MdOutlineLink,
     MdOutlinePeopleOutline,
     MdOutlineSettings,
+    MdOutlineTranslate,
     MdWarning,
 } from 'react-icons/md';
 import { useSearchParams } from 'react-router-dom';
@@ -20,6 +21,7 @@ import { isShowDevtools, MenuView, openTempApp, setMenuView, toggleMenu } from '
 import useSmMediaQuery from '../hook/use-sm-media-query';
 import ResolveConflictModal from '../modal/resolve-conflict-modal';
 import AccountView from './account-view/account-view';
+import LanguageView from './language-view';
 import AppsSection from './main-view/apps-section';
 import LinksSection from './main-view/links-section';
 import classes from './nav-menu.module.css';
@@ -29,7 +31,7 @@ import SupportSection from './support-view/support-section';
 
 type AsideButton = {
     key: MenuView;
-    label: ReactNode;
+    label: string;
     Icon: ReactNode;
     ActionIconProps?: ComponentProps<typeof ActionIcon>;
 };
@@ -91,6 +93,7 @@ export default function NavMenu() {
             },
         },
         { key: 'support', label: t('Help & support'), Icon: <MdOutlineHelpOutline size={22} /> },
+        { key: 'language', label: t('Language'), Icon: <MdOutlineTranslate size={22} /> },
         { key: 'settings', label: t('Settings'), Icon: <MdOutlineSettings size={22} /> },
     ];
 
@@ -118,6 +121,7 @@ export default function NavMenu() {
                         {asideButtons.map(({ key, label, Icon, ActionIconProps }) => (
                             <Tooltip key={key} label={label} position="right" withArrow>
                                 <ActionIcon
+                                    aria-label={label}
                                     variant={menuView === key ? 'light' : 'subtle'}
                                     color={menuView === key ? undefined : 'gray'}
                                     size="lg"
@@ -140,6 +144,8 @@ export default function NavMenu() {
                             <LinksSection />
                         ) : menuView === 'devtools' ? (
                             <AppsSection assetType="devtool" />
+                        ) : menuView === 'language' ? (
+                            <LanguageView />
                         ) : menuView === 'settings' ? (
                             <SettingsView />
                         ) : menuView === 'support' ? (

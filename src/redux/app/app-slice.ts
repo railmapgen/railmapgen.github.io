@@ -3,7 +3,7 @@ import { assetEnablement, tempAssets } from '../../util/asset-enablements';
 import { WorkspaceTab } from '../../util/constants';
 import { constructUrl } from '../../util/utils';
 
-export type MenuView = 'apps' | 'links' | 'devtools' | 'settings' | 'support' | 'account' | 'contributors';
+export type MenuView = 'apps' | 'links' | 'devtools' | 'language' | 'settings' | 'support' | 'account' | 'contributors';
 type FontConfig = {
     displayName?: string;
     url?: string;
