@@ -3,7 +3,6 @@ import { RMMantineProvider, RMWindow, RMWindowHeader } from '@railmapgen/mantine
 import { useTranslation } from 'react-i18next';
 import { FaAndroid, FaApple, FaLinux, FaWindows } from 'react-icons/fa';
 import { MdDownload } from 'react-icons/md';
-import screenshot from '../assets/rail-map-toolkit.png';
 import classes from './app-root.module.css';
 
 const desktopPlatforms = [
@@ -55,7 +54,7 @@ export default function AppRoot() {
                         </div>
 
                         <div className={classes.preview}>
-                            <img src={screenshot} alt={t('DownloadPage.screenshot')} />
+                            <img src="/images/rail-map-toolkit.png" alt={t('DownloadPage.screenshot')} />
                         </div>
 
                         <div className={classes.downloads}>

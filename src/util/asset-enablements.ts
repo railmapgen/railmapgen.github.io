@@ -202,7 +202,7 @@ export const assetEnablement: Record<string, AssetDetail> = {
 
 export const tempAssets: Record<string, string> = {
     contributors: '/contributors/',
-    tauri: '/download/',
+    tauri: assetEnablement.tauri.url,
 };
 
 export const getAvailableAsset = (assetType: AssetType, env: RmgEnv, instance: RmgInstance): string[] => {
