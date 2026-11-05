@@ -60,6 +60,7 @@ const LoginView = (props: { setLoginState: (_: 'login' | 'register' | 'forgot-pa
 
             <RMSectionBody direction="column" gap="xs">
                 <TextInput
+                    id="rmt-login-email"
                     type="email"
                     label={t('Email')}
                     value={email}

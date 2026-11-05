@@ -2,8 +2,10 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { assetEnablement, tempAssets } from '../../util/asset-enablements';
 import { WorkspaceTab } from '../../util/constants';
 import { constructUrl } from '../../util/utils';
+import { logout } from '../account/account-slice';
 
 export type MenuView = 'apps' | 'links' | 'devtools' | 'language' | 'settings' | 'support' | 'account' | 'contributors';
+export type AccountPage = 'login' | 'register' | 'forgot-password';
 type FontConfig = {
     displayName?: string;
     url?: string;
@@ -16,6 +18,8 @@ export interface AppState {
     isTerminated?: boolean;
     isShowMenu: boolean;
     menuView: MenuView;
+    accountPage: AccountPage;
+    isRedeemModalOpen: boolean;
     refreshRequired: boolean;
     lastShowDevtools: number;
     openedTabs: WorkspaceTab[];
@@ -27,6 +31,8 @@ export interface AppState {
 const initialState: AppState = {
     isShowMenu: true,
     menuView: 'apps',
+    accountPage: 'login',
+    isRedeemModalOpen: false,
     refreshRequired: false,
     lastShowDevtools: 0,
     openedTabs: [],
@@ -41,18 +47,36 @@ const appSlice = createSlice({
     reducers: {
         setIsPrimary: (state, action: PayloadAction<boolean>) => {
             state.isPrimary = action.payload;
+            if (!action.payload) state.isRedeemModalOpen = false;
         },
 
         terminateSession: state => {
             state.isTerminated = true;
+            state.isRedeemModalOpen = false;
         },
 
         toggleMenu: state => {
             state.isShowMenu = !state.isShowMenu;
         },
 
+        setMenuOpen: (state, action: PayloadAction<boolean>) => {
+            state.isShowMenu = action.payload;
+        },
+
         setMenuView: (state, action: PayloadAction<MenuView>) => {
             state.menuView = action.payload;
+            if (action.payload !== 'account') {
+                state.accountPage = 'login';
+                state.isRedeemModalOpen = false;
+            }
+        },
+
+        setAccountPage: (state, action: PayloadAction<AccountPage>) => {
+            state.accountPage = action.payload;
+        },
+
+        setIsRedeemModalOpen: (state, action: PayloadAction<boolean>) => {
+            state.isRedeemModalOpen = action.payload;
         },
 
         requireRefresh: state => {
@@ -205,6 +229,12 @@ const appSlice = createSlice({
             state.showFontAdvice = 'never';
         },
     },
+    extraReducers: builder => {
+        builder.addCase(logout, state => {
+            state.accountPage = 'login';
+            state.isRedeemModalOpen = false;
+        });
+    },
 });
 
 export const isShowDevtools = (lastShowDevtools: number) => {
@@ -216,7 +246,10 @@ export const {
     setIsPrimary,
     terminateSession,
     toggleMenu,
+    setMenuOpen,
     setMenuView,
+    setAccountPage,
+    setIsRedeemModalOpen,
     requireRefresh,
     showDevtools,
     hideDevtools,

@@ -17,6 +17,7 @@ import { registerOnRMPSaveChange } from './util/local-storage-save';
 import { RMErrorBoundary, RMMantineProvider } from '@railmapgen/mantine-components';
 import { LoadingOverlay } from '@mantine/core';
 import { addRemoteNotification } from './redux/notification/notification-slice';
+import { registerSubscriptionRedemption } from './util/subscription-redemption';
 
 let root: Root;
 const AppRoot = lazy(() => import('./components/app-root'));
@@ -50,6 +51,7 @@ rmgRuntime.ready().then(async () => {
     await store.dispatch(syncAfterLogin());
     store.dispatch(fetchSubscription());
 
+    registerSubscriptionRedemption(store);
     renderApp();
 
     // FIXME: Broadcast current theme to chakra UI apps. Do not remove until all apps are migrated.
