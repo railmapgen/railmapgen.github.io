@@ -59,11 +59,13 @@ describe('subscription redemption entry', () => {
         expect(store.getState().app).toMatchObject({ isShowMenu: true, menuView: 'account' });
         await screen.findByRole('dialog', { name: 'Redeem your subscription' });
         expect(screen.getAllByRole('dialog', { name: 'Redeem your subscription' })).toHaveLength(1);
-        fireEvent.change(screen.getByRole('textbox', { name: 'CDKey' }), { target: { value: 'keep-this-code' } });
+        fireEvent.change(screen.getByRole('textbox', { name: 'Redemption code' }), {
+            target: { value: 'keep-this-code' },
+        });
         act(() => request(undefined, frame.id));
         expect(store.getState().app.isShowMenu).toBe(true);
         expect(screen.getAllByRole('dialog', { name: 'Redeem your subscription' })).toHaveLength(1);
-        expect(screen.getByRole('textbox', { name: 'CDKey' })).toHaveValue('keep-this-code');
+        expect(screen.getByRole('textbox', { name: 'Redemption code' })).toHaveValue('keep-this-code');
         expect(rmgRuntime.toggleNavMenu).toHaveBeenLastCalledWith(true);
     });
 
