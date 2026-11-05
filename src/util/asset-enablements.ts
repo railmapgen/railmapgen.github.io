@@ -21,7 +21,7 @@ interface AssetDetail {
 }
 
 const getTauriUrl = () => {
-    const baseUrl = 'https://ghfast.top/https://github.com/railmapgen/railmapgen.github.io/releases/download';
+    const baseUrl = 'https://gh.monlor.com/https://github.com/railmapgen/railmapgen.github.io/releases/download';
     const d = new Date();
     const tag = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}01`;
     const ver = `${String(d.getFullYear()).slice(-2)}.${d.getMonth() + 1}.1`;
