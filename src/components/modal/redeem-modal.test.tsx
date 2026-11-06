@@ -61,7 +61,9 @@ describe('RedeemModal notifications', () => {
             return { status: 200, json: async () => ({ subscriptions: [] }) } as Response;
         });
         render(<RedeemModal opened onClose={onClose} />, { store });
-        fireEvent.change(screen.getByRole('textbox', { name: 'CDKey' }), { target: { value: ' test-code ' } });
+        fireEvent.change(screen.getByRole('textbox', { name: 'Redemption code' }), {
+            target: { value: ' test-code ' },
+        });
         fireEvent.click(screen.getByRole('button', { name: 'Redeem' }));
 
         await waitFor(() =>

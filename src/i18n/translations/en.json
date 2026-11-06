@@ -32,5 +32,12 @@
     },
 
     "Expand": "Expand",
-    "Collapse": "Collapse"
+    "Collapse": "Collapse",
+    "Community Reviews": "Community review",
+    "Failed to get the RMP save!": "Failed to get the Rail Map Painter save!",
+    "Help & support": "Help and support",
+    "Mininum 8 characters. Contain at least 1 letter and 1 number.": "Minimum 8 characters. Contain at least 1 letter and 1 number.",
+    "CDKey": "Redemption code",
+    "Restart RMT in this window": "Restart Rail Map Toolkit in this window",
+    "System": "Follow system"
 }

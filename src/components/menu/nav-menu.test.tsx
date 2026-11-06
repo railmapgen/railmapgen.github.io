@@ -6,6 +6,8 @@ import i18n from '../../i18n/config';
 import { createTestStore, render } from '../../test-utils';
 import NavMenu from './nav-menu';
 
+const languageLabel = 'Language/语言/語言/言語/언어';
+
 describe('Language navigation', () => {
     afterEach(async () => {
         cleanup();
@@ -26,8 +28,8 @@ describe('Language navigation', () => {
         expect(screen.getByRole('heading', { name: 'Settings' })).toBeInTheDocument();
         expect(screen.queryByRole('combobox')).not.toBeInTheDocument();
 
-        await user.click(screen.getByRole('button', { name: 'Language' }));
-        expect(screen.getByRole('heading', { name: 'Language' })).toBeInTheDocument();
+        await user.click(screen.getByRole('button', { name: languageLabel }));
+        expect(screen.getByRole('heading', { name: languageLabel })).toBeInTheDocument();
         expect(screen.queryByRole('heading', { name: 'Settings' })).not.toBeInTheDocument();
         expect(screen.queryByRole('combobox')).not.toBeInTheDocument();
 
@@ -46,7 +48,7 @@ describe('Language navigation', () => {
             { store: createTestStore() }
         );
 
-        await user.click(screen.getByRole('button', { name: 'Language' }));
+        await user.click(screen.getByRole('button', { name: languageLabel }));
         await user.click(screen.getByRole('button', { name: '日本語' }));
 
         expect(rmgRuntime.getLanguage()).toBe('ja');
@@ -55,12 +57,13 @@ describe('Language navigation', () => {
         expect(screen.getByRole('button', { name: 'English', pressed: false })).toBeInTheDocument();
 
         await user.click(screen.getByRole('button', { name: i18n.t('Settings') }));
-        await user.click(screen.getByRole('button', { name: i18n.t('Language') }));
+        await user.click(screen.getByRole('button', { name: languageLabel }));
         expect(screen.getByRole('button', { name: '日本語', pressed: true })).toBeInTheDocument();
 
         await act(async () => {
             await i18n.changeLanguage('ko');
         });
+        expect(screen.getByRole('heading', { name: languageLabel })).toBeInTheDocument();
         expect(screen.getByRole('button', { name: '한국어', pressed: true })).toBeInTheDocument();
         expect(screen.getByRole('button', { name: '日本語', pressed: false })).toBeInTheDocument();
     });
