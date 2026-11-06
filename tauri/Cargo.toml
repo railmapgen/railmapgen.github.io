@@ -22,12 +22,22 @@ tauri-plugin-http = { version = "2", features = ["unsafe-headers"] }
 resvg = "0.45.1"
 tauri-plugin-dialog = "2"
 xmltree = "0.11.0"
+ttf-parser = "0.25"
+
+[target.'cfg(target_os = "ios")'.dependencies]
+objc2 = "0.6"
+block2 = "0.6"
+objc2-foundation = { version = "0.3", default-features = false, features = ["std", "NSArray", "NSString", "NSURL", "NSError", "NSObject"] }
+objc2-ui-kit = { version = "0.3", default-features = false, features = ["std", "UIScrollView", "UIView", "UIActivity", "UIActivityViewController", "UIActivityItemProvider", "UIResponder", "UIViewController", "UIPresentationController", "UIPopoverPresentationController", "UIImage", "UIWindow", "objc2-core-foundation", "block2"] }
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem and the built-in dev server is disabled.
 # If you use cargo directly instead of tauri's cli you can use this feature flag to switch between tauri's `dev` and `build` modes.
 # DO NOT REMOVE!!
 custom-protocol = [ "tauri/custom-protocol" ]
+# Generated macOS Xcode builds serve the large offline applications from the
+# .app resource directory, as iOS does, rather than recompiling them into Rust.
+apple-bundle-assets = []
 
 # Required for mobile release
 [lib]

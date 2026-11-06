@@ -8,7 +8,7 @@ use tauri::{
 #[path = "ios_asset_files.rs"]
 mod files;
 
-/// Serves the iOS frontend from bundle resources without embedding it in Rust.
+/// Serves Apple offline applications from bundle resources without embedding them in Rust.
 #[derive(Default)]
 pub struct BundleAssets {
     files: files::FileAssets,
@@ -19,17 +19,17 @@ impl<R: Runtime> Assets<R> for BundleAssets {
         let root = app
             .path()
             .resource_dir()
-            .expect("failed to locate iOS bundle resources")
+            .expect("failed to locate Apple bundle resources")
             .join("ui")
             .canonicalize()
-            .expect("iOS frontend resources are missing from assets/ui");
+            .expect("Apple frontend resources are missing from the bundle ui directory");
         assert!(
             root.is_dir(),
-            "iOS frontend resource root is not a directory"
+            "Apple frontend resource root is not a directory"
         );
         self.files
             .set_root(root)
-            .expect("iOS frontend resources were already initialized");
+            .expect("Apple frontend resources were already initialized");
     }
 
     fn get(&self, key: &AssetKey) -> Option<Cow<'_, [u8]>> {

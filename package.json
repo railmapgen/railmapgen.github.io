@@ -23,6 +23,7 @@
     },
     "devDependencies": {
         "@eslint/js": "^9.39.4",
+        "@tauri-apps/cli": "2.12.4",
         "@testing-library/jest-dom": "^6.9.1",
         "@testing-library/react": "^16.3.2",
         "@testing-library/user-event": "^14.6.1",
@@ -51,7 +52,11 @@
         "test": "vitest run --coverage",
         "lint": "eslint src contributors runtime-demo",
         "lint:fix": "eslint src contributors runtime-demo --fix",
-        "preview": "vite preview --host"
+        "preview": "vite preview --host",
+        "apple:generate": "node scripts/apple/apple.mjs generate",
+        "apple:open": "node scripts/apple/apple.mjs open",
+        "apple:test": "node --test scripts/apple/*test.mjs",
+        "tauri": "node scripts/apple/apple.mjs tauri"
     },
     "version": "3.2.41"
 }

@@ -6,7 +6,9 @@
 /ui/
 /.build/
 
-# iOS native project and editor schemas are regenerated in CI
+# Apple native projects and local Xcode workspace are regenerated
 /gen/apple/
+/gen/macos/
+/gen/xcode/
 /gen/schemas/iOS-schema.json
 /gen/schemas/mobile-schema.json
