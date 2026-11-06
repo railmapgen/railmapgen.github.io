@@ -35,6 +35,16 @@ Select a scheme and click Run. Builds include offline resources and do not requi
 
 Re-run generation after moving the checkout or changing Node, Cargo, or Xcode. Generated projects and build products are ignored by Git; keep native build changes in `scripts/apple` or `tauri/src`.
 
+### Appearance and language on iPhone and iPad
+
+The app's Appearance and Language preferences also appear in iOS Settings under Rail Map Toolkit. Changes in either place are saved to the same native preferences and applied when the app becomes active. Existing in-app preferences migrate the first time the native settings bridge connects.
+
+Appearance supports Light, Dark, and System. The exposed screen edges and native presentation backgrounds use the same appearance as the app. System follows the device appearance, including changes while the app is running.
+
+Language supports English, Simplified Chinese, Traditional Chinese, Japanese, Korean, and System. System follows the preferred language selected for this app in iOS Settings, falling back to the device's preferred supported language. Explicit in-app language choices synchronize with the Language preference supplied by the Settings bundle; they do not rewrite the system's Preferred Language setting.
+
+Regenerate the Xcode project after updating the native settings implementation so the Settings bundle and preference bridge are included. To validate on a simulator or device, change appearance and language both inside the app and in iOS Settings, return to the app, then check System mode, rotation, and iPad window resizing.
+
 ## Resources and packaging
 
 Normal builds rebuild the local host and reuse cached child applications. To refresh published children:

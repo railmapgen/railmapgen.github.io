@@ -2,13 +2,17 @@
 @import '@railmapgen/mantine-components/styles.css';
 
 :root {
-    background-color: #ffffff;
+    --rmt-page-background: #ffffff;
+    --rmt-page-color: #000000;
+    color-scheme: var(--mantine-color-scheme, light dark);
+    background-color: var(--mantine-color-body, var(--rmt-page-background));
+    color: var(--mantine-color-text, var(--rmt-page-color));
 }
 
 @media (prefers-color-scheme: dark) {
     :root {
-        background-color: #242424;
-        color: white;
+        --rmt-page-background: #242424;
+        --rmt-page-color: #ffffff;
     }
 }
 
@@ -80,9 +84,9 @@ html.rmt-native-edge-to-edge body {
     padding: 0;
 }
 
-/* The exposed system edge stays white even when application content is dark. */
+/* The exposed system edge shares the application's resolved appearance. */
 html.rmt-native-edge-to-edge.rmt-shared-viewport {
-    background: #ffffff !important;
+    background: var(--mantine-color-body, var(--rmt-page-background));
 }
 
 html.rmt-native-edge-to-edge.rmt-shared-viewport body {
@@ -95,7 +99,7 @@ html.rmt-native-edge-to-edge.rmt-shared-viewport body {
     min-height: 0;
     padding: 0 !important;
     overflow: hidden;
-    background: var(--mantine-color-body, #ffffff);
+    background: var(--mantine-color-body, var(--rmt-page-background));
 }
 
 /* Native controls and auxiliary pages share the same cropped content area. */

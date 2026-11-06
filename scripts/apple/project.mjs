@@ -40,11 +40,19 @@ export function iosSpec({ version, team = '' }) {
             railmapgen_iOS: {
                 type: 'application',
                 platform: 'iOS',
-                sources: ['Sources', 'Assets.xcassets', { path: 'Externals', excludes: ['**/*.a'] }, 'railmapgen_iOS'],
+                sources: [
+                    'Sources',
+                    'Assets.xcassets',
+                    { path: 'Externals', excludes: ['**/*.a'] },
+                    { path: 'railmapgen_iOS', excludes: ['Settings.bundle'] },
+                    { path: 'railmapgen_iOS/Settings.bundle', type: 'folder', buildPhase: 'resources' },
+                ],
                 info: {
                     path: 'railmapgen_iOS/Info.plist',
                     properties: {
                         LSRequiresIPhoneOS: true,
+                        CFBundleDevelopmentRegion: 'en',
+                        CFBundleLocalizations: ['en', 'zh-Hans', 'zh-Hant', 'ja', 'ko'],
                         NSPhotoLibraryAddUsageDescription:
                             'Save exported images and videos to your photo library when you choose Save Image or Save Video.',
                         UILaunchScreen: {},
@@ -194,12 +202,16 @@ export function scaffoldIos(root) {
     const sources = path.join(root, 'Sources/railmapgen');
     mkdirSync(sources, { recursive: true });
     cpSync(path.join(repoRoot, 'scripts/apple/SceneDelegate.mm'), path.join(sources, 'SceneDelegate.mm'));
+    cpSync(path.join(repoRoot, 'scripts/apple/Preferences.mm'), path.join(sources, 'Preferences.mm'));
     writeFileSync(
         path.join(sources, 'main.mm'),
         '// tauri::mobile_entry_point supplies the UIKit application and plugin runtime.\nextern "C" void start_app();\nint main(int argc, char *argv[]) { start_app(); return 0; }\n'
     );
     mkdirSync(path.join(root, 'Externals'), { recursive: true });
     mkdirSync(path.join(root, 'railmapgen_iOS'), { recursive: true });
+    cpSync(path.join(repoRoot, 'scripts/apple/Settings.bundle'), path.join(root, 'railmapgen_iOS/Settings.bundle'), {
+        recursive: true,
+    });
     const entitlements = path.join(root, 'railmapgen_iOS/railmapgen_iOS.entitlements');
     if (!existsSync(entitlements))
         writeFileSync(entitlements, '<?xml version="1.0" encoding="UTF-8"?>\n<plist version="1.0"><dict/></plist>\n');

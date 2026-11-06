@@ -1,5 +1,5 @@
 import classes from './app-root.module.css';
-import { useEffect, useLayoutEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState, useSyncExternalStore } from 'react';
 import Workspace from './workspace/workspace';
 import { MdMenu } from 'react-icons/md';
 import { toggleMenu } from '../redux/app/app-slice';
@@ -13,19 +13,26 @@ import { BrowserRouter } from 'react-router-dom';
 import MultiInstanceModal from './modal/multi-instance-modal';
 import TerminationModal from './modal/termination-modal';
 import { RMPage, RMWindow } from '@railmapgen/mantine-components';
-import { ActionIcon } from '@mantine/core';
+import { ActionIcon, useMantineColorScheme } from '@mantine/core';
 import Notifications from './notifications/notifications';
 import clsx from 'clsx';
 import { installNativeSafeAreaBridge } from '../util/native-safe-area';
+import { getAppearancePreference, subscribePreferences } from '../util/preferences';
 
 export default function AppRoot() {
     const { t } = useTranslation();
     const dispatch = useRootDispatch();
+    const { setColorScheme } = useMantineColorScheme();
+    const appearance = useSyncExternalStore(subscribePreferences, getAppearancePreference);
 
     const { isPrimary, isTerminated, isShowMenu } = useRootSelector(state => state.app);
     const [isCookiesModalOpen, setIsCookiesModalOpen] = useState(false);
 
     useLayoutEffect(() => installNativeSafeAreaBridge(), []);
+
+    useLayoutEffect(() => {
+        setColorScheme(appearance === 'system' ? 'auto' : appearance);
+    }, [appearance, setColorScheme]);
 
     useEffect(() => {
         if (!rmgRuntime.isAnalyticsQADone()) {

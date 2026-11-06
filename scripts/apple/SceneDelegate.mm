@@ -1,6 +1,9 @@
 #import <UIKit/UIKit.h>
 #import <WebKit/WebKit.h>
 
+void RMTRegisterPreferencesWebView(WKWebView *webView);
+void RMTRefreshPreferences(void);
+
 @class RMTSceneDelegate;
 @interface RMTViewportProbe : UIView
 @property(nonatomic, weak) RMTSceneDelegate *owner;
@@ -40,6 +43,10 @@ static NSMapTable<WKWebView *, RMTViewportProbe *> *rmtAttachmentProbes;
 - (void)safeAreaInsetsDidChange {
     [super safeAreaInsetsDidChange];
     [self setNeedsUpdateConstraints];
+}
+- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
+    [super traitCollectionDidChange:previousTraitCollection];
+    RMTRefreshPreferences();
 }
 - (void)layoutSubviews {
     [super layoutSubviews];
@@ -159,6 +166,7 @@ static NSMapTable<WKWebView *, RMTViewportProbe *> *rmtAttachmentProbes;
 
 + (void)registerWebView:(WKWebView *)webView {
     NSAssert([NSThread isMainThread], @"The Tauri WebView must be registered on the main thread");
+    RMTRegisterPreferencesWebView(webView);
     if (!rmtAttachmentProbes) rmtAttachmentProbes = [NSMapTable weakToWeakObjectsMapTable];
     RMTViewportProbe *probe = [rmtAttachmentProbes objectForKey:webView];
     if (!probe) {
@@ -186,6 +194,7 @@ static NSMapTable<WKWebView *, RMTViewportProbe *> *rmtAttachmentProbes;
         (rmtConnectedDelegate.scene && window.windowScene != rmtConnectedDelegate.scene);
     rmtMainWindow = window;
     if (needsAttachment) [rmtConnectedDelegate attachWindow];
+    RMTRefreshPreferences();
 }
 
 - (void)attachWindow {
@@ -221,6 +230,7 @@ static NSMapTable<WKWebView *, RMTViewportProbe *> *rmtAttachmentProbes;
 
 - (void)sceneDidBecomeActive:(UIScene *)scene {
     [self attachWindow];
+    RMTRefreshPreferences();
     // With scenes enabled UIKit no longer calls these AppDelegate methods.
     // Tao uses them to emit its Resumed/Suspended events and update focus.
     UIApplication *app = UIApplication.sharedApplication;

@@ -1,0 +1,8 @@
+"Settings" = "设置";
+"Appearance" = "外观";
+"Language" = "语言";
+"System" = "跟随系统";
+"Light" = "浅色";
+"Dark" = "深色";
+"Changes also apply to the settings inside Rail Map Toolkit." = "更改也会同步到地铁线路图工具包内的设置。";
+"System language follows the preferred language for this app in iOS Settings." = "选择“跟随系统”时，将使用 iOS 设置中为本应用指定的首选语言。";
