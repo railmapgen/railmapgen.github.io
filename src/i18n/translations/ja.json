@@ -188,18 +188,11 @@
     "Share work {{index}}": "作品 {{index}} を共有",
     "Share this link with others to allow them to view this work.": "このリンクを他の方と共有し、作品の閲覧を許可してください。",
     "Copied": "コピーしました",
-    "Copy": "コピー",
     "Share link created successfully.": "共有リンクが正常に作成されました。",
     "Share link deleted successfully.": "共有リンクが正常に削除されました。",
     "This link is valid until:": "このリンクの有効期限：",
     "Delete Share": "共有を削除",
     "Create Share Link": "共有リンクを作成",
     "Please be aware that sharing this link does not create a separate copy of your work. Instead, everyone who opens the link will always see the most up-to-date version. So, if you make changes after sharing the link, those changes will be visible to everyone who has the link.": "ご注意：このリンクを共有しても、作品の個別のコピーは作成されません。代わりに、リンクを開いた人は常に最新バージョンを閲覧することになります。そのため、リンク共有後に変更を加えた場合、その変更はリンクをお持ちのすべての方に表示されます。",
-    "Link will be valid as long as you have an active subscription. Otherwise, the link will be invalid after 1 day.": "有効なご購読がある限り、リンクは有効です。それ以外の場合、リンクは 1 日後に無効になります。",
-    "Components": "部品",
-    "Language": "言語",
-    "Name": "名称",
-    "RMP_CLOUD_SHORT_NAME": "地下鉄路線図画家・出発進行",
-    "RMP_EXPORT_SHORT_NAME": "地下鉄路線図画家・一旦停止",
-    "RMG Templates": "RMG 雛形"
+    "Link will be valid as long as you have an active subscription. Otherwise, the link will be invalid after 1 day.": "有効なご購読がある限り、リンクは有効です。それ以外の場合、リンクは 1 日後に無効になります。"
 }

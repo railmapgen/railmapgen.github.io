@@ -39,8 +39,5 @@
     "Mininum 8 characters. Contain at least 1 letter and 1 number.": "Minimum 8 characters. Contain at least 1 letter and 1 number.",
     "CDKey": "Redemption code",
     "Restart RMT in this window": "Restart Rail Map Toolkit in this window",
-    "System": "Follow system",
-    "Go back": "Back",
-    "RMP_CLOUD_SHORT_NAME": "Rail Map Painter・Proceed Signal",
-    "RMP_EXPORT_SHORT_NAME": "Rail Map Painter・Stop and Proceed"
+    "System": "Follow system"
 }

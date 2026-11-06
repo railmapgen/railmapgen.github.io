@@ -189,17 +189,11 @@
     "Share work {{index}}": "分享作品 {{index}}",
     "Share this link with others to allow them to view this work.": "分享此連結給他人以檢視此作品。",
     "Copied": "已複製",
-    "Copy": "複製",
     "Share link created successfully.": "分享連結建立成功。",
     "Share link deleted successfully.": "分享連結刪除成功。",
     "This link is valid until:": "此連結有效期至：",
     "Delete Share": "刪除分享",
     "Create Share Link": "建立分享連結",
     "Please be aware that sharing this link does not create a separate copy of your work. Instead, everyone who opens the link will always see the most up-to-date version. So, if you make changes after sharing the link, those changes will be visible to everyone who has the link.": "請注意，分享此連結不會建立您作品的副本。相反，每個開啟連結的人都將始終看到最新版本。因此，如果您在分享連結後進行變更，這些變更將對擁有該連結的每個人可見。",
-    "Link will be valid as long as you have an active subscription. Otherwise, the link will be invalid after 1 day.": "只要您擁有有效訂閱，連結便會一直有效。否則，連結將在 1 天後失效。",
-    "Language": "語言",
-    "RMP_CLOUD": "地鐵路綫圖繪製器・出發進行",
-    "RMP_CLOUD_SHORT_NAME": "地鐵路綫圖繪製器・出發進行",
-    "RMP_EXPORT": "地鐵路綫圖繪製器・一度停車",
-    "RMP_EXPORT_SHORT_NAME": "地鐵路綫圖繪製器・一度停車"
+    "Link will be valid as long as you have an active subscription. Otherwise, the link will be invalid after 1 day.": "只要您擁有有效訂閱，連結便會一直有效。否則，連結將在 1 天後失效。"
 }
