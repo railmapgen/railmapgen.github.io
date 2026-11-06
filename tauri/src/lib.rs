@@ -1,3 +1,5 @@
+#[cfg(target_os = "ios")]
+mod apple_browser;
 #[cfg(any(target_os = "ios", target_os = "macos"))]
 mod apple_export;
 #[cfg(any(target_os = "ios", target_os = "macos"))]
@@ -29,7 +31,12 @@ pub fn run() {
             apple_export::finish_file_export,
             apple_export::abort_file_export,
             apple_export::show_file_export_error,
+            #[cfg(target_os = "ios")]
+            apple_browser::open_url,
         ]);
+
+    #[cfg(target_os = "ios")]
+    let builder = builder.plugin(apple_browser::init());
 
     let context = tauri::generate_context!();
     #[cfg(any(

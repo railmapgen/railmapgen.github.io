@@ -1,4 +1,4 @@
-//! UIKit integration for the Apple host: viewport setup and file presentation.
+//! UIKit integration for the Apple host: viewport, browser, and file presentation.
 //!
 //! Export callers own temporary files until activity completion, including
 //! cancellation, after UIKit dismisses the sharing sheet.
@@ -8,7 +8,7 @@ use std::{cell::RefCell, path::PathBuf, rc::Rc};
 use block2::RcBlock;
 use objc2::{
     define_class, msg_send,
-    rc::Retained,
+    rc::{Allocated, Retained},
     runtime::{AnyClass, AnyObject, Bool},
     DefinedClass, MainThreadMarker, MainThreadOnly, Message,
 };
@@ -16,7 +16,79 @@ use objc2_foundation::{NSArray, NSError, NSObject, NSObjectProtocol, NSString, N
 use objc2_ui_kit::{
     UIActivityItemSource, UIActivityType, UIActivityTypeSaveToCameraRoll, UIActivityViewController,
     UIImage, UIScrollView, UIScrollViewContentInsetAdjustmentBehavior, UIView, UIViewAutoresizing,
+    UIViewController,
 };
+
+#[link(name = "SafariServices", kind = "framework")]
+unsafe extern "C" {
+    // Referencing the class symbol also keeps SafariServices linked when the
+    // application uses dead-strip-dylibs. No optional runtime lookup is needed.
+    #[link_name = "OBJC_CLASS_$_SFSafariViewController"]
+    static SAFARI_VIEW_CONTROLLER_CLASS: AnyClass;
+}
+
+/// Present Safari's native application browser on the live WebView's thread.
+/// UIKit retains the controller until the user closes its built-in Done button.
+pub fn present_browser(
+    webview: tauri::Webview,
+    url: String,
+    completion: impl FnOnce(Result<(), String>) + Send + 'static,
+) -> tauri::Result<()> {
+    webview.with_webview(move |webview| {
+        let Some(_mtm) = MainThreadMarker::new() else {
+            completion(Err("The browser must run on the UIKit main thread".into()));
+            return;
+        };
+        // SAFETY: Tauri supplies a live WKWebView (a UIView) on UIKit's thread.
+        let view = unsafe { &*webview.inner().cast::<UIView>() };
+        let Some(native_window) = view.window() else {
+            completion(Err("The application window is not attached".into()));
+            return;
+        };
+        let Some(mut presenter) = native_window.rootViewController() else {
+            completion(Err("The application has no presentation controller".into()));
+            return;
+        };
+        // SAFETY: SafariServices supplies this Objective-C class on iOS 9+;
+        // the application's deployment target is iOS 15.
+        let safari_class = unsafe { &SAFARI_VIEW_CONTROLLER_CLASS };
+        loop {
+            // Rapid duplicate clicks must not stack Safari controllers. UIKit
+            // exposes the first presented controller even during its animation.
+            if presenter.isKindOfClass(safari_class) && !presenter.isBeingDismissed() {
+                completion(Ok(()));
+                return;
+            }
+            match presenter.presentedViewController() {
+                Some(presented) => presenter = presented,
+                None => break,
+            }
+        }
+        if presenter.isBeingDismissed()
+            || presenter.isBeingPresented()
+            || presenter
+                .viewIfLoaded()
+                .and_then(|view| view.window())
+                .is_none()
+        {
+            completion(Err("The application is not ready to open a browser".into()));
+            return;
+        }
+        let Some(url) = NSURL::URLWithString(&NSString::from_str(&url)) else {
+            completion(Err("The browser URL is invalid".into()));
+            return;
+        };
+        // SAFETY: SFSafariViewController inherits UIViewController; alloc and
+        // initWithURL: have these ownership conventions. Callers already
+        // validated that the initial URL uses HTTP or HTTPS, as UIKit requires.
+        let controller: Retained<UIViewController> = unsafe {
+            let allocated: Allocated<UIViewController> = msg_send![safari_class, alloc];
+            msg_send![allocated, initWithURL: &*url]
+        };
+        presenter.presentViewController_animated_completion(&controller, true, None);
+        completion(Ok(()));
+    })
+}
 
 /// Keep the WebView edge-to-edge. The web shell derives one content rectangle
 /// for canvas and controls; UIKit must not apply a second content inset.

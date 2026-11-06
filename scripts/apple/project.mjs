@@ -125,6 +125,7 @@ export function iosSpec({ version, team = '' }) {
                     'Metal',
                     'MetalKit',
                     'QuartzCore',
+                    'SafariServices',
                     'Security',
                     'UIKit',
                     'VideoToolbox',

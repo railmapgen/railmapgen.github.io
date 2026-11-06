@@ -45,6 +45,12 @@ Language supports English, Simplified Chinese, Traditional Chinese, Japanese, Ko
 
 Regenerate the Xcode project after updating the native settings implementation so the Settings bundle and preference bridge are included. To validate on a simulator or device, change appearance and language both inside the app and in iOS Settings, return to the app, then check System mode, rotation, and iPad window resizing.
 
+### Links on iPhone and iPad
+
+External HTTP and HTTPS links open in the app using the native Safari browser window. This includes links and `window.open` calls from bundled child applications. Close the browser window to return to the current application. Internal application routes and file exports retain their existing behavior.
+
+Regenerate the Xcode project after updating the browser integration to include the SafariServices framework. On a simulator or device, check an external link from both the host menu and a child application, close the browser, and confirm that the current project and file sharing still work.
+
 ## Resources and packaging
 
 Normal builds rebuild the local host and reuse cached child applications. To refresh published children:
