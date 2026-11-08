@@ -1,0 +1,26 @@
+{
+    "Noto Sans CJK SC": {
+        "file": "NotoSansCJKsc-Regular.otf",
+        "sha256": "2c76254f6fc379fddfce0a7e84fb5385bb135d3e399294f6eeb6680d0365b74b",
+        "displayName": "Noto Sans CJK SC Regular",
+        "url": "https://github.com/notofonts/noto-cjk",
+        "license": "NotoSansCJKsc-LICENSE.txt",
+        "split": true
+    },
+    "Arimo": {
+        "file": "Arimo-Regular.ttf",
+        "sha256": "88cc899855d30f9c779b73c3319d0e077b098f927187aafce11ca029add707a6",
+        "displayName": "Arimo Regular",
+        "url": "https://github.com/googlefonts/arimo",
+        "license": "Arimo-LICENSE.txt",
+        "split": false
+    },
+    "Taipei Sans TC Beta": {
+        "file": "TaipeiSansTCBeta-Regular.ttf",
+        "sha256": "8cc967e1e428c552701c461e8169e6ae76c7a23694ea1a6a786d6746adec53c4",
+        "displayName": "台北黑體 Regular",
+        "url": "https://sites.google.com/view/jtfoundry/zh-tw/downloads",
+        "license": "TaipeiSansTCBeta-LICENSE.txt",
+        "split": true
+    }
+}
