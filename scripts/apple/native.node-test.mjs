@@ -136,6 +136,11 @@ test('iOS scaffold can be regenerated and preserves local plugin entitlements', 
             readFileSync(path.join(temporary, 'Sources/railmapgen/Preferences.mm'), 'utf8'),
             /rmt-native-preferences/
         );
+        for (const file of ['WebViewRecovery.h', 'WebViewRecovery.mm'])
+            assert.equal(
+                readFileSync(path.join(temporary, 'Sources/railmapgen', file), 'utf8'),
+                readFileSync(new URL(`./${file}`, import.meta.url), 'utf8')
+            );
         const settings = path.join(temporary, 'railmapgen_iOS/Settings.bundle');
         assert.match(readFileSync(path.join(settings, 'Root.plist'), 'utf8'), /rmtAppearance/);
         for (const language of ['en', 'zh-Hans', 'zh-Hant', 'ja', 'ko'])

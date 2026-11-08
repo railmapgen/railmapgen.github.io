@@ -51,6 +51,22 @@ External HTTP and HTTPS links open in the app using the native Safari browser wi
 
 Regenerate the Xcode project after updating the browser integration to include the SafariServices framework. On a simulator or device, check an external link from both the host menu and a child application, close the browser, and confirm that the current project and file sharing still work.
 
+### WebView recovery on iPhone and iPad
+
+The native host monitors termination of the main WebView's content process. If termination occurs in the background, recovery waits until the scene becomes active. The host reloads the existing WebView and preserves Tauri's navigation delegate, bridge, and website data. Ordinary foreground transitions probe the content process without reloading the page. A slow or unanswered probe alone does not trigger an automatic reload.
+
+Automatic recovery is limited to one attempt per 60 seconds. Repeated termination or an unsuccessful recovery displays a native Reload button. Native recovery controls follow the app's language and appearance. This handles native process/lifecycle failures; a successful navigation does not establish that a child application's UI is healthy, and recovery cannot restore edits that were never persisted by that application.
+
+Regenerate the Xcode project after changing `SceneDelegate.mm` or `WebViewRecovery.h/.mm`. Run the isolated UIKit/WebKit tests with an installed iOS simulator runtime:
+
+```sh
+npm run apple:test:recovery
+# Compile the native test host without running a simulator:
+npm run apple:test:recovery -- --build-only
+```
+
+The runner creates a temporary test project and a dedicated simulator, then deletes that simulator when finished. Failed runs retain their logs and result bundle at the printed temporary path. Native diagnostic messages use the `[RMTWebViewRecovery]` prefix. On a device, also check long background sessions, phone rotation, iPad window resizing, and file sharing after recovery.
+
 ## Resources and packaging
 
 Normal builds rebuild the local host and reuse cached child applications. To refresh published children:

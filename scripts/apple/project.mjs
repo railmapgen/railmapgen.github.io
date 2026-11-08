@@ -204,6 +204,8 @@ export function scaffoldIos(root) {
     mkdirSync(sources, { recursive: true });
     cpSync(path.join(repoRoot, 'scripts/apple/SceneDelegate.mm'), path.join(sources, 'SceneDelegate.mm'));
     cpSync(path.join(repoRoot, 'scripts/apple/Preferences.mm'), path.join(sources, 'Preferences.mm'));
+    for (const file of ['WebViewRecovery.h', 'WebViewRecovery.mm'])
+        cpSync(path.join(repoRoot, 'scripts/apple', file), path.join(sources, file));
     writeFileSync(
         path.join(sources, 'main.mm'),
         '// tauri::mobile_entry_point supplies the UIKit application and plugin runtime.\nextern "C" void start_app();\nint main(int argc, char *argv[]) { start_app(); return 0; }\n'

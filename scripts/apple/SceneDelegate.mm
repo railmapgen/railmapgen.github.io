@@ -1,5 +1,6 @@
 #import <UIKit/UIKit.h>
 #import <WebKit/WebKit.h>
+#import "WebViewRecovery.h"
 
 void RMTRegisterPreferencesWebView(WKWebView *webView);
 void RMTRefreshPreferences(void);
@@ -141,6 +142,12 @@ static NSMapTable<WKWebView *, RMTViewportProbe *> *rmtAttachmentProbes;
         RMTViewportProbe *probe = [rmtAttachmentProbes objectForKey:webView];
         probe.owner = self;
         [self.viewportProbes setObject:probe forKey:webView];
+        RMTWebViewRecovery *recovery = [RMTWebViewRecovery registerWebView:webView];
+        __weak RMTSceneDelegate *owner = self;
+        recovery.didRecover = ^{
+            [owner attachWindow];
+            RMTRefreshPreferences();
+        };
         if (!CGRectEqualToRect(probe.frame, view.bounds)) probe.frame = view.bounds;
         [probe setNeedsUpdateConstraints];
         if (!self.observedWebViews) self.observedWebViews = [NSHashTable weakObjectsHashTable];
@@ -159,6 +166,9 @@ static NSMapTable<WKWebView *, RMTViewportProbe *> *rmtAttachmentProbes;
         // protected edge: phone portrait top, phone landscape cutout side,
         // and iPad's UIKit-measured top region. Other edges stay full bleed.
         [self publishNotchSide:webView];
+        // Tauri may attach its window after the scene has already activated.
+        // Registration during layout is frequent; setActive is idempotent.
+        [recovery setActive:self.scene.activationState == UISceneActivationStateForegroundActive];
         return;
     }
     for (UIView *child in [view.subviews copy]) [self layoutWebViewsIn:child];
@@ -167,6 +177,7 @@ static NSMapTable<WKWebView *, RMTViewportProbe *> *rmtAttachmentProbes;
 + (void)registerWebView:(WKWebView *)webView {
     NSAssert([NSThread isMainThread], @"The Tauri WebView must be registered on the main thread");
     RMTRegisterPreferencesWebView(webView);
+    [RMTWebViewRecovery registerWebView:webView];
     if (!rmtAttachmentProbes) rmtAttachmentProbes = [NSMapTable weakToWeakObjectsMapTable];
     RMTViewportProbe *probe = [rmtAttachmentProbes objectForKey:webView];
     if (!probe) {
@@ -236,9 +247,13 @@ static NSMapTable<WKWebView *, RMTViewportProbe *> *rmtAttachmentProbes;
     UIApplication *app = UIApplication.sharedApplication;
     if ([app.delegate respondsToSelector:@selector(applicationDidBecomeActive:)])
         [app.delegate applicationDidBecomeActive:app];
+    for (WKWebView *webView in self.observedWebViews)
+        [[RMTWebViewRecovery registerWebView:webView] setActive:YES];
 }
 
 - (void)sceneWillResignActive:(UIScene *)scene {
+    for (WKWebView *webView in self.observedWebViews)
+        [[RMTWebViewRecovery registerWebView:webView] setActive:NO];
     UIApplication *app = UIApplication.sharedApplication;
     if ([app.delegate respondsToSelector:@selector(applicationWillResignActive:)])
         [app.delegate applicationWillResignActive:app];
@@ -268,6 +283,8 @@ static NSMapTable<WKWebView *, RMTViewportProbe *> *rmtAttachmentProbes;
 #endif
 
 - (void)sceneDidDisconnect:(UIScene *)scene {
+    for (WKWebView *webView in self.observedWebViews)
+        [[RMTWebViewRecovery registerWebView:webView] detach];
     for (RMTViewportProbe *probe in self.viewportProbes.objectEnumerator) [probe removeFromSuperview];
     self.viewportProbes = nil;
     for (WKWebView *view in self.observedWebViews)

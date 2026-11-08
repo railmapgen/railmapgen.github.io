@@ -56,6 +56,7 @@
         "apple:generate": "node scripts/apple/apple.mjs generate",
         "apple:open": "node scripts/apple/apple.mjs open",
         "apple:test": "node --test scripts/apple/*test.mjs",
+        "apple:test:recovery": "node scripts/apple/tests/run-recovery-tests.mjs",
         "tauri": "node scripts/apple/apple.mjs tauri"
     },
     "version": "3.2.41"
