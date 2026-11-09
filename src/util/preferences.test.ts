@@ -24,6 +24,7 @@ describe('system preferences', () => {
     };
 
     beforeEach(() => {
+        vi.spyOn(rmgRuntime, 'getInstance').mockReturnValue('AppStore');
         window.localStorage.clear();
         postMessage.mockClear();
         Object.defineProperty(window, 'webkit', {
@@ -157,5 +158,34 @@ describe('system preferences', () => {
         expect(i18n.language).toBe('ja');
         expect(rmgRuntime.getLanguage()).toBe('ja');
         expect(postMessage).toHaveBeenLastCalledWith({ type: 'set', language: 'ja' });
+    });
+
+    it('ignores native bridges and snapshots outside the AppStore instance', () => {
+        vi.mocked(rmgRuntime.getInstance).mockReturnValue('GitHub');
+        Object.defineProperty(window, '__RMT_NATIVE_PREFERENCES__', { configurable: true, value: native });
+        release = installPreferences();
+        expect(i18n.language).toBe('en');
+        expect(document.documentElement.dataset.mantineColorScheme).toBe('light');
+
+        publish({ ...native, appearance: 'dark', language: 'ja' });
+        expect(i18n.language).toBe('en');
+        expect(document.documentElement.dataset.mantineColorScheme).toBe('light');
+
+        setAppearancePreference('dark');
+        setLanguagePreference('ko');
+        window.dispatchEvent(new Event('focus'));
+        expect(getAppearancePreference()).toBe('dark');
+        expect(i18n.language).toBe('ko');
+        expect(postMessage).not.toHaveBeenCalled();
+    });
+
+    it('keeps web preferences working in AppStore when no native Settings bridge is available', () => {
+        Reflect.deleteProperty(window, 'webkit');
+        release = installPreferences();
+        setAppearancePreference('dark');
+        setLanguagePreference('ja');
+        expect(document.documentElement.dataset.mantineColorScheme).toBe('dark');
+        expect(i18n.language).toBe('ja');
+        expect(postMessage).not.toHaveBeenCalled();
     });
 });

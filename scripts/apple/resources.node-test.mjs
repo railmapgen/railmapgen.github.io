@@ -157,7 +157,8 @@ test('offline preparation overlays current host, adapts children and removes del
     };
     try {
         await put(path.join(directory, 'package.json'), JSON.stringify({ version: '1.2.3' }));
-        await put(path.join(directory, 'info.json'), JSON.stringify({ component: 'railmapgen.github.io' }));
+        const hostInfo = { component: 'railmapgen.github.io', instance: 'localhost' };
+        await put(path.join(directory, 'info.json'), JSON.stringify(hostInfo));
         await put(path.join(directory, 'dist/index.html'), html);
         await put(path.join(directory, 'dist/fonts/config.json'), '{}');
         await put(path.join(directory, 'dist/current.txt'), 'fresh host');
@@ -211,6 +212,13 @@ test('offline preparation overlays current host, adapts children and removes del
         const manifest = await prepareResources({ root: directory, buildHost: false, offline: true });
         assert.equal(manifest.appVersion, '1.2.3');
         assert.equal(manifest.sources.length, 8);
+        assert.deepEqual(JSON.parse(await readFile(path.join(directory, 'tauri/ui/info.json'))), {
+            ...hostInfo,
+            version: '1.2.3',
+            environment: 'PRD',
+            instance: 'AppStore',
+        });
+        assert.deepEqual(JSON.parse(await readFile(path.join(directory, 'info.json'))), hostInfo);
         assert.equal(await readFile(path.join(directory, 'tauri/ui/current.txt'), 'utf8'), 'fresh host');
         assert.equal(
             await readFile(path.join(directory, 'tauri/ui/host.css'), 'utf8'),
@@ -227,8 +235,20 @@ test('offline preparation overlays current host, adapts children and removes del
             );
             assert.equal(
                 JSON.parse(await readFile(path.join(directory, 'tauri/ui', component, 'info.json'))).instance,
-                'Tauri'
+                'AppStore'
             );
+            const cache = path.join(directory, 'tauri/.build/apple-cache/repos', component);
+            assert.deepEqual(JSON.parse(await readFile(path.join(cache, 'info.json'))), {
+                component,
+                version: '1.0.0',
+                instance: 'GitHub',
+            });
+            const cacheStatus = spawnSync('git', ['status', '--porcelain', '--untracked-files=all'], {
+                cwd: cache,
+                encoding: 'utf8',
+            });
+            assert.equal(cacheStatus.status, 0, cacheStatus.stderr);
+            assert.equal(cacheStatus.stdout, '', `${component}: published source cache changed`);
             assert.match(
                 await readFile(path.join(directory, 'tauri/ui', component, 'assets/index.css'), 'utf8'),
                 /padding:8px;height:calc\(40px \+ var\(--rmt-safe-area-top,0px\)\)/
@@ -421,7 +441,8 @@ test('local RMP survives offline preparation, records private-path-free provenan
         await put(path.join(root, 'dist/index.html'), '<html><head></head><body></body></html>');
         await put(path.join(root, 'dist/fonts/config.json'), '{}');
         await put(path.join(directory, 'index.html'), '<html><head></head><body>local RMP</body></html>');
-        await put(path.join(directory, 'info.json'), JSON.stringify({ component: 'rmp', version: '6.1.7-local' }));
+        const localInfo = JSON.stringify({ component: 'rmp', version: '6.1.7-local', instance: 'localhost' });
+        await put(path.join(directory, 'info.json'), localInfo);
         await put(
             path.join(directory, 'assets/local.js'),
             'const view={className:"rmg-window ",header:"rmg-window__header",top:"env(safe-area-inset-top)"};'
@@ -440,6 +461,13 @@ test('local RMP survives offline preparation, records private-path-free provenan
         assert.equal(Object.hasOwn(local, 'retrievedFrom'), false);
         assert.equal(JSON.stringify(first).includes(directory), false);
         assert.equal(first.sources.filter(application => application.kind === 'local').length, 1);
+        for (const component of ['', ...childApplications]) {
+            assert.equal(
+                JSON.parse(await readFile(path.join(root, 'tauri/ui', component, 'info.json'))).instance,
+                'AppStore'
+            );
+        }
+        assert.equal(await readFile(path.join(directory, 'info.json'), 'utf8'), localInfo);
         assert.match(await readFile(path.join(root, 'tauri/ui/rmp/index.html'), 'utf8'), /local RMP/);
         assert.match(await readFile(path.join(root, 'tauri/ui/rmp/index.html'), 'utf8'), /data-rmt-component="rmp"/);
         assert.match(
@@ -470,6 +498,7 @@ test('local RMP survives offline preparation, records private-path-free provenan
         assert.equal(upstream.version, '1.0.0');
         assert.equal(upstream.repository, 'https://github.com/railmapgen/rmp.git');
         assert.equal(Object.hasOwn(upstream, 'kind'), false);
+        assert.equal(JSON.parse(await readFile(path.join(root, 'tauri/ui/rmp/info.json'))).instance, 'AppStore');
         await assert.rejects(access(path.join(root, 'tauri/ui/rmp/assets/local.js')));
     } finally {
         await rm(root, { recursive: true, force: true });

@@ -1,3 +1,4 @@
+import rmgRuntime from '@railmapgen/rmg-runtime';
 import {
     getFrameSafeArea,
     getSharedViewport,
@@ -174,6 +175,7 @@ describe('shared native viewport bridge', () => {
             expect(owner.documentElement.style.getPropertyValue(`--rmt-safe-area-${edge}`)).toBe('0px');
     };
     beforeEach(() => {
+        vi.spyOn(rmgRuntime, 'getInstance').mockReturnValue('AppStore');
         pendingFrames = [];
         physical = { top: 24, right: 47, bottom: 21, left: 47 };
         document.documentElement.classList.add('rmt-native-edge-to-edge');
@@ -363,9 +365,20 @@ describe('shared native viewport bridge', () => {
         expect(pendingFrames).toHaveLength(0);
     });
 
-    it('does not change ordinary website pages', () => {
+    it('enables AppStore layout from the runtime instance without an injected host class', () => {
         document.documentElement.classList.remove('rmt-native-edge-to-edge');
+        release = installNativeSafeAreaBridge();
+        expect(document.documentElement.classList.contains('rmt-native-edge-to-edge')).toBe(true);
+        expect(document.documentElement.style.getPropertyValue('--rmt-host-viewport-top')).toBe('24px');
+        release();
+        release = undefined;
+        expect(document.documentElement.classList.contains('rmt-native-edge-to-edge')).toBe(false);
+    });
+
+    it('does not enable native layout outside AppStore even with injected layout or device markers', () => {
+        vi.mocked(rmgRuntime.getInstance).mockReturnValue('GitHub');
         installNativeSafeAreaBridge()();
         expect(document.querySelector('span[aria-hidden="true"]')).toBeNull();
+        expect(document.documentElement.style.getPropertyValue('--rmt-host-viewport-top')).toBe('');
     });
 });

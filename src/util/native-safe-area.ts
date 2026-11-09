@@ -1,3 +1,5 @@
+import rmgRuntime from '@railmapgen/rmg-runtime';
+
 export interface SafeAreaInsets {
     top: number;
     right: number;
@@ -108,7 +110,10 @@ export const getVisibleSafeArea = (
  */
 export const installNativeSafeAreaBridge = (rootDocument: Document = document): (() => void) => {
     const rootWindow = rootDocument.defaultView;
-    if (!rootWindow || !rootDocument.documentElement.classList.contains(nativeClass)) return () => {};
+    if (!rootWindow || rmgRuntime.getInstance() !== 'AppStore') return () => {};
+
+    const hadNativeClass = rootDocument.documentElement.classList.contains(nativeClass);
+    rootDocument.documentElement.classList.add(nativeClass);
 
     const originalRootInsets = [...edges.map(edge => `--rmt-safe-area-${edge}`), '--rmt-host-menu-right'].map(
         property => {
@@ -333,6 +338,7 @@ export const installNativeSafeAreaBridge = (rootDocument: Document = document): 
             else rootDocument.documentElement.style.removeProperty(property);
         }
         rootDocument.documentElement.classList.toggle(sharedViewportClass, hadSharedViewportClass);
+        rootDocument.documentElement.classList.toggle(nativeClass, hadNativeClass);
         probe.remove();
     };
 };

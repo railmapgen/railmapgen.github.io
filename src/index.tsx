@@ -19,8 +19,6 @@ import { LoadingOverlay } from '@mantine/core';
 import { addRemoteNotification } from './redux/notification/notification-slice';
 import { installPreferences } from './util/preferences';
 
-installPreferences();
-
 let root: Root;
 const AppRoot = lazy(() => import('./components/app-root'));
 
@@ -43,6 +41,7 @@ const renderApp = () => {
 };
 
 rmgRuntime.ready().then(async () => {
+    installPreferences();
     initStore(store);
 
     // If the user is logged in previously, check and refresh the token if needed,

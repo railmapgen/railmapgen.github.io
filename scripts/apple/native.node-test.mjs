@@ -214,13 +214,9 @@ test(
             const preferences = settings.PreferenceSpecifiers.filter(preference => preference.Key);
             assert.deepEqual(
                 preferences.map(preference => [preference.Key, preference.DefaultValue]),
-                [
-                    ['rmtAppearance', 'system'],
-                    ['rmtLanguage', 'system'],
-                ]
+                [['rmtAppearance', 'system']]
             );
             assert.deepEqual(preferences[0].Values, ['system', 'light', 'dark']);
-            assert.deepEqual(preferences[1].Values, ['system', ...info.CFBundleLocalizations]);
         } finally {
             rmSync(temporary, { recursive: true, force: true });
         }

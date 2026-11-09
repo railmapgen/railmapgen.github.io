@@ -1,9 +1,9 @@
 {
     "CookiesModal": {
-        "header": "本網站的 Cookies",
-        "text1": "在 RMG，我們使用 Cookies 以確保本網站及服務可以正常運作。這些 Cookies 是必需的，因此已預設啟用。",
+        "header": "本應用的 Cookies",
+        "text1": "在 RMG，我們使用 Cookies 以確保本應用及服務可以正常運作。這些 Cookies 是必需的，因此已預設啟用。",
         "text2": "我們亦會以 Cookies 的方式：",
-        "item1": "分析閣下的使用模式，用來改進本網站",
+        "item1": "分析閣下的使用模式，用來改進本應用",
         "text3": "這些 Cookies 是可選的。如果閣下想容許所有可選 Cookies，請選擇「接受所有 Cookies」。如果閣下想禁用 Cookies，請選擇「拒絕」。",
         "accept": "接受所有 Cookies",
         "reject": "拒絕"

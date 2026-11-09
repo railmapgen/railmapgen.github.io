@@ -150,6 +150,7 @@ jobs:
       - name: Verify device payload and privacy
         run: |
           python3 - <<'PY' 2>&1 | tee .build/logs/verify.log
+          import json
           import os
           import pathlib
           import plistlib
@@ -179,6 +180,9 @@ jobs:
           assert not list((app / 'assets/ui').rglob('.git')), 'Unexpected bundled Git metadata'
           assert all('rmt-native-edge-to-edge' in (app / 'assets/ui' / path).read_text()
                      for path in required), 'Missing edge-to-edge application adapter'
+          for path in required:
+              runtime_info = app / 'assets/ui' / pathlib.Path(path).with_name('info.json')
+              assert json.loads(runtime_info.read_text())['instance'] == 'AppStore', f'Unexpected application instance: {path}'
           private_suffixes = {'.p12', '.pfx', '.p8', '.pem', '.key', '.mobileprovision', '.provisionprofile'}
           macho = {bytes.fromhex(value) for value in
                    ['feedface', 'cefaedfe', 'feedfacf', 'cffaedfe', 'cafebabe', 'bebafeca', 'cafebabf', 'bfbafeca']}

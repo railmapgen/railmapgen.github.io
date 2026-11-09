@@ -320,7 +320,7 @@ async function adaptApplication(directory, component, adapter) {
     }
     const infoPath = path.join(directory, 'info.json');
     const info = JSON.parse(await readFile(infoPath, 'utf8'));
-    info.instance = 'Tauri';
+    info.instance = 'AppStore';
     await writeFile(infoPath, JSON.stringify(info, null, 2) + '\n');
 }
 
@@ -360,7 +360,7 @@ async function prepareResourcesLocked({ refreshAssets, buildHost, offline, root 
     try {
         await copyApplication(host, stage);
         const hostInfo = JSON.parse(await readFile(path.join(root, 'info.json'), 'utf8'));
-        Object.assign(hostInfo, { version: pkg.version, environment: 'PRD', instance: 'Tauri' });
+        Object.assign(hostInfo, { version: pkg.version, environment: 'PRD', instance: 'AppStore' });
         await writeFile(path.join(stage, 'info.json'), JSON.stringify(hostInfo, null, 2) + '\n');
         await adaptApplication(stage, 'host', { family: 'host', revision: adapterRevision });
         for (const application of applications) {

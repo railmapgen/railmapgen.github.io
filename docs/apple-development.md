@@ -25,6 +25,8 @@ npm run apple:open
 
 This builds the local frontend, caches the eight published child applications, and creates `tauri/gen/xcode/RailMapToolkit.xcworkspace`. Open the workspace belonging to the checkout you want to build.
 
+The iOS and macOS Xcode builds share `instance: "AppStore"` in the host and every bundled child application's `info.json`. Frontend environment checks use `rmgRuntime.getInstance()` to identify this platform; no separate operating-system or distribution fields are added. The separate desktop release workflow continues to write `instance: "Tauri"`.
+
 | Platform      | Scheme                         | Destination                   |
 | ------------- | ------------------------------ | ----------------------------- |
 | iPhone / iPad | `railmapgen_iOS`               | Simulator or connected device |
@@ -37,13 +39,13 @@ Re-run generation after moving the checkout or changing Node, Cargo, or Xcode. G
 
 ### Appearance and language on iPhone and iPad
 
-The app's Appearance and Language preferences also appear in iOS Settings under Rail Map Toolkit. Changes in either place are saved to the same native preferences and applied when the app becomes active. Existing in-app preferences migrate the first time the native settings bridge connects.
+The app's Appearance preference also appears in iOS Settings under Rail Map Toolkit. Changes in either place are saved to the same native preference and applied when the app becomes active. Existing in-app preferences migrate the first time the native settings bridge connects.
 
 Appearance supports Light, Dark, and System. The exposed screen edges and native presentation backgrounds use the same appearance as the app. System follows the device appearance, including changes while the app is running.
 
-Language supports English, Simplified Chinese, Traditional Chinese, Japanese, Korean, and System. System follows the preferred language selected for this app in iOS Settings, falling back to the device's preferred supported language. Explicit in-app language choices synchronize with the Language preference supplied by the Settings bundle; they do not rewrite the system's Preferred Language setting.
+Language supports English, Simplified Chinese, Traditional Chinese, Japanese, Korean, and System. System follows the preferred language selected for this app in iOS Settings, falling back to the device's preferred supported language. iOS Settings uses the system's Preferred Language entry; the Settings bundle only supplies Appearance. Explicit in-app language choices remain saved in native preferences and do not rewrite the system's Preferred Language setting.
 
-Regenerate the Xcode project after updating the native settings implementation so the Settings bundle and preference bridge are included. To validate on a simulator or device, change appearance and language both inside the app and in iOS Settings, return to the app, then check System mode, rotation, and iPad window resizing.
+Regenerate the Xcode project after updating the native settings implementation so the Settings bundle and preference bridge are included. To validate on a simulator or device, change appearance both inside the app and in iOS Settings. Select System for the in-app language, change the system's Preferred Language entry in iOS Settings, and return to the app. Confirm there is only one language entry in iOS Settings, then check System mode, rotation, and iPad window resizing.
 
 ### Links on iPhone and iPad
 

@@ -1,8 +1,6 @@
 "Settings" = "設定";
 "Appearance" = "外観";
-"Language" = "言語";
 "System" = "システム";
 "Light" = "ライト";
 "Dark" = "ダーク";
 "Changes also apply to the settings inside Rail Map Toolkit." = "変更は Rail Map Toolkit 内の設定にも反映されます。";
-"System language follows the preferred language for this app in iOS Settings." = "「システム」を選ぶと、iOS の設定でこのアプリに指定した優先する言語に従います。";

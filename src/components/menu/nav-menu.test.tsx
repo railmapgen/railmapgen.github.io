@@ -84,6 +84,10 @@ describe('System preference controls', () => {
     let release: (() => void) | undefined;
     const native = { appearance: 'dark', language: 'en', systemLanguage: 'ja', systemAppearance: 'light' };
 
+    beforeEach(() => {
+        vi.spyOn(rmgRuntime, 'getInstance').mockReturnValue('AppStore');
+    });
+
     afterEach(async () => {
         cleanup();
         release?.();

@@ -34,7 +34,10 @@ const isLanguage = (value: unknown): value is Language => languages.includes(Str
 const isLanguagePreference = (value: unknown): value is LanguagePreference => value === 'system' || isLanguage(value);
 let nativePreferences: NativePreferences | undefined;
 
-const nativeHandler = () => (window as PreferencesWindow).webkit?.messageHandlers?.rmtPreferences;
+const nativeHandler = () =>
+    rmgRuntime.getInstance() === 'AppStore'
+        ? (window as PreferencesWindow).webkit?.messageHandlers?.rmtPreferences
+        : undefined;
 
 export const subscribePreferences = (listener: () => void) => {
     listeners.add(listener);
@@ -118,7 +121,7 @@ export const setLanguagePreference = (language: LanguagePreference) => {
 };
 
 const acceptNativePreferences = (value: unknown) => {
-    if (!value || typeof value !== 'object') return;
+    if (rmgRuntime.getInstance() !== 'AppStore' || !value || typeof value !== 'object') return;
     const preferences = value as NativePreferences;
     if (
         !isAppearance(preferences.appearance) ||

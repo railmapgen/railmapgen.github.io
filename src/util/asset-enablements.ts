@@ -82,14 +82,14 @@ export const assetEnablement: Record<string, AssetDetail> = {
         assetType: 'app',
         showContributors: true,
         legacyContributors: 'legacy-contributor-list.txt',
-        allowedInstances: ['Org', 'GitHub', 'GitLab', 'Tauri', 'localhost', 'unknown'],
+        allowedInstances: ['Org', 'GitHub', 'GitLab', 'Tauri', 'AppStore', 'localhost', 'unknown'],
         supportSafeAreaInset: true,
     },
     'rmg-templates-upload': {
         name: 'RMG Templates - Upload',
         url: '/rmg-templates/#/new',
         assetType: 'app',
-        allowedInstances: ['Org', 'GitHub', 'GitLab', 'Tauri', 'localhost', 'unknown'],
+        allowedInstances: ['Org', 'GitHub', 'GitLab', 'Tauri', 'AppStore', 'localhost', 'unknown'],
         supportSafeAreaInset: true,
     },
     'rmp-gallery': {
@@ -98,7 +98,7 @@ export const assetEnablement: Record<string, AssetDetail> = {
         assetType: 'app',
         showContributors: true,
         showDonators: true,
-        allowedInstances: ['Org', 'GitHub', 'GitLab', 'Tauri', 'localhost', 'unknown'],
+        allowedInstances: ['Org', 'GitHub', 'GitLab', 'Tauri', 'AppStore', 'localhost', 'unknown'],
     },
     'rmp-designer': {
         name: 'RMP Designer',
