@@ -40,7 +40,6 @@
         "notIncluded": "対象外",
         "bundleNote": "アルティメット版には「{{cloud}}」と「{{export}}」の全特典が含まれます。",
         "methods": "サブスクリプションの取得方法",
-        "methodHint": "コードを取得して、以下で引き換えてください",
         "support": "開発を支援",
         "supportDescription": "プロジェクトの開発を支援し、自分に合ったプランを選べます。",
         "contribute": "コミュニティへの貢献",

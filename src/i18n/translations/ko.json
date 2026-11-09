@@ -40,7 +40,6 @@
         "notIncluded": "미포함",
         "bundleNote": "얼티밋 버전에는 {{cloud}} 및 {{export}}의 모든 혜택이 포함됩니다.",
         "methods": "구독을 얻는 방법",
-        "methodHint": "코드를 받은 후 아래에서 사용하세요",
         "support": "개발 후원",
         "supportDescription": "프로젝트 개발을 후원하고 나에게 맞는 구독을 선택하세요.",
         "contribute": "커뮤니티 기여",

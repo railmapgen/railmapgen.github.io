@@ -40,7 +40,6 @@
         "notIncluded": "不包含",
         "bundleNote": "終極版包含「{{cloud}}」與「{{export}}」的全部權益。",
         "methods": "如何取得訂閱",
-        "methodHint": "取得兌換碼後，在下方完成兌換",
         "support": "支持開發",
         "supportDescription": "支持專案開發，選擇適合你的訂閱。",
         "contribute": "社群貢獻",
