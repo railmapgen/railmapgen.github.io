@@ -2,7 +2,8 @@ import { Button, Modal, Table, TextInput, UnstyledButton } from '@mantine/core';
 import { useFocusWithin, useHover, useMediaQuery } from '@mantine/hooks';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { MdArrowOutward, MdAutoAwesome, MdCheck, MdGroups, MdKey, MdOutlineDraw } from 'react-icons/md';
+import { LuRoute, LuSparkles } from 'react-icons/lu';
+import { MdArrowOutward, MdCheck, MdGroups, MdKey } from 'react-icons/md';
 import { useRootDispatch, useRootSelector } from '../../redux';
 import { fetchSubscription, logout } from '../../redux/account/account-slice';
 import { addNotification } from '../../redux/notification/notification-slice';
@@ -37,7 +38,7 @@ const RedeemModal = (props: { opened: boolean; onClose: () => void }) => {
             name: t('SubscriptionGuide.free'),
             description: t('SubscriptionGuide.freeDescription'),
             tone: 'free',
-            icon: <MdOutlineDraw size="100%" />,
+            icon: <LuRoute size="100%" />,
         },
         {
             name: t('RMP_CLOUD_SHORT_NAME'),
@@ -71,7 +72,7 @@ const RedeemModal = (props: { opened: boolean; onClose: () => void }) => {
             name: t('SubscriptionGuide.ultimate'),
             description: t('SubscriptionGuide.ultimateDescription'),
             tone: 'ultimate',
-            icon: <MdAutoAwesome size="100%" />,
+            icon: <LuSparkles size="100%" />,
         },
     ];
     const features = [
@@ -344,7 +345,7 @@ const RedeemModal = (props: { opened: boolean; onClose: () => void }) => {
                 </Table>
             </div>
             <p style={styles.bundleNote}>
-                <MdAutoAwesome style={{ color: guideColors.ultimate, flexShrink: 0 }} aria-hidden />
+                <LuSparkles style={{ color: guideColors.ultimate, flexShrink: 0 }} aria-hidden />
                 {t('SubscriptionGuide.bundleNote', {
                     cloud: t('RMP_CLOUD_SHORT_NAME'),
                     export: t('RMP_EXPORT_SHORT_NAME'),
