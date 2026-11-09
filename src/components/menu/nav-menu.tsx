@@ -17,8 +17,8 @@ import {
 import { useSearchParams } from 'react-router-dom';
 import { useRootDispatch, useRootSelector } from '../../redux';
 import { fetchSaveList } from '../../redux/account/account-slice';
-import { isShowDevtools, MenuView, openTempApp, setMenuView, toggleMenu } from '../../redux/app/app-slice';
-import useSmMediaQuery from '../hook/use-sm-media-query';
+import { isShowDevtools, MenuView, setMenuView } from '../../redux/app/app-slice';
+import useOpenTempApp from '../hook/use-open-temp-app';
 import ResolveConflictModal from '../modal/resolve-conflict-modal';
 import AccountView from './account-view/account-view';
 import LanguageView from './language-view';
@@ -43,7 +43,7 @@ export default function NavMenu() {
     const { isLoggedIn, name } = useRootSelector(state => state.account);
     const dispatch = useRootDispatch();
 
-    const smMediaQuery = useSmMediaQuery();
+    const openTempApp = useOpenTempApp();
     const [searchParams] = useSearchParams();
     const prdUrl =
         (rmgRuntime.getInstance() === 'GitLab' ? 'https://railmapgen.gitlab.io/' : 'https://railmapgen.github.io/') +
@@ -83,13 +83,7 @@ export default function NavMenu() {
             label: t('Contributors'),
             Icon: <MdOutlinePeopleOutline size={22} />,
             ActionIconProps: {
-                onClick: () => {
-                    dispatch(openTempApp('contributors'));
-                    if (!smMediaQuery) {
-                        dispatch(toggleMenu());
-                        rmgRuntime.toggleNavMenu(false);
-                    }
-                },
+                onClick: () => openTempApp('contributors'),
             },
         },
         { key: 'support', label: t('Help & support'), Icon: <MdOutlineHelpOutline size={22} /> },

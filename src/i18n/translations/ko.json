@@ -48,6 +48,14 @@
         "codeDescription": "코드를 사용하면 현재 계정에 혜택이 추가됩니다."
     },
 
+    "DownloadPage": {
+        "title": "즐겨 쓰던 도구를, 이제 데스크톱에서도.",
+        "subtitle": "Rail Map Toolkit을 데스크톱에서 만나보세요. 언제든 창작을 이어갈 수 있어요.",
+        "screenshot": "Rail Map Toolkit의 Rail Map Painter에 표시된 철도 노선도",
+        "comingSoon": "출시 예정",
+        "version": "버전"
+    },
+
     "CookiesModal": {
         "header": "본 웹사이트의 쿠키",
         "text1": "RMG에서는 본 웹사이트 및 서비스가 정상적으로 작동하도록 쿠키를 사용합니다. 이러한 쿠키는 필수적이므로 기본적으로 활성화되어 있습니다.",
@@ -132,6 +140,7 @@
     "Resource administrators": "리소스 관리자",
     "Resource contributors": "리소스 기여자",
     "Restart RMT in this window": "이 창에서 RMT 다시 시작",
+    "Blog": "블로그",
     "Running": "실행 중",
     "Save": "저장",
     "Select an app to start your own rail map design!": "앱을 선택하여 나만의 노선도 디자인을 시작하세요!",
@@ -141,7 +150,6 @@
     "System": "시스템 설정 따름",
     "Tab": "탭",
     "Terms and conditions": "이용 약관",
-    "Tutorial": "사용 설명서",
     "Mini Metro Web": "미니 메트로 웹",
     "Unable to create your account": "계정을 만들 수 없습니다.",
     "Unable to reset your password": "비밀번호를 재설정할 수 없습니다.",

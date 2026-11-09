@@ -48,6 +48,14 @@
         "codeDescription": "兌換後，權益將加入目前的帳號。"
     },
 
+    "DownloadPage": {
+        "title": "你所熱愛的，現在也在本地。",
+        "subtitle": "將路綫圖工具組帶到桌面，讓創作隨時繼續。",
+        "screenshot": "地鐵路綫圖工具組中使用地鐵路綫圖繪製器繪製的路網圖",
+        "comingSoon": "敬請期待",
+        "version": "版本"
+    },
+
     "CookiesModal": {
         "header": "本網站的 Cookies",
         "text1": "在 RMG，我們使用 Cookies 以確保本網站及服務可以正常運作。這些 Cookies 是必需的，因此已預設啟用。",
@@ -133,7 +141,7 @@
     "Resource administrators": "資源管理員",
     "Resource contributors": "資源貢獻者",
     "Restart RMT in this window": "於該視窗重新啟動工具組",
-    "RMT Blog": "RMT 博客",
+    "Blog": "博客",
     "Running": "運行中",
     "Save": "儲存",
     "Select an app to start your own rail map design!": "選擇一個應用程式以開始你的路綫圖設計！",
@@ -143,7 +151,6 @@
     "System": "跟隨系統",
     "Tab": "分頁",
     "Terms and conditions": "條款及細則",
-    "Tutorial": "使用指南",
     "Mini Metro Web": "迷你捷運繪製工具",
     "Unable to create your account": "無法建立你的帳戶",
     "Unable to reset your password": "無法重設你的密碼",

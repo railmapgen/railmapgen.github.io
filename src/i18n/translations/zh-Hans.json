@@ -48,6 +48,14 @@
         "codeDescription": "兑换后，权益将添加到当前账号。"
     },
 
+    "DownloadPage": {
+        "title": "你所热爱的，现在也在本地。",
+        "subtitle": "将线路图工具包带到桌面，让创作随时继续。",
+        "screenshot": "地铁线路图工具包中使用地铁线路图绘制器绘制的线网图",
+        "comingSoon": "敬请期待",
+        "version": "版本"
+    },
+
     "CookiesModal": {
         "header": "本网站的 Cookies",
         "text1": "在 RMG，我们使用 Cookies 来确保本网站及服务可以正常运作。这些 Cookies 是必需的，因此已默认启动。",
@@ -133,7 +141,7 @@
     "Resource administrators": "资源管理员",
     "Resource contributors": "资源贡献者",
     "Restart RMT in this window": "在此窗口重新启动工具包",
-    "RMT Blog": "RMT 博客",
+    "Blog": "博客",
     "Running": "正在运行",
     "Save": "保存",
     "Select an app to start your own rail map design!": "选择一个应用程序来开始你的线路图设计！",
@@ -143,7 +151,6 @@
     "System": "跟随系统",
     "Tab": "标签页",
     "Terms and conditions": "条款与细则",
-    "Tutorial": "使用教程",
     "Mini Metro Web": "迷你地铁绘制工具",
     "Unable to create your account": "无法创建您的账户",
     "Unable to reset your password": "无法重置您的密码",
