@@ -1,12 +1,11 @@
 {
-  "sourceCommit": "f4b7925064a459b96e699eea05827a4885bcd7b1",
-  "issue": 396,
-  "images": {
-    "subscription-guide-light.png": "ccd07cfef2bda3f758d328ab2b700ad43a34404e8ed020a0635ed32fe4e83028",
-    "subscription-guide-dark.png": "e3e1a2355f7f5ecfde4994c574e17e30a2c3ea721c03cc64c652aeb2f94be5e4",
-    "subscription-guide-mobile-light.png": "4ae2fc8b4e7be6561406fd90483551eb1887f8a74499b107e6db15c24f96fe6f",
-    "subscription-guide-mobile-dark.png": "25fb3f76ba751721fa4bfe2134a74b9f88022288df4dc04ae9f1fc9da9a40481",
-    "subscription-guide-mobile-light-bottom.png": "5a3a030e53a5d3ea000892b73740f7160ba0812d10d998d4780c53c9522b9d08",
-    "subscription-guide-mobile-dark-bottom.png": "cebf8d1aea4426dfd59189127de39c157083d83ffe8bc4cd60d866b06a3e5515"
+  "source_commit": "d9403282be6e7be16759b1e74b7f1121fc15ab44",
+  "screenshots": {
+    "subscription-guide-dark.png": "d8e45398f127b3c4f985608d35c72351ea98415ef96e08e0a9e0e929290f6018",
+    "subscription-guide-light.png": "0e7eb4264fbb70337616f5b807190eb2a85ae2167a9b5d22a70aa47aab6ed0fc",
+    "subscription-guide-mobile-dark-bottom.png": "cad4a11f9a5581cf5c6cef650d6a991c4a9deda2d2d3c6dbab2dbd49f7a7a784",
+    "subscription-guide-mobile-dark.png": "4e92cf9abed6938a4aeeb2952588302ab8dcfd2f01a91c735f335f6b10695616",
+    "subscription-guide-mobile-light-bottom.png": "008cb522226269c33e1b2ebdc92fa6ee812bdb2406f3a36ba29400a3643fc565",
+    "subscription-guide-mobile-light.png": "84889ae30e93007e666a65b7dbcf7edea08b31329003870f0524362dd35b9676"
   }
 }
