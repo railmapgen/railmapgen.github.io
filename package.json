@@ -51,7 +51,9 @@
         "test": "vitest run --coverage",
         "lint": "eslint src contributors download runtime-demo",
         "lint:fix": "eslint src contributors download runtime-demo --fix",
-        "preview": "vite preview --host"
+        "preview": "vite preview --host",
+        "fonts:build": "python3 scripts/build-fonts.py",
+        "fonts:check": "python3 -B scripts/test-fonts.py && python3 scripts/build-fonts.py --check"
     },
     "version": "3.2.47"
 }

@@ -1,0 +1,421 @@
+{
+    "dependencies": {
+        "fonttools": "4.61.1",
+        "Brotli": "1.2.0"
+    },
+    "families": {
+        "Noto Sans CJK SC": {
+            "sourceSha256": "2c76254f6fc379fddfce0a7e84fb5385bb135d3e399294f6eeb6680d0365b74b",
+            "codepoints": 44810,
+            "variationSequences": 25,
+            "files": [
+                {
+                    "file": "NotoSansCJKsc-Regular.core.woff2",
+                    "sha256": "3288873f6897c735c49b1e748996d14d7dc2cf70bcddea6aaf736be3dce99194"
+                },
+                {
+                    "file": "NotoSansCJKsc-Regular.2800.woff2",
+                    "sha256": "ae209ed578e97b1d8e8a460b808bc9c394bb8c3a80d9b6e1686b47b4710bd1d3"
+                },
+                {
+                    "file": "NotoSansCJKsc-Regular.3000.woff2",
+                    "sha256": "7daf7ded317e4adee12e01dd8f98642ee427b3b2d09b551f1e806f26a14d8611"
+                },
+                {
+                    "file": "NotoSansCJKsc-Regular.3800.woff2",
+                    "sha256": "e4d254142a4dd23f618d3a4a44061170d79db3836477f901b591f9780aadfb59"
+                },
+                {
+                    "file": "NotoSansCJKsc-Regular.4000.woff2",
+                    "sha256": "f3ffa34660cfe87e759cf7411a4a8ce5a192b1c0b3f7c290102c592aed3bd986"
+                },
+                {
+                    "file": "NotoSansCJKsc-Regular.4800.woff2",
+                    "sha256": "b5df7bd8287fc6c7cada6829096204ca26f8ee8045b430dbe55dca3f63513241"
+                },
+                {
+                    "file": "NotoSansCJKsc-Regular.4E.woff2",
+                    "sha256": "bdd9a89b2f36d2ffe529d1189a2b6c3f44be74aef7300e19f5ecf69ce3feca4b"
+                },
+                {
+                    "file": "NotoSansCJKsc-Regular.50.woff2",
+                    "sha256": "5dc0e3039211508f8636a8b9722bd7950fa839282f8c326fb3df9a2f74b6cc37"
+                },
+                {
+                    "file": "NotoSansCJKsc-Regular.58.woff2",
+                    "sha256": "f3d090b709e18c6d0613be3455a506c89f6c234ee7822c9b047b55937dd70ccb"
+                },
+                {
+                    "file": "NotoSansCJKsc-Regular.60.woff2",
+                    "sha256": "07100eea6a919e8b498a9a9bcaa607b58c5579377edc4d4cc6fe84a01e810348"
+                },
+                {
+                    "file": "NotoSansCJKsc-Regular.68.woff2",
+                    "sha256": "4ff39865b3fba16bb4fd917abd9d1e4a7cb7868c621a889869dbea23f6d1304a"
+                },
+                {
+                    "file": "NotoSansCJKsc-Regular.70.woff2",
+                    "sha256": "1ec5d9a154680fd4abfc89b3349080dda182d64a5d1fcc98e21e4dd612e4764d"
+                },
+                {
+                    "file": "NotoSansCJKsc-Regular.78.woff2",
+                    "sha256": "3f5b1c8d19eadb37eb3ff5f21f591e7eb65f0d1214b49c8bacc95ef8b44d52ac"
+                },
+                {
+                    "file": "NotoSansCJKsc-Regular.80.woff2",
+                    "sha256": "064d91ba3433f6fc171bf5fc6f2f8a4bc9ade701a0dc22f49456c60940371b56"
+                },
+                {
+                    "file": "NotoSansCJKsc-Regular.88.woff2",
+                    "sha256": "3b4340068c03840bee02664edb9367c5998f54b5f9fcfdf78a4bed2d10958332"
+                },
+                {
+                    "file": "NotoSansCJKsc-Regular.90.woff2",
+                    "sha256": "509ff9794aeaabf39964a1d43219697f2db9d8334a9fa756c850fd6aa732d025"
+                },
+                {
+                    "file": "NotoSansCJKsc-Regular.98.woff2",
+                    "sha256": "c659da1c4f6e99c64598bb38158714555a799a8fb8099dab477a23ffc4d0bc52"
+                },
+                {
+                    "file": "NotoSansCJKsc-Regular.F800.woff2",
+                    "sha256": "a590ad134607e9e5077b67e3a98af8096f047742a1bc67c62f1a29ce6c638c19"
+                },
+                {
+                    "file": "NotoSansCJKsc-Regular.20000.woff2",
+                    "sha256": "757a30360b2345c0acab7121395b29806984776405c942897a93954eb32fee58"
+                },
+                {
+                    "file": "NotoSansCJKsc-Regular.20800.woff2",
+                    "sha256": "6d68499501f89946d4005622be12aa36d2fa81e5da6c9805a32ac0633469a587"
+                },
+                {
+                    "file": "NotoSansCJKsc-Regular.21000.woff2",
+                    "sha256": "e673d398c87b5f55f681e48089ea12d4aa2f9effff552fd0a1eaf5baa72f4441"
+                },
+                {
+                    "file": "NotoSansCJKsc-Regular.21800.woff2",
+                    "sha256": "ac04f72227c137b60f67dae2d94442badcfb45168f5cf99d40f53467a40196e9"
+                },
+                {
+                    "file": "NotoSansCJKsc-Regular.22000.woff2",
+                    "sha256": "850345cb4851c5bec22e0f53707a88417cc8e0d1a31543591b44b34fb12663e1"
+                },
+                {
+                    "file": "NotoSansCJKsc-Regular.22800.woff2",
+                    "sha256": "e0be19c068ff1b82798d11e5918cae15fcfcae2a143794ffa24fffa919343a5f"
+                },
+                {
+                    "file": "NotoSansCJKsc-Regular.23000.woff2",
+                    "sha256": "94ad654469177f36423f5eba56fe7f3d944bfe30afecb66124b4abc90bc33c51"
+                },
+                {
+                    "file": "NotoSansCJKsc-Regular.23800.woff2",
+                    "sha256": "9e65f446cc51d669ef60f95f6a3cbe82286955043c9180fdaed693d2d10d2dd3"
+                },
+                {
+                    "file": "NotoSansCJKsc-Regular.24000.woff2",
+                    "sha256": "f7874baa88a1e0bd6fc72871eb227fb16b8a26ea0e3820df6e65f1869f093670"
+                },
+                {
+                    "file": "NotoSansCJKsc-Regular.24800.woff2",
+                    "sha256": "5b894e44c886e8dcbf1d200643fed5e1d84c3a546715cace0b5b21ce30db8709"
+                },
+                {
+                    "file": "NotoSansCJKsc-Regular.25000.woff2",
+                    "sha256": "9032141b054e604dc62253e50a1a3f174008ef2fe4a7e94be8c3177db48b9f2b"
+                },
+                {
+                    "file": "NotoSansCJKsc-Regular.25800.woff2",
+                    "sha256": "18e073e6afd825fe40c2dcb4f311b80b651ff0d6f899b59001909cab026d835f"
+                },
+                {
+                    "file": "NotoSansCJKsc-Regular.26000.woff2",
+                    "sha256": "2afde52916c55781bfd739a0659a254a6a3bfb1abc14992c6a5918d2c698528d"
+                },
+                {
+                    "file": "NotoSansCJKsc-Regular.26800.woff2",
+                    "sha256": "3b175fbb83bd2008c2f146d82f1300daaa57791f2241f5239115f69cdb811ec1"
+                },
+                {
+                    "file": "NotoSansCJKsc-Regular.27000.woff2",
+                    "sha256": "dcefdba59e22d0a880535e31fcfac6e48ed708be5bbfff9d9f7d8c467f66fefb"
+                },
+                {
+                    "file": "NotoSansCJKsc-Regular.27800.woff2",
+                    "sha256": "396273d041ddc772758fd5b2e224d459d30f8017160743aa8f9cd8deef048d7d"
+                },
+                {
+                    "file": "NotoSansCJKsc-Regular.28000.woff2",
+                    "sha256": "15fa7e51776f59b18999067d812a36fed1267f58f7f0a700ab96c3066594d797"
+                },
+                {
+                    "file": "NotoSansCJKsc-Regular.28800.woff2",
+                    "sha256": "b7bdbe4106a2b1060094f99127ee4fe0edc8eef98de9ebe15539bac17312b56a"
+                },
+                {
+                    "file": "NotoSansCJKsc-Regular.29000.woff2",
+                    "sha256": "62e85380a26b0d0d15919a98c74be98615d65f42509870d8f0f03b9fe2de3cee"
+                },
+                {
+                    "file": "NotoSansCJKsc-Regular.29800.woff2",
+                    "sha256": "9cd69946e794822184538cdd90b6ebe30729dbec8ab51a4d6ba91127bf3a6b45"
+                },
+                {
+                    "file": "NotoSansCJKsc-Regular.2A000.woff2",
+                    "sha256": "3d868e006a8278473a92da436d569a4af98dc76de4db9f738c21c08dc0d0e271"
+                },
+                {
+                    "file": "NotoSansCJKsc-Regular.2A800.woff2",
+                    "sha256": "6c015bb58138c8d47d53286fb2e1ed6d2e19a7da09701d45f33be6a0e226f1d6"
+                },
+                {
+                    "file": "NotoSansCJKsc-Regular.2B000.woff2",
+                    "sha256": "67d7352ed6615557ad9f1e29eebb372ce8cddcb10d8126196d4b40b7ed549040"
+                },
+                {
+                    "file": "NotoSansCJKsc-Regular.2B800.woff2",
+                    "sha256": "46bf285ba5369695afc55fadd08d618bfd5eeb511a6b41185c68b6e390a44bea"
+                },
+                {
+                    "file": "NotoSansCJKsc-Regular.2C000.woff2",
+                    "sha256": "2732140271d3b2bd14df7d6c31fe7028829b4883bf80e78e39ad461cd72c0318"
+                },
+                {
+                    "file": "NotoSansCJKsc-Regular.2C800.woff2",
+                    "sha256": "4a662484dc58f930205536b409445f878eacd4e646ba200115058cfbdced5111"
+                },
+                {
+                    "file": "NotoSansCJKsc-Regular.2D000.woff2",
+                    "sha256": "90d0906ac3b5993897fd5f56cbb16773821ce0356023cc7b2d6fa10629b04063"
+                },
+                {
+                    "file": "NotoSansCJKsc-Regular.2E000.woff2",
+                    "sha256": "fc775f62ef05b2869b5649ad91eb8e5e5ab156d8e82c678e01861f005b829402"
+                },
+                {
+                    "file": "NotoSansCJKsc-Regular.2F800.woff2",
+                    "sha256": "14979abe3651da9330eb34f83a1d1d45b4fadcafc28716690549a825cd7430f5"
+                },
+                {
+                    "file": "NotoSansCJKsc-Regular.30000.woff2",
+                    "sha256": "617ede920b7c1679426f758e8966146d526865751fd88b61e607813314711e0b"
+                },
+                {
+                    "file": "NotoSansCJKsc-Regular.30800.woff2",
+                    "sha256": "4bc7b471ae371ac922c604efbfc00efb3018bedfa5b853b59db5027fac1078e0"
+                },
+                {
+                    "file": "NotoSansCJKsc-Regular.31000.woff2",
+                    "sha256": "7f6f19f0767260c4eb167f589c3cd076e9d64ec0ed2516f2b51c503456f1bae1"
+                },
+                {
+                    "file": "NotoSansCJKsc-Regular.hangul.woff2",
+                    "sha256": "4f9ef6ac2e75cf3c12e44cc7eb7e608bf865f0898df51b743fd40ca46f616502"
+                }
+            ]
+        },
+        "Arimo": {
+            "sourceSha256": "88cc899855d30f9c779b73c3319d0e077b098f927187aafce11ca029add707a6",
+            "codepoints": 3010,
+            "variationSequences": 0,
+            "files": [
+                {
+                    "file": "Arimo-Regular.woff2",
+                    "sha256": "262526c5911013e298746b88e66d09ad4d1c45bf0e7b6f258cc42d74733353c3"
+                }
+            ]
+        },
+        "Taipei Sans TC Beta": {
+            "sourceSha256": "8cc967e1e428c552701c461e8169e6ae76c7a23694ea1a6a786d6746adec53c4",
+            "codepoints": 32731,
+            "variationSequences": 0,
+            "files": [
+                {
+                    "file": "TaipeiSansTCBeta-Regular.core.woff2",
+                    "sha256": "f8b17df925a97f17c277e016f6443271972da7d620663b15aaece6480d0dc9b2"
+                },
+                {
+                    "file": "TaipeiSansTCBeta-Regular.2800.woff2",
+                    "sha256": "81a08da54014080ba113addcfa79478990d4bae7d1b515381bf1d8a49e31271c"
+                },
+                {
+                    "file": "TaipeiSansTCBeta-Regular.3000.woff2",
+                    "sha256": "8782a9e88117668e595abcc04d2887feacc7270e90df4ef553ec09b4901d1fd8"
+                },
+                {
+                    "file": "TaipeiSansTCBeta-Regular.3800.woff2",
+                    "sha256": "8464cc959cf723c0c32fd7550ddba36f68399b4ee3428c25361011224425e2a2"
+                },
+                {
+                    "file": "TaipeiSansTCBeta-Regular.4000.woff2",
+                    "sha256": "87f4e728676c00e122e0c4b7d27c55bcbb7180839b87b1e3ccbdc67ac42852bc"
+                },
+                {
+                    "file": "TaipeiSansTCBeta-Regular.4800.woff2",
+                    "sha256": "11cbd01f248de88b85d9c7272fb14936fd5ef9b39e961f930b7661e7ef7b9b68"
+                },
+                {
+                    "file": "TaipeiSansTCBeta-Regular.4E.woff2",
+                    "sha256": "abc8b814fce246e755b721b1d8e9f6e4df60a8481410d4113010aa1740e0406f"
+                },
+                {
+                    "file": "TaipeiSansTCBeta-Regular.50.woff2",
+                    "sha256": "41a485f03810471f6eeba2b2e2f33a60ef310333300d3c44629b769a9ab2720b"
+                },
+                {
+                    "file": "TaipeiSansTCBeta-Regular.58.woff2",
+                    "sha256": "8f92775ed43778992e04dadb794296901c715e64939aae1c98c6965c3904df8b"
+                },
+                {
+                    "file": "TaipeiSansTCBeta-Regular.60.woff2",
+                    "sha256": "7783bcc19105e6a477b5daf2e04bdeb9986796e07d8b5fd4d4afd1c575dd2cb1"
+                },
+                {
+                    "file": "TaipeiSansTCBeta-Regular.68.woff2",
+                    "sha256": "2319947774c8d671aec113107b5c3d0576c1e8fc56ad531736e7629e68ff6b42"
+                },
+                {
+                    "file": "TaipeiSansTCBeta-Regular.70.woff2",
+                    "sha256": "69f5735a3796625557c30da1c7d86a82c0732062828ff5b0cbf8abedc2c42dd1"
+                },
+                {
+                    "file": "TaipeiSansTCBeta-Regular.78.woff2",
+                    "sha256": "e616127ff510591b2876f60ba2afd7c3702b421baa96097b39ce9e1fac161de9"
+                },
+                {
+                    "file": "TaipeiSansTCBeta-Regular.80.woff2",
+                    "sha256": "35266b6b6be86ac2bd041cc72fb480a8e142c1e3615e7a09e978db30eacd866a"
+                },
+                {
+                    "file": "TaipeiSansTCBeta-Regular.88.woff2",
+                    "sha256": "34e5b55a18a4e7379c8390705578d09603ffcb2e35297da64ccb4c3250f7e7cd"
+                },
+                {
+                    "file": "TaipeiSansTCBeta-Regular.90.woff2",
+                    "sha256": "1fdf6c765f4149e6864c3447623e781651a034e5ed2d9a3f41de6ea9e2f3a4ff"
+                },
+                {
+                    "file": "TaipeiSansTCBeta-Regular.98.woff2",
+                    "sha256": "be2db2598cb15357fac0b4b7aa1542bfc0c4490fa9a791c528fb109f91a0037a"
+                },
+                {
+                    "file": "TaipeiSansTCBeta-Regular.F800.woff2",
+                    "sha256": "5ab5415c47d3948e42cb5b2f603ddaa430ec6a49cf224011bf6942dd2207b9f0"
+                },
+                {
+                    "file": "TaipeiSansTCBeta-Regular.20000.woff2",
+                    "sha256": "ad0b05c6c69033f001ecc07e4ac717ebf86cb6abe6fdf1d1c74848bc5fa59412"
+                },
+                {
+                    "file": "TaipeiSansTCBeta-Regular.20800.woff2",
+                    "sha256": "5b5f62f47111d4519eefefa8c834dd76ead4887eab37be5ca16533c762ef6d77"
+                },
+                {
+                    "file": "TaipeiSansTCBeta-Regular.21000.woff2",
+                    "sha256": "86131330949401e8263cc2cf5ef4401b119acdd36592b35304ec688d5cc1617e"
+                },
+                {
+                    "file": "TaipeiSansTCBeta-Regular.21800.woff2",
+                    "sha256": "279592caf639a6ce807e2991dcbb1fb2a8fedc87d7263b58f083a32d01c838cc"
+                },
+                {
+                    "file": "TaipeiSansTCBeta-Regular.22000.woff2",
+                    "sha256": "dfeb20d2de5055dc5260d545e99d550736180a37ddc7f94f60653698f9402c5e"
+                },
+                {
+                    "file": "TaipeiSansTCBeta-Regular.22800.woff2",
+                    "sha256": "df47bbf0c4c71f3dc88734d3539de5f5c5fc88628c89e6f1c2ff8978527f0ac9"
+                },
+                {
+                    "file": "TaipeiSansTCBeta-Regular.23000.woff2",
+                    "sha256": "7b97994f68b28c278f016bd0f8e0b90a774520187a0f9969406e4c1c6cd136df"
+                },
+                {
+                    "file": "TaipeiSansTCBeta-Regular.23800.woff2",
+                    "sha256": "d0402387576b87574d7ddcf59fe58acb0287d94369849eddaaf2fab5a9a731aa"
+                },
+                {
+                    "file": "TaipeiSansTCBeta-Regular.24000.woff2",
+                    "sha256": "9c482510220d4c76f77fa09e50f2fcf9030e8996c7ce755774635dbf84986d79"
+                },
+                {
+                    "file": "TaipeiSansTCBeta-Regular.24800.woff2",
+                    "sha256": "1724d0d804def4ddfb8f8e2585a5da26fd7476302406ff13fe937ee5018b8f10"
+                },
+                {
+                    "file": "TaipeiSansTCBeta-Regular.25000.woff2",
+                    "sha256": "aa796116e3d9be0fb58cf39af489a901d3e26e531556bef334c8b2e3a96bee07"
+                },
+                {
+                    "file": "TaipeiSansTCBeta-Regular.25800.woff2",
+                    "sha256": "d4afe616e531efe8978ee0b1ef466267abf60bc17ee8e81a8ef2833a2d9b8046"
+                },
+                {
+                    "file": "TaipeiSansTCBeta-Regular.26000.woff2",
+                    "sha256": "3cc6410193e21cc437e2721989c8e987d7b0e4b95028a01d701717ac77efc518"
+                },
+                {
+                    "file": "TaipeiSansTCBeta-Regular.26800.woff2",
+                    "sha256": "c8be6078de3becc2fbd9bf279b679d2a8fed841b6f3de75c658089054dd8547b"
+                },
+                {
+                    "file": "TaipeiSansTCBeta-Regular.27000.woff2",
+                    "sha256": "316f1f2d4454039d74126c78ce07953ac1a6c9242eefd451d7818323cf6d1ad2"
+                },
+                {
+                    "file": "TaipeiSansTCBeta-Regular.27800.woff2",
+                    "sha256": "db79a061a9082d462dc1d8ade4a806fbd76bf1c04e94a0e829ffb722dbfcbef5"
+                },
+                {
+                    "file": "TaipeiSansTCBeta-Regular.28000.woff2",
+                    "sha256": "00e7f3055ec640d9176c35b2660263389407bd86fc788d0ce3389e5317aafaa6"
+                },
+                {
+                    "file": "TaipeiSansTCBeta-Regular.28800.woff2",
+                    "sha256": "f51187a5e7cc8a5fc9d880c8841fc8a256fd65c418700685a4d10035212d3b3a"
+                },
+                {
+                    "file": "TaipeiSansTCBeta-Regular.29000.woff2",
+                    "sha256": "3591aaa9685ac0999588ccffd404615c7fe841b0111915083f2be0ca088a54e4"
+                },
+                {
+                    "file": "TaipeiSansTCBeta-Regular.29800.woff2",
+                    "sha256": "d9efbfddda78006a9d36900856a2312841af190036f320ece3a9aab4b1357b2f"
+                },
+                {
+                    "file": "TaipeiSansTCBeta-Regular.2A000.woff2",
+                    "sha256": "1bc35aa29a21c333cc1d040e405294e71d49a9b8cf0688df9913619af68e3721"
+                },
+                {
+                    "file": "TaipeiSansTCBeta-Regular.2A800.woff2",
+                    "sha256": "0475ec4d834f5812de6dc9301d960917d06e44ad504a68cfdf0dbf1f5010e071"
+                },
+                {
+                    "file": "TaipeiSansTCBeta-Regular.2B000.woff2",
+                    "sha256": "b0f5f06fa910d71d500548334e002525e16fbb1016aced9c5e1b9be2ed263e0c"
+                },
+                {
+                    "file": "TaipeiSansTCBeta-Regular.2B800.woff2",
+                    "sha256": "ba5c4df120ca96d87542638e1e0003cddbdd86229cfe2ced224170b4b1e41c69"
+                },
+                {
+                    "file": "TaipeiSansTCBeta-Regular.2C000.woff2",
+                    "sha256": "4f5aff3ea986ef18872ccae3e6631c0f97b0b51d17424b40e4891863d255f569"
+                },
+                {
+                    "file": "TaipeiSansTCBeta-Regular.2C800.woff2",
+                    "sha256": "71bed028ae422ba299f250c84704df327c3950a29e562479a9dbf2a39d22761a"
+                },
+                {
+                    "file": "TaipeiSansTCBeta-Regular.2F800.woff2",
+                    "sha256": "f35a8649f9097a50fe822a349b69febada1982336e17897d9795bbe2e3d76eee"
+                },
+                {
+                    "file": "TaipeiSansTCBeta-Regular.hangul.woff2",
+                    "sha256": "046795b3d61f12be9842efc418069c377cef55471530143255f1a60f18dd7243"
+                }
+            ]
+        }
+    }
+}

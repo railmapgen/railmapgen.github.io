@@ -30,3 +30,5 @@ yarn-error.log*
 /.vscode
 /.idea
 .env
+# Optional font-generation virtual environment
+/.venv-fonts
