@@ -1,11 +1,11 @@
 {
-  "source_commit": "d9403282be6e7be16759b1e74b7f1121fc15ab44",
+  "source_commit": "e696c45c3e40408fc3bf3e992554542e53ca73e6",
   "screenshots": {
-    "subscription-guide-dark.png": "d8e45398f127b3c4f985608d35c72351ea98415ef96e08e0a9e0e929290f6018",
-    "subscription-guide-light.png": "0e7eb4264fbb70337616f5b807190eb2a85ae2167a9b5d22a70aa47aab6ed0fc",
-    "subscription-guide-mobile-dark-bottom.png": "cad4a11f9a5581cf5c6cef650d6a991c4a9deda2d2d3c6dbab2dbd49f7a7a784",
-    "subscription-guide-mobile-dark.png": "4e92cf9abed6938a4aeeb2952588302ab8dcfd2f01a91c735f335f6b10695616",
-    "subscription-guide-mobile-light-bottom.png": "008cb522226269c33e1b2ebdc92fa6ee812bdb2406f3a36ba29400a3643fc565",
-    "subscription-guide-mobile-light.png": "84889ae30e93007e666a65b7dbcf7edea08b31329003870f0524362dd35b9676"
+    "subscription-guide-dark.png": "e2cd965fac55e96147644511ab76152fc9a91344f3cc1a038d9f618012e2eee1",
+    "subscription-guide-light.png": "2784b31e4ba0b3fd0d874c8ee8c51c5692db221772fcf885f0ce2189d24590ac",
+    "subscription-guide-mobile-dark-bottom.png": "501ef007ffb55773714caebf874fd87f0f4a5dab4ad95ee2ff7ebf6e16ed2c57",
+    "subscription-guide-mobile-dark.png": "14a09249d494a06aab6d2864c9b55ee7a7596335071d1752b0ea52bab8a076ec",
+    "subscription-guide-mobile-light-bottom.png": "b1dc5f5e478ecb0d38baecbfebde54f38a290f4f6bdc1e9e01a032cb948fd54c",
+    "subscription-guide-mobile-light.png": "53b7e81cbb60be2b7f28b3cab22bcc31df9bf977254e42db260a9d87e49d90a2"
   }
 }
