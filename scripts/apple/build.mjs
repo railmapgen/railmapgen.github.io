@@ -147,7 +147,7 @@ async function buildMacos(tools, config) {
     const override = {
         version,
         build: { frontendDist: [] },
-        bundle: { resources: { 'ui/': 'ui/' } },
+        bundle: { createUpdaterArtifacts: false, resources: { 'ui/': 'ui/' } },
         app: { windows: base.app.windows.map(window => ({ ...window, label: window.label ?? 'main', create: false })) },
     };
     if (config === 'Debug')

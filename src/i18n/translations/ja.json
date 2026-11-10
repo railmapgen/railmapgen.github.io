@@ -1,4 +1,12 @@
 {
+    "DownloadPage": {
+        "title": "お気に入りのツールを、デスクトップでも。",
+        "subtitle": "Rail Map Toolkit をデスクトップに。いつでも創作の続きを。",
+        "screenshot": "Rail Map Toolkit の Rail Map Painter で表示した鉄道路線図",
+        "comingSoon": "近日公開",
+        "version": "バージョン"
+    },
+
     "CookiesModal": {
         "header": "本網頁のクッキー",
         "text1": "RMGでは、網頁およびサービスが正常に動作するようにするため、クッキーを使用しています。これらのクッキーは必須であり、デフォルトで有効化されています。",
@@ -158,8 +166,6 @@
     "Sync this slot": "このスロットを同期",
     "All subscriptions": "すべての契約",
     "Redeem": "引き換え",
-    "RMP_CLOUD": "地下鉄路線図画家・出発進行",
-    "RMP_EXPORT": "地下鉄路線図画家・一旦停止",
     "With this subscription, the following features are unlocked:": "この購読で次の機能が解放されます：",
     "PRO features": "プロ機能",
     "Sync 99 more saves": "さらに 99 個の保存を同期",

@@ -1,7 +1,7 @@
 import classes from './account-view.module.css';
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useRootSelector } from '../../../redux';
+import { useRootDispatch, useRootSelector } from '../../../redux';
+import { AccountPage, setAccountPage } from '../../../redux/app/app-slice';
 import AccountInfo from './account-info';
 import ForgotPasswordView from './forgot-password-view';
 import LoginView from './login-view';
@@ -15,7 +15,9 @@ const AccountView = () => {
     const { t } = useTranslation();
     const { isLoggedIn } = useRootSelector(state => state.account);
 
-    const [loginState, setLoginState] = useState<'login' | 'register' | 'forgot-password'>('login');
+    const dispatch = useRootDispatch();
+    const loginState = useRootSelector(state => state.app.accountPage);
+    const setLoginState = (page: AccountPage) => dispatch(setAccountPage(page));
 
     return (
         <RMSection>

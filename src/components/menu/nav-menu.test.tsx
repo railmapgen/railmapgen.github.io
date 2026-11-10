@@ -147,3 +147,47 @@ describe('System preference controls', () => {
         expect(screen.getByRole('button', { name: '한국어', pressed: false })).toBeInTheDocument();
     });
 });
+
+describe('Temporary page navigation', () => {
+    afterEach(() => {
+        cleanup();
+        vi.restoreAllMocks();
+    });
+
+    it.each([true, false])('Opens contributors in the workspace (desktop: %s)', async isDesktop => {
+        vi.spyOn(window, 'matchMedia').mockImplementation(query => ({
+            media: query,
+            matches: isDesktop,
+            onchange: null,
+            addListener: vi.fn(),
+            removeListener: vi.fn(),
+            addEventListener: vi.fn(),
+            removeEventListener: vi.fn(),
+            dispatchEvent: vi.fn(),
+        }));
+        const store = createTestStore();
+        const user = userEvent.setup();
+        const toggleNavMenuSpy = vi.spyOn(rmgRuntime, 'toggleNavMenu');
+        render(
+            <MemoryRouter>
+                <NavMenu />
+            </MemoryRouter>,
+            { store }
+        );
+
+        const contributors = screen.getByRole('button', { name: 'Contributors' });
+        await user.click(contributors);
+        expect(store.getState().app.openedTabs).toEqual([
+            { id: 'contributors', app: 'contributors', url: '/contributors/' },
+        ]);
+        expect(store.getState().app.activeTab).toBe('contributors');
+        expect(store.getState().app.isShowMenu).toBe(isDesktop);
+        if (isDesktop) {
+            await user.click(contributors);
+            expect(store.getState().app.openedTabs).toHaveLength(1);
+            expect(toggleNavMenuSpy).not.toHaveBeenCalled();
+        } else {
+            expect(toggleNavMenuSpy).toHaveBeenCalledExactlyOnceWith(false);
+        }
+    });
+});

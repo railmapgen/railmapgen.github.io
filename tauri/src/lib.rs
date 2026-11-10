@@ -13,6 +13,10 @@ mod apple_ios;
 mod ios_assets;
 mod resvg;
 mod svg_transform;
+#[cfg(all(desktop, not(feature = "apple-bundle-assets")))]
+mod updater;
+#[cfg(all(desktop, not(feature = "apple-bundle-assets")))]
+mod updater_download;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -20,6 +24,9 @@ pub fn run() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_http::init())
         .invoke_handler(tauri::generate_handler![resvg::render_image]);
+
+    #[cfg(all(desktop, not(feature = "apple-bundle-assets")))]
+    let builder = builder.plugin(tauri_plugin_updater::Builder::new().build());
 
     #[cfg(any(target_os = "ios", target_os = "macos"))]
     let builder = builder
@@ -48,18 +55,23 @@ pub fn run() {
         context.set_assets(Box::new(ios_assets::BundleAssets::default()));
         context
     };
-    #[cfg(any(
-        target_os = "ios",
-        all(target_os = "macos", feature = "apple-bundle-assets")
-    ))]
     let builder = builder.setup(|app| {
-        // Assets::setup resolves the bundle directory before this window loads.
-        let window =
-            tauri::WebviewWindowBuilder::from_config(app, &app.config().app.windows[0])?.build()?;
-        #[cfg(target_os = "ios")]
-        apple_ios::configure_viewport(&window)?;
-        #[cfg(target_os = "macos")]
-        let _ = window;
+        #[cfg(any(
+            target_os = "ios",
+            all(target_os = "macos", feature = "apple-bundle-assets")
+        ))]
+        {
+            // Assets::setup resolves the bundle directory before this window loads.
+            let window =
+                tauri::WebviewWindowBuilder::from_config(app, &app.config().app.windows[0])?
+                    .build()?;
+            #[cfg(target_os = "ios")]
+            apple_ios::configure_viewport(&window)?;
+            #[cfg(target_os = "macos")]
+            let _ = window;
+        }
+        #[cfg(all(desktop, not(feature = "apple-bundle-assets")))]
+        updater::spawn_check(app.handle().clone());
         Ok(())
     });
 

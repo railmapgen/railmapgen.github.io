@@ -1,4 +1,12 @@
 {
+    "DownloadPage": {
+        "title": "你所熱愛的，現在也在本地。",
+        "subtitle": "將路綫圖工具組帶到桌面，讓創作隨時繼續。",
+        "screenshot": "地鐵路綫圖工具組中使用地鐵路綫圖繪製器繪製的路網圖",
+        "comingSoon": "敬請期待",
+        "version": "版本"
+    },
+
     "CookiesModal": {
         "header": "本應用的 Cookies",
         "text1": "在 RMG，我們使用 Cookies 以確保本應用及服務可以正常運作。這些 Cookies 是必需的，因此已預設啟用。",
@@ -159,8 +167,6 @@
     "Sync this slot": "同步此存檔",
     "All subscriptions": "所有訂閱",
     "Redeem": "兌換",
-    "RMP_CLOUD": "地鐵綫路圖繪製器・出發進行",
-    "RMP_EXPORT": "地鐵綫路圖繪製器・一度停車",
     "With this subscription, the following features are unlocked:": "訂閱後將解鎖以下功能：",
     "PRO features": "專業功能",
     "Sync 99 more saves": "同步額外99個存檔",

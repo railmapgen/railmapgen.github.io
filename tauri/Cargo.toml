@@ -7,7 +7,7 @@ license = "GPL-3.0-only"
 repository = "https://github.com/railmapgen/railmapgen.github.io/"
 default-run = "railmapgen"
 edition = "2021"
-rust-version = "1.60"
+rust-version = "1.90"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -23,6 +23,9 @@ resvg = "0.45.1"
 tauri-plugin-dialog = "2"
 xmltree = "0.11.0"
 ttf-parser = "0.25"
+
+[target.'cfg(not(any(target_os = "ios", target_os = "android")))'.dependencies]
+tauri-plugin-updater = "2"
 
 [target.'cfg(target_os = "ios")'.dependencies]
 objc2 = "0.6"

@@ -18,6 +18,7 @@ import { RMErrorBoundary, RMMantineProvider } from '@railmapgen/mantine-componen
 import { LoadingOverlay } from '@mantine/core';
 import { addRemoteNotification } from './redux/notification/notification-slice';
 import { installPreferences } from './util/preferences';
+import { registerSubscriptionRedemption } from './util/subscription-redemption';
 
 let root: Root;
 const AppRoot = lazy(() => import('./components/app-root'));
@@ -52,6 +53,7 @@ rmgRuntime.ready().then(async () => {
     await store.dispatch(syncAfterLogin());
     store.dispatch(fetchSubscription());
 
+    registerSubscriptionRedemption(store);
     renderApp();
 
     rmgRuntime.onAppOpen(app => {
