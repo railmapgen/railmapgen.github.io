@@ -1,5 +1,7 @@
 #import <UIKit/UIKit.h>
 #import <WebKit/WebKit.h>
+#import <TargetConditionals.h>
+#import <sys/utsname.h>
 #import "WebViewRecovery.h"
 
 void RMTRegisterPreferencesWebView(WKWebView *webView);
@@ -28,6 +30,18 @@ void RMTRefreshPreferences(void);
 static UIWindow *rmtMainWindow;
 static __weak RMTSceneDelegate *rmtConnectedDelegate;
 static NSMapTable<WKWebView *, RMTViewportProbe *> *rmtAttachmentProbes;
+
+static BOOL RMTIsIPhoneDuo(void) {
+#if TARGET_OS_SIMULATOR
+    NSString *model = NSProcessInfo.processInfo.environment[@"SIMULATOR_MODEL_IDENTIFIER"];
+#else
+    struct utsname systemInfo;
+    if (uname(&systemInfo) != 0) return NO;
+    NSString *model = [NSString stringWithUTF8String:systemInfo.machine];
+#endif
+    // Exact hardware identity covers both displays without matching by size.
+    return [model isEqualToString:@"iPhone19,4"];
+}
 
 @implementation RMTViewportProbe
 - (void)didMoveToWindow {
@@ -110,7 +124,9 @@ static NSMapTable<WKWebView *, RMTViewportProbe *> *rmtAttachmentProbes;
 - (void)publishNotchSide:(WKWebView *)webView {
     NSString *device = @"";
     NSString *side = @"";
-    if (self.window.traitCollection.userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
+    if (RMTIsIPhoneDuo()) {
+        device = @"phone-duo";
+    } else if (self.window.traitCollection.userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
         device = @"phone";
         side = @"top";
         if (self.scene.interfaceOrientation == UIInterfaceOrientationLandscapeRight) side = @"left";
@@ -162,9 +178,9 @@ static NSMapTable<WKWebView *, RMTViewportProbe *> *rmtAttachmentProbes;
             if (!installed) [controller addUserScript:[[WKUserScript alloc] initWithSource:source
                 injectionTime:WKUserScriptInjectionTimeAtDocumentEnd forMainFrameOnly:YES]];
         }
-        // Device identity and scene orientation select the host's common
-        // protected edge: phone portrait top, phone landscape cutout side,
-        // and iPad's UIKit-measured top region. Other edges stay full bleed.
+        // Duo fills every edge on either display. Other devices retain their
+        // common protected edge: phone portrait top, phone landscape cutout
+        // side, and iPad's UIKit-measured top region.
         [self publishNotchSide:webView];
         // Tauri may attach its window after the scene has already activated.
         // Registration during layout is frequent; setActive is idempotent.

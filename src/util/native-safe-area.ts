@@ -32,7 +32,7 @@ const intersects = (first: ViewportRect, second: ViewportRect) =>
 export const getHeaderMenuRight = (menu: ViewportRect | undefined, header: ViewportRect): number =>
     menu && intersects(menu, header) ? menu.left + menu.width : 0;
 
-/** Every Apple page shares one content rectangle, with one physical exclusion. */
+/** Every Apple page shares one content rectangle; Duo keeps every physical edge open. */
 export const getSharedViewport = (
     userAgent: string,
     viewport: ViewportRect,
@@ -43,6 +43,7 @@ export const getSharedViewport = (
     maxTouchPoints = 0
 ): { enabled: boolean; insets: SafeAreaInsets } => {
     const none = { top: 0, right: 0, bottom: 0, left: 0 };
+    if (nativeDevice === 'phone-duo') return { enabled: true, insets: none };
     const phone = nativeDevice === 'phone' || (!nativeDevice && /iPhone/.test(userAgent));
     const pad =
         nativeDevice === 'pad' ||

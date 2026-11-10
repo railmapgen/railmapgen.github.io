@@ -10,6 +10,19 @@ describe('shared Apple viewport', () => {
     const viewport = { top: 0, left: 0, width: 874, height: 402 };
     const physical = { top: 32, right: 62, bottom: 21, left: 62 };
 
+    it('fills every iPhone Duo edge in all orientations and window sizes regardless of reported safe areas', () => {
+        for (const bounds of [viewport, { ...viewport, width: 402, height: 874 }, { ...viewport, height: 200 }]) {
+            for (const side of ['top', 'left', 'right', '']) {
+                for (const userAgent of ['iPhone', 'iPad', 'Macintosh']) {
+                    expect(getSharedViewport(userAgent, bounds, physical, side, 90, 'phone-duo', 5)).toEqual({
+                        enabled: true,
+                        insets: { top: 0, right: 0, bottom: 0, left: 0 },
+                    });
+                }
+            }
+        }
+    });
+
     it('uses one shared notch boundary in both iPhone landscape directions', () => {
         expect(getSharedViewport('iPhone', viewport, physical, 'left').insets).toEqual({
             top: 0,
@@ -262,6 +275,39 @@ describe('shared native viewport bridge', () => {
         expect(document.documentElement.style.getPropertyValue('--rmt-host-viewport-top')).toBe('24px');
     });
 
+    it('removes every physical Duo inset from the host and nested pages when native identity arrives', async () => {
+        document.documentElement.dataset.rmtDevice = 'phone';
+        document.documentElement.dataset.rmtNotchSide = 'left';
+        const frame = addFrame(document, 47, 0, 797, 390);
+        const nested = addFrame(frame.contentDocument!, 0, 40, 797, 350);
+        release = installNativeSafeAreaBridge();
+        expect(document.documentElement.style.getPropertyValue('--rmt-host-viewport-left')).toBe('47px');
+
+        document.documentElement.dataset.rmtDevice = 'phone-duo';
+        resizeFrame(frame, 0, 0, 844, 390);
+        resizeFrame(nested, 0, 40, 844, 350);
+        await Promise.resolve();
+        flushFrame();
+        for (const edge of ['top', 'right', 'bottom', 'left'])
+            expect(document.documentElement.style.getPropertyValue(`--rmt-host-viewport-${edge}`)).toBe('0px');
+        expectNoExtraInsets(document);
+        expectNoExtraInsets(frame.contentDocument!);
+        expectNoExtraInsets(nested.contentDocument!);
+
+        vi.spyOn(window, 'innerWidth', 'get').mockReturnValue(390);
+        vi.spyOn(window, 'innerHeight', 'get').mockReturnValue(844);
+        physical = { top: 62, right: 10, bottom: 34, left: 10 };
+        document.documentElement.dataset.rmtNotchSide = 'top';
+        resizeFrame(frame, 0, 0, 390, 844);
+        resizeFrame(nested, 0, 40, 390, 804);
+        window.dispatchEvent(new Event('resize'));
+        flushFrame();
+        for (const edge of ['top', 'right', 'bottom', 'left'])
+            expect(document.documentElement.style.getPropertyValue(`--rmt-host-viewport-${edge}`)).toBe('0px');
+        expectNoExtraInsets(frame.contentDocument!);
+        expectNoExtraInsets(nested.contentDocument!);
+    });
+
     it('keeps all three remaining iPad edges open after window resizing and native chrome changes', () => {
         const frame = addFrame(document, 0, 24, 844, 366);
         release = installNativeSafeAreaBridge();
@@ -277,31 +323,37 @@ describe('shared native viewport bridge', () => {
         expectNoExtraInsets(frame.contentDocument!);
     });
 
-    it('shrinks the same canvas and controls rectangle above the keyboard, then restores the full bottom edge', () => {
-        const previous = Object.getOwnPropertyDescriptor(window, 'visualViewport');
-        const visible = Object.assign(new EventTarget(), { offsetTop: 0, offsetLeft: 0, width: 844, height: 390 });
-        Object.defineProperty(window, 'visualViewport', { value: visible, configurable: true });
-        try {
-            const frame = addFrame(document, 0, 24, 844, 366);
-            release = installNativeSafeAreaBridge();
-            expect(document.documentElement.style.getPropertyValue('--rmt-host-viewport-bottom')).toBe('0px');
-            visible.height = 200;
-            resizeFrame(frame, 0, 24, 844, 176);
-            visible.dispatchEvent(new Event('resize'));
-            flushFrame();
-            expect(document.documentElement.style.getPropertyValue('--rmt-host-viewport-bottom')).toBe('190px');
-            expectNoExtraInsets(document);
-            expectNoExtraInsets(frame.contentDocument!);
-            visible.height = 390;
-            resizeFrame(frame, 0, 24, 844, 366);
-            visible.dispatchEvent(new Event('resize'));
-            flushFrame();
-            expect(document.documentElement.style.getPropertyValue('--rmt-host-viewport-bottom')).toBe('0px');
-        } finally {
-            if (previous) Object.defineProperty(window, 'visualViewport', previous);
-            else Reflect.deleteProperty(window, 'visualViewport');
+    it.each(['pad', 'phone-duo'])(
+        'shrinks the shared %s viewport above the keyboard, then restores the full bottom edge',
+        device => {
+            document.documentElement.dataset.rmtDevice = device;
+            const previous = Object.getOwnPropertyDescriptor(window, 'visualViewport');
+            const visible = Object.assign(new EventTarget(), { offsetTop: 0, offsetLeft: 0, width: 844, height: 390 });
+            Object.defineProperty(window, 'visualViewport', { value: visible, configurable: true });
+            try {
+                const top = device === 'pad' ? 24 : 0;
+                const frame = addFrame(document, 0, top, 844, 390 - top);
+                release = installNativeSafeAreaBridge();
+                expect(document.documentElement.style.getPropertyValue('--rmt-host-viewport-top')).toBe(`${top}px`);
+                expect(document.documentElement.style.getPropertyValue('--rmt-host-viewport-bottom')).toBe('0px');
+                visible.height = 200;
+                resizeFrame(frame, 0, top, 844, 200 - top);
+                visible.dispatchEvent(new Event('resize'));
+                flushFrame();
+                expect(document.documentElement.style.getPropertyValue('--rmt-host-viewport-bottom')).toBe('190px');
+                expectNoExtraInsets(document);
+                expectNoExtraInsets(frame.contentDocument!);
+                visible.height = 390;
+                resizeFrame(frame, 0, top, 844, 390 - top);
+                visible.dispatchEvent(new Event('resize'));
+                flushFrame();
+                expect(document.documentElement.style.getPropertyValue('--rmt-host-viewport-bottom')).toBe('0px');
+            } finally {
+                if (previous) Object.defineProperty(window, 'visualViewport', previous);
+                else Reflect.deleteProperty(window, 'visualViewport');
+            }
         }
-    });
+    );
 
     it('observes new nested pages while leaving unmarked pages untouched', () => {
         release = installNativeSafeAreaBridge();
