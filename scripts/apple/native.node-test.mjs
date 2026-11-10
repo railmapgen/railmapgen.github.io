@@ -23,7 +23,7 @@ import {
     synchronizeResources,
     synchronizeResourcesWithLock,
 } from './build.mjs';
-import { iosSpec, macScheme, macSpec, nodeLauncher, scaffoldIos } from './project.mjs';
+import { generateIosIcons, iosSpec, macScheme, macSpec, nodeLauncher, scaffoldIos } from './project.mjs';
 
 test('the shared CLI imports without side effects and rejects invalid input before running tools', () => {
     const entry = new URL('./apple.mjs', import.meta.url);
@@ -150,6 +150,32 @@ test('iOS scaffold can be regenerated and preserves local plugin entitlements', 
         );
         assert.ok(icons.images.some(image => image.idiom === 'ipad'));
         assert.ok(icons.images.some(image => image.idiom === 'iphone'));
+    } finally {
+        rmSync(temporary, { recursive: true, force: true });
+    }
+});
+
+test('iOS app icons have the required dimensions and no alpha channel', { skip: process.platform !== 'darwin' }, () => {
+    const temporary = mkdtempSync(path.join(os.tmpdir(), 'rmt ios icons '));
+    try {
+        scaffoldIos(temporary);
+        const iconSet = path.join(temporary, 'Assets.xcassets/AppIcon.appiconset');
+        generateIosIcons(iconSet);
+        const { images } = JSON.parse(readFileSync(path.join(iconSet, 'Contents.json')));
+        assert.ok(images.some(image => image.idiom === 'ios-marketing'));
+        const files = images.map(({ filename, size, scale }) => {
+            const file = path.join(iconSet, filename);
+            const png = readFileSync(file);
+            const pixels = Number(size.split('x')[0]) * Number(scale.replace('x', ''));
+            assert.equal(png.subarray(1, 4).toString(), 'PNG');
+            assert.equal(png.readUInt32BE(16), pixels, filename);
+            assert.equal(png.readUInt32BE(20), pixels, filename);
+            assert.equal(png[25], 2, `${filename} must be RGB`);
+            return file;
+        });
+        const metadata = execFileSync('/usr/bin/sips', ['--getProperty', 'hasAlpha', ...files], { encoding: 'utf8' });
+        assert.equal((metadata.match(/hasAlpha: no/g) ?? []).length, images.length);
+        assert.doesNotMatch(metadata, /hasAlpha: yes/);
     } finally {
         rmSync(temporary, { recursive: true, force: true });
     }

@@ -1,4 +1,4 @@
-import { chmodSync, cpSync, existsSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs';
+import { chmodSync, cpSync, existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {
@@ -252,6 +252,23 @@ export function scaffoldIos(root) {
     });
 }
 
+export function generateIosIcons(iconSet) {
+    // The iOS-only master includes padding and has no alpha channel. Resizing
+    // it directly preserves RGB; Tauri's iOS icon encoder produces RGBA PNGs.
+    const source = path.join(tauriRoot, 'icons/icon-ios.png');
+    for (const { size, scale, filename } of readJson(path.join(iconSet, 'Contents.json')).images) {
+        const pixels = String(Number(size.split('x')[0]) * Number(scale.replace('x', '')));
+        capture('/usr/bin/sips', [
+            '--resampleHeightWidth',
+            pixels,
+            pixels,
+            source,
+            '--out',
+            path.join(iconSet, filename),
+        ]);
+    }
+}
+
 function findTool(name, advice, options = {}) {
     try {
         return capture('/usr/bin/which', [name], options);
@@ -331,12 +348,8 @@ export async function generate(options = {}) {
     scaffoldIos(appleRoot);
     writeJson(specPath, iosSpec({ version, team }));
     run(tools.node, [cli, 'icon', 'icons/icon512.png', '--output', '.build/icons'], { cwd: tauriRoot, env });
-    const icons = path.join(tauriRoot, '.build/icons/ios');
     const iconSet = path.join(appleRoot, 'Assets.xcassets/AppIcon.appiconset');
-    if (!existsSync(path.join(iconSet, 'Contents.json')))
-        throw new Error('Tauri did not generate the iOS icon catalog.');
-    for (const file of readdirSync(icons))
-        if (file.endsWith('.png')) cpSync(path.join(icons, file), path.join(iconSet, file));
+    generateIosIcons(iconSet);
     run(tools.xcodegen, ['generate', '--spec', specPath]);
     const projects = ['../apple/railmapgen.xcodeproj'];
     if (!options.iosOnly) {

@@ -37,6 +37,8 @@ Select a scheme and click Run. Builds include offline resources and do not requi
 
 Re-run generation after moving the checkout or changing Node, Cargo, or Xcode. Generated projects and build products are ignored by Git; keep native build changes in `scripts/apple` or `tauri/src`.
 
+iOS uses the separate `tauri/icons/icon-ios.png` master: an opaque RGB PNG with slightly more padding. Generation resizes it for every iPhone, iPad, and App Store icon slot without adding an alpha channel. Other platforms continue to use the shared icons. Regenerate the project after changing the iOS master.
+
 ### Appearance and language on iPhone and iPad
 
 The app's Appearance preference also appears in iOS Settings under Rail Map Toolkit. Changes in either place are saved to the same native preference and applied when the app becomes active. Existing in-app preferences migrate the first time the native settings bridge connects.
