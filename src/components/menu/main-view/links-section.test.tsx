@@ -54,16 +54,13 @@ describe('Useful links', () => {
         const eventSpy = vi.spyOn(rmgRuntime, 'event');
         render(<LinksSection />, { store });
 
-        expect(screen.getByRole('link', { name: 'Tutorial' })).toHaveAttribute(
-            'href',
-            'https://rmttutorial.wordpress.com'
-        );
-        expect(screen.getByRole('link', { name: 'Tutorial' })).toHaveAttribute('target', '_blank');
+        const miniMetroWeb = screen.getByRole('link', { name: 'Mini Metro Web' });
+        expect(miniMetroWeb).toHaveAttribute('href', 'https://mini-metro-web.gitlab.io/');
+        expect(miniMetroWeb).toHaveAttribute('target', '_blank');
 
-        const tutorial = screen.getByRole('link', { name: 'Tutorial' });
-        tutorial.addEventListener('click', event => event.preventDefault());
-        await user.click(tutorial);
-        expect(eventSpy).toHaveBeenCalledWith(Events.OPEN_LINK, { id: 'tutorial' });
+        miniMetroWeb.addEventListener('click', event => event.preventDefault());
+        await user.click(miniMetroWeb);
+        expect(eventSpy).toHaveBeenCalledWith(Events.OPEN_LINK, { id: 'mini-metro-web' });
         expect(store.getState().app.openedTabs).toHaveLength(0);
         expect(store.getState().app.isShowMenu).toBe(true);
     });

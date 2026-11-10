@@ -131,22 +131,11 @@ export const assetEnablement: Record<string, AssetDetail> = {
         allowMultiInstances: true,
         supportSafeAreaInset: true,
     },
-    tutorial: {
-        name: 'Tutorial',
-        url: 'https://rmttutorial.wordpress.com',
-        assetType: 'link',
-    },
     'official-website': {
         name: 'Official website',
         url: 'https://railmapgen.org',
         assetType: 'link',
         allowedInstances: ['GitHub', 'GitLab', 'localhost', 'unknown'],
-    },
-    blog: {
-        name: 'RMT Blog',
-        url: 'https://railmapgen.org/rmt-blog/',
-        assetType: 'link',
-        allowedInstances: ['Org', 'GitHub', 'GitLab', 'localhost', 'unknown'],
     },
     'github-pages': {
         name: 'GitHub Pages mirror',
@@ -159,6 +148,12 @@ export const assetEnablement: Record<string, AssetDetail> = {
         url: 'https://railmapgen.gitlab.io',
         assetType: 'link',
         allowedInstances: ['Org', 'GitHub', 'localhost', 'unknown'],
+    },
+    blog: {
+        name: 'Blog',
+        url: 'https://railmapgen.org/rmt-blog/',
+        assetType: 'link',
+        allowedInstances: ['Org', 'GitHub', 'GitLab', 'localhost', 'unknown'],
     },
     tauri: {
         name: 'Download desktop app',
@@ -188,14 +183,19 @@ export const assetEnablement: Record<string, AssetDetail> = {
         url: 'https://njmetro-railmap-creator.umamichi.moe/',
         assetType: 'link',
     },
-    linesPaper: {
-        name: 'LinesPaper线图荟',
-        url: 'https://space.bilibili.com/3546659889875715',
-        assetType: 'link',
-    },
     metrowordle: {
         name: 'MetroWordle',
         url: 'https://metrowordle.fun',
+        assetType: 'link',
+    },
+    MoeRTGuideGen: {
+        name: 'MoeRT-GuideGen',
+        url: 'https://guidegen.0v0.my/',
+        assetType: 'link',
+    },
+    dotsmiletcu: {
+        name: '多彩梦交通文化综合体',
+        url: 'https://dotsmiletcu.github.io/',
         assetType: 'link',
     },
 };
