@@ -1,0 +1,7 @@
+.body {
+    flex-direction: column;
+    gap: var(--mantine-spacing-md);
+    padding: var(--mantine-spacing-sm);
+    padding-bottom: calc(env(safe-area-inset-bottom) + var(--mantine-spacing-sm));
+    overflow-y: auto;
+}

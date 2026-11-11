@@ -162,6 +162,12 @@ export const assetEnablement: Record<string, AssetDetail> = {
         allowedInstances: ['Org', 'GitHub', 'GitLab', 'localhost', 'unknown'],
         supportSafeAreaInset: true,
     },
+    privacy: {
+        name: 'Privacy',
+        url: '/privacy/',
+        assetType: 'link',
+        supportSafeAreaInset: true,
+    },
     'community-review': {
         name: 'Community review',
         url: 'https://github.com/railmapgen/railmapgen.github.io/wiki/Earn-Subscriptions-Through-Community-Reviews',
@@ -203,6 +209,7 @@ export const assetEnablement: Record<string, AssetDetail> = {
 export const tempAssets: Record<string, string> = {
     contributors: '/contributors/',
     tauri: assetEnablement.tauri.url,
+    privacy: assetEnablement.privacy.url,
 };
 
 export const getAvailableAsset = (assetType: AssetType, env: RmgEnv, instance: RmgInstance): string[] => {
