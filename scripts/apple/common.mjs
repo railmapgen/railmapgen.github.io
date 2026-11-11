@@ -37,6 +37,11 @@ export function configuration(value) {
     if (value?.toLowerCase() === 'release') return 'Release';
     throw new Error(`Unsupported Xcode configuration: ${value}. Choose Debug or Release.`);
 }
+export function appleChannel(value = 'stable') {
+    const channel = typeof value === 'string' ? value.trim().toLowerCase() : undefined;
+    if (channel === 'stable' || channel === 'testflight') return channel;
+    throw new Error(`Unsupported Apple channel: ${value}. Choose stable or TestFlight.`);
+}
 export function iosTriple(platform, arch) {
     const triples = {
         'iphoneos/arm64': 'aarch64-apple-ios',

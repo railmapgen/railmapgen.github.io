@@ -2,6 +2,7 @@ import { cpSync, existsSync, mkdirSync, rmSync } from 'node:fs';
 import path from 'node:path';
 import {
     appleRoot,
+    appleChannel,
     buildRoot,
     capture,
     cli,
@@ -56,7 +57,10 @@ export function cargoArguments(platform, arch, config) {
     ];
 }
 
-export function iosEnvironment(environment, { sdk, macSdk, tools, version }) {
+export const resolveAppleChannel = (channel, environment = {}, tools = {}) =>
+    appleChannel(channel ?? environment.RMT_APPLE_CHANNEL ?? tools.channel);
+
+export function iosEnvironment(environment, { sdk, macSdk, tools, version, channel }) {
     const env = {
         ...environment,
         PATH: `${path.join(buildRoot, 'bin')}:${path.dirname(tools.cargo)}:${path.dirname(tools.node)}:${environment.PATH}`,
@@ -71,6 +75,7 @@ export function iosEnvironment(environment, { sdk, macSdk, tools, version }) {
         // allowing independent SDK builds to compile without holding this lock.
         TAURI_CONFIG: JSON.stringify({ version, bundle: { resources: [] } }),
         RMT_SWIFT_NATIVE_BUILD_SYSTEM: tools.xcodeMajor >= 27 ? '1' : '0',
+        RMT_APPLE_CHANNEL: resolveAppleChannel(channel, environment, tools),
     };
     // Xcode supplies an iOS SDKROOT even to host build scripts. Host C/C++
     // dependencies need the macOS SDK, while target dependencies need iOS.
@@ -103,7 +108,7 @@ export async function synchronizeResourcesWithLock(appPath, source = path.join(t
     return withResourceLock(root, () => synchronizeResources(appPath, source), { timeoutMs: consumerLockTimeoutMs });
 }
 
-async function buildIos(tools, config) {
+async function buildIos(tools, config, channel) {
     await prepareResources({ buildHost: true, offline: true });
     const platform = process.env.PLATFORM_NAME;
     const arches = [...new Set((process.env.ARCHS ?? '').trim().split(/\s+/).filter(Boolean))];
@@ -111,7 +116,7 @@ async function buildIos(tools, config) {
     const sdk = process.env.SDKROOT || capture('/usr/bin/xcrun', ['--sdk', platform, '--show-sdk-path']);
     const macSdk = capture('/usr/bin/xcrun', ['--sdk', 'macosx', '--show-sdk-path']);
     const version = readJson(path.join(repoRoot, 'package.json')).version;
-    const baseEnv = iosEnvironment(process.env, { sdk, macSdk, tools, version });
+    const baseEnv = iosEnvironment(process.env, { sdk, macSdk, tools, version, channel });
     for (const arch of arches) {
         const triple = iosTriple(platform, arch);
         const env = { ...baseEnv };
@@ -139,7 +144,19 @@ async function buildIos(tools, config) {
     }
 }
 
-async function buildMacos(tools, config) {
+export function macosEnvironment(environment, tools, channel) {
+    const env = {
+        ...environment,
+        PATH: `${path.dirname(tools.cargo)}:${path.dirname(tools.node)}:${environment.PATH}`,
+        CARGO_TARGET_DIR: path.join(tauriRoot, 'target'),
+        RMT_APPLE_CHANNEL: resolveAppleChannel(channel, environment, tools),
+    };
+    // A Tauri subprocess must not inherit Xcode's product/executable names.
+    delete env.TAURI_CONFIG;
+    return env;
+}
+
+async function buildMacos(tools, config, channel) {
     await prepareResources({ buildHost: true, offline: true });
     const version = readJson(path.join(repoRoot, 'package.json')).version;
     const configPath = path.join(buildRoot, `macos-${config}.config.json`);
@@ -153,13 +170,7 @@ async function buildMacos(tools, config) {
     if (config === 'Debug')
         override.bundle.macOS = { entitlements: path.join(repoRoot, 'scripts/apple/macos-debug.entitlements') };
     writeJson(configPath, override);
-    const env = {
-        ...process.env,
-        PATH: `${path.dirname(tools.cargo)}:${path.dirname(tools.node)}:${process.env.PATH}`,
-        CARGO_TARGET_DIR: path.join(tauriRoot, 'target'),
-    };
-    // A Tauri subprocess must not inherit Xcode's product/executable names.
-    delete env.TAURI_CONFIG;
+    const env = macosEnvironment(process.env, tools, channel);
     // Tauri copies UI/fonts during its build and bundling stages, so retain the
     // same lock until the complete signed app has been staged for Xcode Run.
     // Preparation is deliberately outside this callback to avoid nested locks.
@@ -202,7 +213,10 @@ async function buildMacos(tools, config) {
     );
 }
 
-export async function build(operation) {
+export async function build(operation, options = {}) {
+    // Reject an invalid explicit selection before any native build or resource write.
+    if (options.channel !== undefined || process.env.RMT_APPLE_CHANNEL !== undefined)
+        resolveAppleChannel(options.channel, process.env);
     if (operation === 'ios-resources') {
         if (!process.env.TARGET_BUILD_DIR || !process.env.WRAPPER_NAME)
             throw new Error('Missing Xcode application resource destination.');
@@ -212,8 +226,10 @@ export async function build(operation) {
     const toolsPath = path.join(buildRoot, 'toolchain.json');
     if (!existsSync(toolsPath)) throw new Error('Toolchain settings are missing. Run npm run apple:generate.');
     const tools = readJson(toolsPath);
+    const channel = resolveAppleChannel(options.channel, process.env, tools);
     const config = configuration(process.env.CONFIGURATION);
-    if (operation === 'ios') await buildIos(tools, config);
-    else if (operation === 'macos') await buildMacos(tools, config);
+    console.log(`Building Apple ${channel} (${config}).`);
+    if (operation === 'ios') await buildIos(tools, config, channel);
+    else if (operation === 'macos') await buildMacos(tools, config, channel);
     else throw new Error(`Unknown Apple build operation: ${operation}`);
 }

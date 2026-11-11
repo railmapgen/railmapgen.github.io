@@ -15,7 +15,7 @@ describe('AppStore asset availability', () => {
         expect(getAvailableAsset('devtool', RmgEnv.PRD, 'AppStore')).toEqual([]);
         const links = getAvailableAsset('link', RmgEnv.PRD, 'AppStore');
 
-        expect(links).toContain('tutorial');
+        expect(links).toContain('mini-metro-web');
         for (const link of ['tauri', 'official-website', 'blog', 'github-pages', 'gitlab-pages', 'community-review']) {
             expect(links).not.toContain(link);
             expect(getAvailableAsset('link', RmgEnv.PRD, 'localhost')).toContain(link);

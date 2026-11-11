@@ -2,6 +2,15 @@ name: Build unsigned iOS IPA
 
 on:
   workflow_dispatch:
+    inputs:
+      channel:
+        description: Apple distribution channel
+        type: choice
+        required: true
+        default: stable
+        options:
+          - stable
+          - TestFlight
   pull_request:
     paths:
       - 'tauri/**'
@@ -44,6 +53,8 @@ jobs:
     runs-on: macos-15
     timeout-minutes: 60
     env:
+      RMT_APPLE_CHANNEL: ${{ inputs.channel || 'stable' }}
+      RMT_APPLE_BUILD_NUMBER: ${{ github.run_number }}.${{ github.run_attempt }}
       CARGO_BUILD_JOBS: '3'
       CARGO_INCREMENTAL: '0'
       CARGO_PROFILE_RELEASE_DEBUG: '0'
@@ -165,6 +176,10 @@ jobs:
           assert len(apps) == len(ipas) == 1, 'Expected one device archive and one IPA'
           app = apps[0]
           info = plistlib.loads((app / 'Info.plist').read_bytes())
+          version = json.loads(pathlib.Path('../package.json').read_text())['version']
+          build_number = os.environ['RMT_APPLE_BUILD_NUMBER']
+          assert info['CFBundleShortVersionString'] == version, 'Archive version does not match package.json'
+          assert info['CFBundleVersion'] == build_number, 'Archive build number does not match this workflow run'
           executable = app / info['CFBundleExecutable']
           assert sorted(info['UIDeviceFamily']) == [1, 2], 'Missing iPhone or iPad support'
           assert info.get('NSPhotoLibraryAddUsageDescription'), 'Missing export photo-library purpose'
@@ -204,13 +219,16 @@ jobs:
           with zipfile.ZipFile(ipas[0]) as archive:
               names = archive.namelist()
               root = f'Payload/{app.name}/'
+              ipa_info = plistlib.loads(archive.read(root + 'Info.plist'))
+              assert ipa_info['CFBundleShortVersionString'] == version, 'IPA version does not match package.json'
+              assert ipa_info['CFBundleVersion'] == build_number, 'IPA build number does not match this workflow run'
               assert all(name.startswith('Payload/') and '..' not in pathlib.PurePosixPath(name).parts for name in names), 'Unexpected IPA layout'
               assert all(root + 'assets/ui/' + path in names for path in required), 'Missing IPA application resources'
               assert not any(pathlib.PurePosixPath(name).suffix.lower() in private_suffixes for name in names), 'Private signing material in IPA'
               assert archive.read(root + info['CFBundleExecutable']) == executable.read_bytes(), 'IPA does not match verified device binary'
           output = pathlib.Path('.build/artifacts/Rail-Map-Toolkit-ios-unsigned.ipa')
           shutil.copy2(ipas[0], output)
-          print('Verified arm64 iPhone IPA, bundled applications, unsigned identity and path privacy.')
+          print(f'Verified arm64 iPhone IPA {version} ({build_number}), bundled applications, unsigned identity and path privacy.')
           PY
           cd .build/artifacts
           shasum -a 256 Rail-Map-Toolkit-ios-unsigned.ipa ui-sources.json > SHA256SUMS

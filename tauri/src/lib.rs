@@ -18,6 +18,14 @@ mod updater;
 #[cfg(all(desktop, not(feature = "apple-bundle-assets")))]
 mod updater_download;
 
+#[cfg(any(
+    target_os = "ios",
+    all(target_os = "macos", feature = "apple-bundle-assets")
+))]
+unsafe extern "C" {
+    fn RMTRegisterSubscriptionsWebView(webview: *mut std::ffi::c_void);
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     let builder = tauri::Builder::default()
@@ -67,8 +75,11 @@ pub fn run() {
                     .build()?;
             #[cfg(target_os = "ios")]
             apple_ios::configure_viewport(&window)?;
-            #[cfg(target_os = "macos")]
-            let _ = window;
+            window.with_webview(|webview| {
+                // SAFETY: Tauri supplies the live WKWebView on the UI thread.
+                // Swift retains its handler and only weakly references the view.
+                unsafe { RMTRegisterSubscriptionsWebView(webview.inner().cast()) };
+            })?;
         }
         #[cfg(all(desktop, not(feature = "apple-bundle-assets")))]
         updater::spawn_check(app.handle().clone());

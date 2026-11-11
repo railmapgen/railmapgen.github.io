@@ -59,7 +59,7 @@ test('the shared Swift entry preserves arguments and the package directory while
         const tools = path.join(temporary, 'tauri/.build/xcode');
         mkdirSync(scripts, { recursive: true });
         mkdirSync(tools, { recursive: true });
-        for (const name of ['apple', 'build', 'common', 'project', 'resources'])
+        for (const name of ['apple', 'build', 'build-number', 'common', 'project', 'resources'])
             cpSync(new URL(`./${name}.mjs`, import.meta.url), path.join(scripts, `${name}.mjs`));
         const probe = path.join(temporary, 'probe.mjs');
         const swift = path.join(temporary, 'swift probe');

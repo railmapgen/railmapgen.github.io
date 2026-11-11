@@ -1,9 +1,15 @@
 import rootReducer, { RootStore } from './index';
 import { createTestStore } from '../test-utils';
 import { LocalStorageKey, WorkspaceTab } from '../util/constants';
-import { initActiveTab, initOpenedTabs, initRMPSaveStore, openSearchedApp } from './init';
+import { initAccountStore, initActiveTab, initOpenedTabs, initRMPSaveStore, openSearchedApp } from './init';
 import { showDevtools } from './app/app-slice';
-import rmgRuntime from '@railmapgen/rmg-runtime';
+import rmgRuntime, { logger } from '@railmapgen/rmg-runtime';
+import { checkTokenAndRefresh } from '../util/api';
+
+vi.mock('../util/api', async importOriginal => {
+    const actual = await importOriginal<typeof import('../util/api')>();
+    return { ...actual, apiFetch: vi.fn(actual.apiFetch), checkTokenAndRefresh: vi.fn() };
+});
 
 const realStore = rootReducer.getState();
 
@@ -189,5 +195,83 @@ describe('ReduxInit', () => {
                 })
             );
         });
+    });
+});
+
+const savedAccount = {
+    id: 11,
+    name: 'Account user',
+    email: 'user@example.test',
+    token: 'access-token',
+    expires: '2098-01-01T00:00:00Z',
+    refreshToken: 'refresh-token',
+    refreshExpires: '2099-01-01T00:00:00Z',
+};
+const savedSync = { baseUserId: 11, baseSaveId: 22, baseHash: 'saved-project' };
+
+const initializeStores = () => {
+    const store = createTestStore();
+    initAccountStore(store);
+    initRMPSaveStore(store);
+    return store;
+};
+
+describe('shared account and sync session', () => {
+    const postMessage = vi.fn();
+    let originalWebkit: PropertyDescriptor | undefined;
+
+    beforeEach(() => {
+        originalWebkit = Object.getOwnPropertyDescriptor(window, 'webkit');
+        Object.defineProperty(window, 'webkit', {
+            configurable: true,
+            value: { messageHandlers: { rmtSubscriptions: { postMessage } } },
+        });
+        postMessage.mockReset();
+        vi.useFakeTimers();
+        vi.spyOn(rmgRuntime, 'getInstance').mockReturnValue('AppStore');
+        vi.spyOn(logger, 'debug').mockImplementation(() => {});
+        vi.spyOn(logger, 'warn').mockImplementation(() => {});
+        vi.mocked(checkTokenAndRefresh).mockClear();
+        rmgRuntime.storage.clear();
+        rmgRuntime.storage.set(LocalStorageKey.ACCOUNT, JSON.stringify(savedAccount));
+        rmgRuntime.storage.set(LocalStorageKey.RMP_SAVE, JSON.stringify(savedSync));
+    });
+
+    afterEach(() => {
+        if (originalWebkit) Object.defineProperty(window, 'webkit', originalWebkit);
+        else Reflect.deleteProperty(window, 'webkit');
+        vi.clearAllTimers();
+        vi.useRealTimers();
+        rmgRuntime.storage.clear();
+        vi.restoreAllMocks();
+    });
+
+    it.each([
+        ['stable', 'PRODUCTION'],
+        ['stable', 'SANDBOX'],
+        ['testflight', 'SANDBOX'],
+    ])('restores the original account and sync data for %s / %s', (channel, environment) => {
+        postMessage.mockResolvedValue({ channel, environment });
+        const store = initializeStores();
+        expect(store.getState().account).toMatchObject({ isLoggedIn: true, id: 11, token: savedAccount.token });
+        expect(store.getState().rmpSave).toMatchObject(savedSync);
+        expect(postMessage).not.toHaveBeenCalled();
+        expect(checkTokenAndRefresh).not.toHaveBeenCalled();
+    });
+
+    it('restores the original session when the App Store bridge is unavailable', () => {
+        Reflect.deleteProperty(window, 'webkit');
+        const store = initializeStores();
+        expect(store.getState().account).toMatchObject({ isLoggedIn: true, id: 11, token: savedAccount.token });
+        expect(store.getState().rmpSave).toMatchObject(savedSync);
+    });
+
+    it('keeps old test-server credentials separate from the original server session', () => {
+        const suffix = '__sandbox_' + encodeURIComponent('https://sandbox.example.test/v1');
+        rmgRuntime.storage.set(LocalStorageKey.ACCOUNT + suffix, JSON.stringify({ ...savedAccount, id: 111 }));
+        rmgRuntime.storage.set(LocalStorageKey.RMP_SAVE + suffix, JSON.stringify({ baseUserId: 111 }));
+        const store = initializeStores();
+        expect(store.getState().account).toMatchObject({ isLoggedIn: true, id: 11, token: savedAccount.token });
+        expect(store.getState().rmpSave).toMatchObject(savedSync);
     });
 });

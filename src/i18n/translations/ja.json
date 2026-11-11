@@ -251,5 +251,27 @@
     "Delete Share": "共有を削除",
     "Create Share Link": "共有リンクを作成",
     "Please be aware that sharing this link does not create a separate copy of your work. Instead, everyone who opens the link will always see the most up-to-date version. So, if you make changes after sharing the link, those changes will be visible to everyone who has the link.": "ご注意：このリンクを共有しても、作品の個別のコピーは作成されません。代わりに、リンクを開いた人は常に最新バージョンを閲覧することになります。そのため、リンク共有後に変更を加えた場合、その変更はリンクをお持ちのすべての方に表示されます。",
-    "Link will be valid as long as you have an active subscription. Otherwise, the link will be invalid after 1 day.": "有効なご購読がある限り、リンクは有効です。それ以外の場合、リンクは 1 日後に無効になります。"
+    "Link will be valid as long as you have an active subscription. Otherwise, the link will be invalid after 1 day.": "有効なご購読がある限り、リンクは有効です。それ以外の場合、リンクは 1 日後に無効になります。",
+
+    "Get subscription": "サブスクリプションを購入",
+    "Subscribe with App Store": "App Store で登録",
+    "App Store subscription": "App Store サブスクリプション",
+    "Your purchase is awaiting approval.": "購入の承認を待っています。",
+    "Unable to open App Store subscriptions.": "App Store サブスクリプションを開けません。",
+    "App Store purchases are unavailable in this version.": "このバージョンでは App Store で購入できません。",
+    "Your account changed. Please try again.": "アカウントが変更されました。もう一度お試しください。",
+    "Unable to verify your App Store purchase. Please try again.": "App Store の購入を確認できません。もう一度お試しください。",
+    "App Store subscriptions are not available yet. Please try again later.": "App Store サブスクリプションは現在利用できません。後でもう一度お試しください。",
+    "Your purchase is awaiting verification. Please try restoring purchases later.": "購入の確認を待っています。後で購入を復元してください。",
+
+    "Unable to determine the App Store purchase environment.": "App Store の購入環境を判定できません。",
+    "This TestFlight build cannot make production purchases.": "この TestFlight ビルドでは本番環境で購入できません。",
+    "The App Store purchase environment does not match this build.": "App Store の購入環境がこのビルドと一致しません。",
+    "The App Store payment environment could not be verified.": "App Store の支払い環境を確認できません。",
+    "This TestFlight build only supports Sandbox purchases. Install it through TestFlight to continue.": "この TestFlight ビルドはテスト購入のみ対応しています。TestFlight からインストールしてください。",
+
+    "The subscription server environment does not match the App Store environment.": "サブスクリプションサーバーと App Store の取引環境が一致しません。",
+    "Too many App Store verification requests. Please try again later.": "App Store の購入確認リクエストが多すぎます。しばらくしてから再度お試しください。",
+
+    "Unable to connect to the App Store. Please try again.": "App Store に接続できません。もう一度お試しください。"
 }

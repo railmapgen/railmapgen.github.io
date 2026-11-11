@@ -3,6 +3,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {
     appleRoot,
+    appleChannel,
     buildRoot,
     capture,
     cli,
@@ -17,6 +18,7 @@ import {
     xmlEscape,
 } from './common.mjs';
 import { prepareResources } from './resources.mjs';
+import { appleBuildNumber, resolveAppleBuildNumber } from './build-number.mjs';
 
 const buildScript = operation =>
     [
@@ -25,7 +27,7 @@ const buildScript = operation =>
         `"$rmt_repository/tauri/.build/xcode/node" "$rmt_repository/scripts/apple/apple.mjs" build ${operation}`,
     ].join('\n');
 
-export function iosSpec({ version, team = '' }) {
+export function iosSpec({ version, team = '', channel = 'stable', buildNumber = '1' }) {
     const swiftPaths = [
         '$(inherited)',
         '$(SDKROOT)/usr/lib/swift',
@@ -79,7 +81,7 @@ export function iosSpec({ version, team = '' }) {
                             'UIInterfaceOrientationLandscapeRight',
                         ],
                         CFBundleShortVersionString: version,
-                        CFBundleVersion: version,
+                        CFBundleVersion: '$(CURRENT_PROJECT_VERSION)',
                     },
                 },
                 entitlements: { path: 'railmapgen_iOS/railmapgen_iOS.entitlements' },
@@ -87,6 +89,8 @@ export function iosSpec({ version, team = '' }) {
                     base: {
                         PRODUCT_NAME: 'Rail Map Toolkit',
                         PRODUCT_BUNDLE_IDENTIFIER: 'org.railmapgen',
+                        CURRENT_PROJECT_VERSION: appleBuildNumber(buildNumber),
+                        RMT_APPLE_CHANNEL: appleChannel(channel),
                         TARGETED_DEVICE_FAMILY: '1,2',
                         ARCHS: '$(ARCHS_STANDARD)',
                         'EXCLUDED_ARCHS[sdk=iphoneos*]': 'x86_64',
@@ -151,13 +155,14 @@ export function iosSpec({ version, team = '' }) {
     };
 }
 
-export function macSpec() {
+export function macSpec({ channel = 'stable' } = {}) {
     return {
         name: 'RailMapToolkit-macOS',
         configs: { Debug: 'debug', Release: 'release' },
         settings: {
             base: {
                 SDKROOT: 'macosx',
+                RMT_APPLE_CHANNEL: appleChannel(channel),
                 SUPPORTED_PLATFORMS: 'macosx',
                 ENABLE_USER_SCRIPT_SANDBOXING: false,
             },
@@ -314,9 +319,11 @@ export function preflight({ iosOnly = false, ci = false } = {}) {
 }
 
 export async function generate(options = {}) {
+    const channel = appleChannel(options.channel ?? process.env.RMT_APPLE_CHANNEL);
+    const buildNumber = resolveAppleBuildNumber(options.buildNumber, process.env);
     const tools = preflight(options);
     mkdirSync(buildRoot, { recursive: true });
-    writeJson(path.join(buildRoot, 'toolchain.json'), tools);
+    writeJson(path.join(buildRoot, 'toolchain.json'), { ...tools, channel });
     const launcher = path.join(buildRoot, 'node');
     writeFileSync(launcher, nodeLauncher(tools.node));
     chmodSync(launcher, 0o755);
@@ -346,7 +353,7 @@ export async function generate(options = {}) {
     // A fixed mobile_entry_point host avoids `ios init`'s global Ruby/gem
     // update checks. Swift plugins still compile through Tauri's Cargo hooks.
     scaffoldIos(appleRoot);
-    writeJson(specPath, iosSpec({ version, team }));
+    writeJson(specPath, iosSpec({ version, team, channel, buildNumber }));
     run(tools.node, [cli, 'icon', 'icons/icon512.png', '--output', '.build/icons'], { cwd: tauriRoot, env });
     const iconSet = path.join(appleRoot, 'Assets.xcassets/AppIcon.appiconset');
     generateIosIcons(iconSet);
@@ -355,7 +362,7 @@ export async function generate(options = {}) {
     if (!options.iosOnly) {
         const macRoot = path.join(tauriRoot, 'gen/macos');
         const macProject = path.join(macRoot, 'RailMapToolkit-macOS.xcodeproj');
-        writeJson(path.join(macRoot, 'project.yml'), macSpec());
+        writeJson(path.join(macRoot, 'project.yml'), macSpec({ channel }));
         run(tools.xcodegen, ['generate', '--spec', path.join(macRoot, 'project.yml')]);
         const pbx = JSON.parse(
             capture('/usr/bin/plutil', ['-convert', 'json', '-o', '-', path.join(macProject, 'project.pbxproj')])
@@ -381,7 +388,7 @@ export async function generate(options = {}) {
         `<?xml version="1.0" encoding="UTF-8"?>\n<Workspace version="1.0">\n${projects.map(project => `  <FileRef location="group:${xmlEscape(project)}"/>`).join('\n')}\n</Workspace>\n`
     );
     console.log(
-        `\nReady: ${workspace}\nOpen this workspace in Xcode and select a scheme and destination. No CLI process needs to stay running.`
+        `\nReady: ${workspace}\niOS version: ${version} (${buildNumber})\nApple channel: ${channel}\nOpen this workspace in Xcode and select a scheme and destination. No CLI process needs to stay running.`
     );
     return workspace;
 }
