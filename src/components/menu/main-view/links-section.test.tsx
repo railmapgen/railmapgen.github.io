@@ -11,7 +11,12 @@ describe('Useful links', () => {
         vi.restoreAllMocks();
     });
 
-    it.each([true, false])('Opens the download page inside the workspace (desktop: %s)', async isDesktop => {
+    it.each([
+        { id: 'tauri', name: 'Download desktop app', url: '/download/', isDesktop: true },
+        { id: 'tauri', name: 'Download desktop app', url: '/download/', isDesktop: false },
+        { id: 'privacy', name: 'Privacy', url: '/privacy/', isDesktop: true },
+        { id: 'privacy', name: 'Privacy', url: '/privacy/', isDesktop: false },
+    ])('Opens $name inside the workspace (desktop: $isDesktop)', async ({ id, name, url, isDesktop }) => {
         vi.spyOn(window, 'matchMedia').mockImplementation(query => ({
             media: query,
             matches: isDesktop,
@@ -28,17 +33,17 @@ describe('Useful links', () => {
         const toggleNavMenuSpy = vi.spyOn(rmgRuntime, 'toggleNavMenu');
         render(<LinksSection />, { store });
 
-        const download = screen.getByRole('button', { name: 'Download desktop app' });
-        expect(download).not.toHaveAttribute('href');
-        await user.click(download);
+        const link = screen.getByRole('button', { name });
+        expect(link).not.toHaveAttribute('href');
+        await user.click(link);
 
-        expect(store.getState().app.openedTabs).toEqual([{ id: 'tauri', app: 'tauri', url: '/download/' }]);
-        expect(store.getState().app.activeTab).toBe('tauri');
+        expect(store.getState().app.openedTabs).toEqual([{ id, app: id, url }]);
+        expect(store.getState().app.activeTab).toBe(id);
         expect(store.getState().app.isShowMenu).toBe(isDesktop);
-        expect(download).toHaveAttribute('data-active', 'true');
-        expect(eventSpy).toHaveBeenCalledWith(Events.OPEN_LINK, { id: 'tauri' });
+        expect(link).toHaveAttribute('data-active', 'true');
+        expect(eventSpy).toHaveBeenCalledWith(Events.OPEN_LINK, { id });
 
-        await user.click(download);
+        await user.click(link);
         expect(store.getState().app.openedTabs).toHaveLength(1);
         expect(store.getState().app.isShowMenu).toBe(isDesktop);
         if (!isDesktop) {

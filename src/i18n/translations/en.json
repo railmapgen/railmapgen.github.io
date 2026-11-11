@@ -1,4 +1,14 @@
 {
+    "Privacy": "Privacy",
+    "PrivacyPage": {
+        "intro": "Rail Map Toolkit may collect the following data and link it to your identity:",
+        "email": "Email address: Used for app functionality, including account registration, sign-in, and account management.",
+        "location": "Coarse location: Used for analytics to understand the regions where the app is used.",
+        "interaction": "Product interaction: Used for analytics to understand feature usage and improve the app.",
+        "analytics": "We use Google Analytics 4 (GA4) to process analytics data. You can change your analytics preference in Settings.",
+        "ga4Link": "Learn about GA4 data collection and privacy"
+    },
+
     "SubscriptionGuide": {
         "title": "Find your way to create",
         "subtitle": "From everyday mapmaking to high-quality exports, choose the tools for your next idea.",
