@@ -165,7 +165,20 @@ describe('Apple subscription purchase and delivery', () => {
     const nativeResult =
         (result: unknown, configuration = stableConfiguration) =>
         async (message: { type: string }) =>
-            message.type === 'configuration' ? configuration : message.type === 'purchase' ? result : {};
+            message.type === 'hasPendingTransactions'
+                ? { hasPendingTransactions: true }
+                : message.type === 'configuration'
+                  ? configuration
+                  : message.type === 'purchase'
+                    ? result
+                    : {};
+
+    const emptyRecovery = async (message: { type: string }) =>
+        message.type === 'hasPendingTransactions'
+            ? { hasPendingTransactions: true }
+            : message.type === 'configuration'
+              ? stableConfiguration
+              : { transactions: [] };
 
     beforeEach(() => {
         originalWebkit = Object.getOwnPropertyDescriptor(window, 'webkit');
@@ -325,12 +338,14 @@ describe('Apple subscription purchase and delivery', () => {
     });
 
     it('silently skips post-login IAP recovery on an existing account server without IAP', async () => {
-        const store = createLoggedInStore();
+        const store = createTestStore();
         vi.mocked(apiFetch).mockResolvedValue(response({ message: 'Not found' }, 404));
         const dispose = installAppleSubscriptions(store);
         try {
-            await waitFor(() => expect(apiFetch).toHaveBeenCalledTimes(1));
             expect(postMessage).not.toHaveBeenCalled();
+            store.dispatch(login(loginInfo));
+            await waitFor(() => expect(apiFetch).toHaveBeenCalledTimes(1));
+            expect(postMessage).toHaveBeenCalledExactlyOnceWith({ type: 'hasPendingTransactions' });
             expect(logger.warn).not.toHaveBeenCalled();
             expect(store.getState().account.isLoggedIn).toBe(true);
         } finally {
@@ -581,11 +596,143 @@ describe('Apple subscription purchase and delivery', () => {
         expect(rmgRuntime.postEvent).toHaveBeenCalledOnce();
     });
 
-    it('waits for a forced token refresh on every foreground before requesting IAP context', async () => {
+    it('keeps launch and foreground recovery local when there are no pending transactions', async () => {
         const store = createLoggedInStore();
-        postMessage.mockImplementation(async message =>
-            message.type === 'configuration' ? stableConfiguration : { transactions: [] }
-        );
+        postMessage.mockResolvedValue({ hasPendingTransactions: false });
+        const dispose = installAppleSubscriptions(store);
+        try {
+            await act(async () => {});
+            expect(postMessage).toHaveBeenCalledExactlyOnceWith({ type: 'hasPendingTransactions' });
+            expect(checkTokenAndRefresh).not.toHaveBeenCalled();
+            expect(apiFetch).not.toHaveBeenCalled();
+
+            vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('visible');
+            await act(async () => {
+                document.dispatchEvent(new Event('visibilitychange'));
+            });
+
+            expect(postMessage.mock.calls).toEqual([
+                [{ type: 'hasPendingTransactions' }],
+                [{ type: 'hasPendingTransactions' }],
+            ]);
+            expect(checkTokenAndRefresh).not.toHaveBeenCalled();
+            expect(apiFetch).not.toHaveBeenCalled();
+            expect(logger.warn).not.toHaveBeenCalled();
+            expect(store.getState().account.isLoggedIn).toBe(true);
+        } finally {
+            dispose();
+        }
+    });
+
+    it.each([null, {}, { hasPendingTransactions: 'true' }, { hasPendingTransactions: 1 }])(
+        'does not request account or IAP data for an invalid pending-transaction reply: %j',
+        async reply => {
+            postMessage.mockResolvedValue(reply);
+            const dispose = installAppleSubscriptions(createLoggedInStore());
+            try {
+                await waitFor(() => expect(logger.warn).toHaveBeenCalledOnce());
+                expect(postMessage).toHaveBeenCalledExactlyOnceWith({ type: 'hasPendingTransactions' });
+                expect(checkTokenAndRefresh).not.toHaveBeenCalled();
+                expect(apiFetch).not.toHaveBeenCalled();
+            } finally {
+                dispose();
+            }
+        }
+    );
+
+    it('does not request account or IAP data when the local pending-transaction check fails', async () => {
+        postMessage.mockRejectedValue(new Error('The native transaction queue is unavailable.'));
+        const dispose = installAppleSubscriptions(createLoggedInStore());
+        try {
+            await waitFor(() => expect(logger.warn).toHaveBeenCalledOnce());
+            expect(postMessage).toHaveBeenCalledExactlyOnceWith({ type: 'hasPendingTransactions' });
+            expect(checkTokenAndRefresh).not.toHaveBeenCalled();
+            expect(apiFetch).not.toHaveBeenCalled();
+        } finally {
+            dispose();
+        }
+    });
+
+    it('leaves recovery idle when a purchase starts during the local queue check', async () => {
+        const store = createLoggedInStore();
+        let completeCheck!: (reply: unknown) => void;
+        let completePurchase: ((reply: unknown) => void) | undefined;
+        postMessage.mockImplementation(async message => {
+            if (message.type === 'hasPendingTransactions') {
+                return new Promise(resolve => {
+                    completeCheck = resolve;
+                });
+            }
+            if (message.type === 'configuration') return stableConfiguration;
+            if (message.type === 'purchase') {
+                return new Promise(resolve => {
+                    completePurchase = resolve;
+                });
+            }
+            return {};
+        });
+        const dispose = installAppleSubscriptions(store);
+        let purchase: ReturnType<typeof purchaseAppleSubscription> | undefined;
+        try {
+            await waitFor(() => expect(completeCheck).toBeTypeOf('function'));
+            purchase = purchaseAppleSubscription(store);
+            await waitFor(() => expect(completePurchase).toBeTypeOf('function'));
+
+            await act(async () => {
+                completeCheck({ hasPendingTransactions: true });
+            });
+
+            expect(checkTokenAndRefresh).not.toHaveBeenCalled();
+            expect(apiFetch).toHaveBeenCalledExactlyOnceWith(
+                API_ENDPOINT.APPLE_IAP_CONTEXT,
+                expect.anything(),
+                'account-token'
+            );
+            expect(postMessage).not.toHaveBeenCalledWith(expect.objectContaining({ type: 'recover' }));
+        } finally {
+            dispose();
+            completePurchase?.({ status: 'cancelled', transactions: [] });
+            await purchase;
+        }
+    });
+
+    it.each(['disposed', 'logged out', 'account changed'])(
+        'stops a delayed local queue check after the recovery is %s',
+        async interruption => {
+            const store = createLoggedInStore();
+            let completeCheck!: (reply: unknown) => void;
+            postMessage
+                .mockImplementationOnce(
+                    () =>
+                        new Promise(resolve => {
+                            completeCheck = resolve;
+                        })
+                )
+                .mockResolvedValue({ hasPendingTransactions: false });
+            const dispose = installAppleSubscriptions(store);
+            try {
+                await waitFor(() => expect(completeCheck).toBeTypeOf('function'));
+                await act(async () => {
+                    if (interruption === 'disposed') dispose();
+                    else if (interruption === 'logged out') store.dispatch(logout());
+                    else store.dispatch(login(loginInfo));
+                    completeCheck({ hasPendingTransactions: true });
+                });
+
+                expect(checkTokenAndRefresh).not.toHaveBeenCalled();
+                expect(apiFetch).not.toHaveBeenCalled();
+                expect(postMessage.mock.calls.every(([message]) => message.type === 'hasPendingTransactions')).toBe(
+                    true
+                );
+            } finally {
+                dispose();
+            }
+        }
+    );
+
+    it('waits for a forced token refresh when foreground recovery finds pending transactions', async () => {
+        const store = createLoggedInStore();
+        postMessage.mockImplementation(emptyRecovery);
         const dispose = installAppleSubscriptions(store);
         try {
             await waitFor(() => expect(postMessage).toHaveBeenCalledWith(expect.objectContaining({ type: 'recover' })));
@@ -609,7 +756,7 @@ describe('Apple subscription purchase and delivery', () => {
                 await waitFor(() => expect(completeRefresh).toBeTypeOf('function'));
                 expect(checkTokenAndRefresh).toHaveBeenLastCalledWith(store, true);
                 expect(apiFetch).not.toHaveBeenCalled();
-                expect(postMessage).not.toHaveBeenCalled();
+                expect(postMessage).toHaveBeenCalledExactlyOnceWith({ type: 'hasPendingTransactions' });
 
                 completeRefresh();
                 await waitFor(() =>
@@ -636,9 +783,7 @@ describe('Apple subscription purchase and delivery', () => {
                     completeContext = resolve;
                 })
         );
-        postMessage.mockImplementation(async message =>
-            message.type === 'configuration' ? stableConfiguration : { transactions: [] }
-        );
+        postMessage.mockImplementation(emptyRecovery);
         const dispose = installAppleSubscriptions(store);
         try {
             await waitFor(() => expect(completeContext).toBeTypeOf('function'));
@@ -670,9 +815,7 @@ describe('Apple subscription purchase and delivery', () => {
 
     it('does not request IAP context when foreground token refresh ends the account session', async () => {
         const store = createLoggedInStore();
-        postMessage.mockImplementation(async message =>
-            message.type === 'configuration' ? stableConfiguration : { transactions: [] }
-        );
+        postMessage.mockImplementation(emptyRecovery);
         const dispose = installAppleSubscriptions(store);
         try {
             await waitFor(() => expect(postMessage).toHaveBeenCalledWith(expect.objectContaining({ type: 'recover' })));
@@ -688,7 +831,7 @@ describe('Apple subscription purchase and delivery', () => {
             await waitFor(() => expect(logger.warn).toHaveBeenCalledOnce());
             expect(checkTokenAndRefresh).toHaveBeenLastCalledWith(store, true);
             expect(apiFetch).not.toHaveBeenCalled();
-            expect(postMessage).not.toHaveBeenCalled();
+            expect(postMessage).toHaveBeenCalledExactlyOnceWith({ type: 'hasPendingTransactions' });
             expect(store.getState().account.isLoggedIn).toBe(false);
         } finally {
             dispose();
@@ -697,9 +840,7 @@ describe('Apple subscription purchase and delivery', () => {
 
     it('stops IAP recovery when disposed during a foreground token refresh', async () => {
         const store = createLoggedInStore();
-        postMessage.mockImplementation(async message =>
-            message.type === 'configuration' ? stableConfiguration : { transactions: [] }
-        );
+        postMessage.mockImplementation(emptyRecovery);
         const dispose = installAppleSubscriptions(store);
         try {
             await waitFor(() => expect(postMessage).toHaveBeenCalledWith(expect.objectContaining({ type: 'recover' })));
@@ -721,7 +862,7 @@ describe('Apple subscription purchase and delivery', () => {
             await Promise.resolve();
 
             expect(apiFetch).not.toHaveBeenCalled();
-            expect(postMessage).not.toHaveBeenCalled();
+            expect(postMessage).toHaveBeenCalledExactlyOnceWith({ type: 'hasPendingTransactions' });
         } finally {
             dispose();
         }
@@ -729,9 +870,7 @@ describe('Apple subscription purchase and delivery', () => {
 
     it('ignores background visibility changes without refreshing tokens or requesting IAP', async () => {
         const store = createLoggedInStore();
-        postMessage.mockImplementation(async message =>
-            message.type === 'configuration' ? stableConfiguration : { transactions: [] }
-        );
+        postMessage.mockImplementation(emptyRecovery);
         const dispose = installAppleSubscriptions(store);
         try {
             await waitFor(() => expect(postMessage).toHaveBeenCalledWith(expect.objectContaining({ type: 'recover' })));
@@ -753,11 +892,13 @@ describe('Apple subscription purchase and delivery', () => {
         async environment => {
             const store = createLoggedInStore();
             postMessage.mockImplementation(async message =>
-                message.type === 'configuration'
-                    ? { ...stableConfiguration, environment }
-                    : message.type === 'recover'
-                      ? { transactions: [{ ...transaction, environment }] }
-                      : {}
+                message.type === 'hasPendingTransactions'
+                    ? { hasPendingTransactions: true }
+                    : message.type === 'configuration'
+                      ? { ...stableConfiguration, environment }
+                      : message.type === 'recover'
+                        ? { transactions: [{ ...transaction, environment }] }
+                        : {}
             );
             vi.mocked(apiFetch).mockImplementation(async endpoint => {
                 if (endpoint === API_ENDPOINT.APPLE_IAP_CONTEXT) {
@@ -785,11 +926,13 @@ describe('Apple subscription purchase and delivery', () => {
     it('does not submit a production transaction recovered by a TestFlight install', async () => {
         const store = createLoggedInStore();
         postMessage.mockImplementation(async message =>
-            message.type === 'configuration'
-                ? { channel: 'testflight', environment: 'SANDBOX' }
-                : message.type === 'recover'
-                  ? { transactions: [transaction] }
-                  : {}
+            message.type === 'hasPendingTransactions'
+                ? { hasPendingTransactions: true }
+                : message.type === 'configuration'
+                  ? { channel: 'testflight', environment: 'SANDBOX' }
+                  : message.type === 'recover'
+                    ? { transactions: [transaction] }
+                    : {}
         );
         vi.mocked(apiFetch).mockResolvedValue(response({ ...context, allowedEnvironments: ['PRODUCTION', 'SANDBOX'] }));
         const dispose = installAppleSubscriptions(store);
@@ -808,15 +951,17 @@ describe('Apple subscription purchase and delivery', () => {
         }
     });
 
-    it('checks the Sandbox environment again when a TestFlight transaction update triggers recovery', async () => {
+    it('recovers a TestFlight transaction update after launch found no pending transactions', async () => {
         const store = createLoggedInStore();
         let updated = false;
         postMessage.mockImplementation(async message =>
-            message.type === 'configuration'
-                ? { channel: 'testflight', environment: 'SANDBOX' }
-                : message.type === 'recover'
-                  ? { transactions: updated ? [{ ...transaction, environment: 'SANDBOX' }] : [] }
-                  : {}
+            message.type === 'hasPendingTransactions'
+                ? { hasPendingTransactions: updated }
+                : message.type === 'configuration'
+                  ? { channel: 'testflight', environment: 'SANDBOX' }
+                  : message.type === 'recover'
+                    ? { transactions: updated ? [{ ...transaction, environment: 'SANDBOX' }] : [] }
+                    : {}
         );
         vi.mocked(apiFetch).mockImplementation(async endpoint => {
             if (endpoint === API_ENDPOINT.APPLE_IAP_CONTEXT) {
@@ -828,13 +973,15 @@ describe('Apple subscription purchase and delivery', () => {
         });
         const dispose = installAppleSubscriptions(store);
         try {
-            await waitFor(() => expect(postMessage).toHaveBeenCalledWith(expect.objectContaining({ type: 'recover' })));
+            await act(async () => {});
+            expect(postMessage).toHaveBeenCalledExactlyOnceWith({ type: 'hasPendingTransactions' });
+            expect(checkTokenAndRefresh).not.toHaveBeenCalled();
+            expect(apiFetch).not.toHaveBeenCalled();
             updated = true;
             window.dispatchEvent(new CustomEvent('rmt-apple-transaction'));
             await waitFor(() => expect(rmgRuntime.postEvent).toHaveBeenCalledOnce());
-            expect(postMessage.mock.calls.filter(([message]) => message.type === 'configuration')).toHaveLength(2);
+            expect(postMessage.mock.calls.filter(([message]) => message.type === 'configuration')).toHaveLength(1);
             expect(postMessage.mock.calls.filter(([message]) => message.type === 'recover')).toEqual([
-                [{ type: 'recover', productIDs: ['subscription_ultimate'], allowedEnvironments: ['SANDBOX'] }],
                 [{ type: 'recover', productIDs: ['subscription_ultimate'], allowedEnvironments: ['SANDBOX'] }],
             ]);
             expect(postMessage).toHaveBeenLastCalledWith({ type: 'finish', transactionIDs: [transaction.id] });

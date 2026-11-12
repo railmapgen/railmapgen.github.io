@@ -105,7 +105,7 @@ const readResponse = async (response: Response, store: RootStore, userId: number
 const loadContext = async (store: RootStore, bridge: AppleSubscriptionBridge, assertCurrent = () => {}) => {
     const { id, token } = accountSession(store);
     // An existing account server can operate without IAP routes. Check its
-    // capability before querying StoreKit, including during post-login recovery.
+    // capability before authorizing purchases or loading signed transactions.
     const response = await apiFetch(API_ENDPOINT.APPLE_IAP_CONTEXT, { signal: AbortSignal.timeout(15000) }, token);
     assertCurrent();
     if (response.status === 404) throw new SubscriptionUnavailableError();
@@ -243,7 +243,7 @@ export const purchaseAppleSubscription = async (store: RootStore): Promise<Purch
     }
 };
 
-/** Recover interrupted deliveries and Ask to Buy approvals without opening a payment UI. */
+/** Recover unfinished purchases on demand without opening a payment UI. */
 export const installAppleSubscriptions = (store: RootStore) => {
     if (rmgRuntime.getInstance() !== 'AppStore') return () => {};
     let recovering = false;
@@ -266,18 +266,31 @@ export const installAppleSubscriptions = (store: RootStore) => {
             const { id: initialUserId } = accountSession(store);
             const forceRefresh = refreshBeforeRecovery;
             refreshBeforeRecovery = false;
+            // Most launches have nothing to recover. Check StoreKit's unfinished
+            // queue before refreshing credentials or contacting the IAP backend.
+            const bridge = getAppleSubscriptionBridge();
+            const pending = (await bridge.postMessage({ type: 'hasPendingTransactions' })) as {
+                hasPendingTransactions?: unknown;
+            } | null;
+            assertCurrentRecovery();
+            assertAccount(store, initialUserId);
+            if (purchaseInProgress) return;
+            if (typeof pending?.hasPendingTransactions !== 'boolean') {
+                throw new Error('Unable to check unfinished App Store purchases.');
+            }
+            if (!pending.hasPendingTransactions) return;
             // Foreground recovery must wait for fresh credentials before any IAP request.
             await checkTokenAndRefresh(store, forceRefresh);
             if (purchaseInProgress) return;
             assertCurrentRecovery();
             assertAccount(store, initialUserId);
-            const bridge = getAppleSubscriptionBridge();
             const { userId, productIDs, allowedEnvironments, configuration } = await loadContext(
                 store,
                 bridge,
                 assertCurrentRecovery
             );
             assertAccount(store, userId);
+            if (purchaseInProgress) return;
             const result = (await bridge.postMessage({ type: 'recover', productIDs, allowedEnvironments })) as {
                 transactions: AppleTransaction[];
             };

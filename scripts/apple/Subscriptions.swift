@@ -122,8 +122,6 @@ private final class RMTSubscriptions: NSObject, WKScriptMessageHandlerWithReply 
     private let webViews = NSHashTable<WKWebView>.weakObjects()
     private var presentation: AnyObject?
     private var deliveredTransactionIDs = Set<String>()
-    private var knownProductIDs = Set<String>()
-    private var authorizedEnvironment: String?
     private var preparingPurchase = false
     private var updatesTask: Task<Void, Never>?
 
@@ -133,21 +131,21 @@ private final class RMTSubscriptions: NSObject, WKScriptMessageHandlerWithReply 
         webView.configuration.userContentController.addScriptMessageHandler(
             self, contentWorld: .page, name: "rmtSubscriptions"
         )
+        if #available(iOS 17.0, macOS 14.0, *) {
+            startTransactionUpdates()
+        }
     }
 
     @available(iOS 17.0, macOS 14.0, *)
     private func startTransactionUpdates() {
         guard updatesTask == nil else { return }
-        // Listen only after the client has confirmed an enabled IAP backend
-        // and native authorization has established the real payment environment.
+        // Observe approvals and renewals without querying app configuration or
+        // the backend. A hint grants no access to signed transactions or finish.
         updatesTask = Task { [weak self] in
             for await result in StoreKit.Transaction.updates {
                 guard let self, case .verified(let transaction) = result,
-                      transaction.productType == .autoRenewable,
-                      self.knownProductIDs.contains(transaction.productID),
-                      subscriptionEnvironment(transaction.environment) == self.authorizedEnvironment,
-                      self.authorizedEnvironment != nil else { continue }
-                self.publish(transaction, signed: result.jwsRepresentation)
+                      transaction.productType == .autoRenewable else { continue }
+                self.publishTransactionHint()
             }
         }
     }
@@ -171,6 +169,16 @@ private final class RMTSubscriptions: NSObject, WKScriptMessageHandlerWithReply 
             return
         }
         switch type {
+        case "hasPendingTransactions":
+            Task {
+                for await result in StoreKit.Transaction.unfinished {
+                    guard case .verified(let transaction) = result,
+                          transaction.productType == .autoRenewable else { continue }
+                    replyHandler(["hasPendingTransactions": true], nil)
+                    return
+                }
+                replyHandler(["hasPendingTransactions": false], nil)
+            }
         case "configuration", "refreshConfiguration":
             Task {
                 do {
@@ -190,7 +198,6 @@ private final class RMTSubscriptions: NSObject, WKScriptMessageHandlerWithReply 
             Task {
                 do {
                     let environment = try await authorizeEnvironment(body)
-                    knownProductIDs.formUnion(ids)
                     startTransactionUpdates()
                     let requested = Set(ids)
                     var transactions = [String: [String: String]]()
@@ -251,17 +258,12 @@ private final class RMTSubscriptions: NSObject, WKScriptMessageHandlerWithReply 
         guard let allowed = body["allowedEnvironments"] as? [String], allowed == [environment] else {
             throw SubscriptionError.environmentNotAllowed
         }
-        authorizedEnvironment = environment
         return environment
     }
 
     @available(iOS 17.0, macOS 14.0, *)
-    private func publish(_ transaction: StoreKit.Transaction, signed: String) {
-        let payload = transactionPayload(transaction, signed)
-        guard let data = try? JSONSerialization.data(withJSONObject: payload, options: [.sortedKeys]),
-              let json = String(data: data, encoding: .utf8) else { return }
-        deliveredTransactionIDs.insert(String(transaction.id))
-        let script = "window.dispatchEvent(new CustomEvent('rmt-apple-transaction',{detail:\(json)}));"
+    private func publishTransactionHint() {
+        let script = "window.dispatchEvent(new Event('rmt-apple-transaction'));"
         for webView in webViews.allObjects where isBundledSubscriptionURL(webView.url) {
             webView.evaluateJavaScript(script, completionHandler: nil)
         }
@@ -297,7 +299,6 @@ private final class RMTSubscriptions: NSObject, WKScriptMessageHandlerWithReply 
             defer { preparingPurchase = false }
             do {
                 let environment = try await authorizeEnvironment(body, refreshOnFailure: true)
-                knownProductIDs.formUnion(productIDs)
                 startTransactionUpdates()
                 let session = RMTSubscriptionPresentation(
                     productIDs: Array(Set(productIDs)).sorted(), groupID: groupID,
