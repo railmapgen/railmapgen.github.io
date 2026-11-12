@@ -46,7 +46,7 @@ const refreshToken = async (refreshToken: string) => {
         method: 'POST',
         headers: defaultHeaders,
         body: JSON.stringify({ refreshToken }),
-        signal: AbortSignal.timeout(3000),
+        signal: AbortSignal.timeout(10000),
     });
     if (refreshRep.status !== 200) {
         throw new Error(`Failed to refresh token with status ${refreshRep.status}: ${await refreshRep.text()}`);
