@@ -38,10 +38,21 @@ test('CLI rejects invalid channel selections before generating or building', asy
     ]) {
         const result = spawnSync(process.execPath, [cli, ...args], { encoding: 'utf8' });
         assert.equal(result.status, 1, result.stderr);
-        assert.match(result.stderr, /Choose (an Apple channel|stable or TestFlight)/);
-        assert.doesNotMatch(result.stderr, /Toolchain settings are missing|Xcode|resource destination/);
+        assert.equal(result.stdout, '');
+        assert.equal(result.stderr, 'Apple command failed.\n');
     }
     await assert.rejects(generate({ channel: 'preview' }), /Choose stable or TestFlight/);
+});
+
+test('CLI failures do not log environment-derived channel values', () => {
+    const cli = fileURLToPath(new URL('./apple.mjs', import.meta.url));
+    const result = spawnSync(process.execPath, [cli, 'build', 'ios-resources'], {
+        encoding: 'utf8',
+        env: { ...process.env, RMT_APPLE_CHANNEL: 'private-test-channel-sentinel' },
+    });
+    assert.equal(result.status, 1, result.stderr);
+    assert.equal(result.stdout, '');
+    assert.equal(result.stderr, 'Apple command failed.\n');
 });
 
 test('Xcode exposes the selected channel independently of Debug and Release', () => {

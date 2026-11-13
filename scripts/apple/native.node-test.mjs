@@ -16,13 +16,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import test from 'node:test';
 import { configuration, iosTriple, run, withResourceLock } from './common.mjs';
-import {
-    cargoArguments,
-    iosEnvironment,
-    swiftArguments,
-    synchronizeResources,
-    synchronizeResourcesWithLock,
-} from './build.mjs';
+import { cargoArguments, iosEnvironment, swiftArguments, synchronizeResources } from './build.mjs';
 import { generateIosIcons, iosSpec, macScheme, macSpec, nodeLauncher, scaffoldIos } from './project.mjs';
 
 test('the shared CLI imports without side effects and rejects invalid input before running tools', () => {
@@ -38,7 +32,8 @@ test('the shared CLI imports without side effects and rejects invalid input befo
     for (const args of [['missing-command'], ['generate', '--invalid'], ['resources', '--invalid'], ['build']]) {
         const result = spawnSync(process.execPath, [filename, ...args], { encoding: 'utf8' });
         assert.equal(result.status, 1, result.stderr);
-        assert.match(result.stderr, /Unknown Apple command|Unknown option|Choose an Apple build operation/);
+        assert.equal(result.stdout, '');
+        assert.equal(result.stderr, 'Apple command failed.\n');
     }
 });
 

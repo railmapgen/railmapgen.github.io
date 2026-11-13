@@ -109,8 +109,8 @@ if (
     existsSync(process.argv[1]) &&
     realpathSync(process.argv[1]) === fileURLToPath(import.meta.url)
 ) {
-    main().catch(error => {
-        console.error(`Apple command failed: ${error.message}`);
+    main().catch(() => {
+        console.error('Apple command failed.');
         process.exitCode = 1;
     });
 }

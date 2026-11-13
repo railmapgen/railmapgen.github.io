@@ -51,16 +51,16 @@ test('invalid build numbers fail before project generation or resource preparati
     ]) {
         const result = spawnSync(process.execPath, [cli, ...args], { encoding: 'utf8' });
         assert.equal(result.status, 1, result.stderr);
-        assert.match(result.stderr, /build number/);
-        assert.doesNotMatch(result.stderr, /Missing|Xcode|resources/i);
+        assert.equal(result.stdout, '');
+        assert.equal(result.stderr, 'Apple command failed.\n');
     }
     const result = spawnSync(process.execPath, [cli, 'generate'], {
         encoding: 'utf8',
         env: { ...process.env, RMT_APPLE_BUILD_NUMBER: 'invalid' },
     });
     assert.equal(result.status, 1, result.stderr);
-    assert.match(result.stderr, /build number/);
-    assert.doesNotMatch(result.stderr, /Missing|Xcode|resources/i);
+    assert.equal(result.stdout, '');
+    assert.equal(result.stderr, 'Apple command failed.\n');
     await assert.rejects(generate({ buildNumber: 'invalid' }), /build number/);
 });
 
