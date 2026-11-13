@@ -58,8 +58,8 @@ export enum API_ENDPOINT {
     SHARE = '/share',
 }
 
-// export const API_URL = 'https://railmapgen.org/v1';
-export const API_URL = 'https://516wjy.thekingofcity.com/v1';
+export const API_URL = 'https://railmapgen.org/v1';
+// export const API_URL = 'https://516wjy.thekingofcity.com/v1';
 
 type Timestamp = `${number}-${number}-${number}T${number}:${number}:${number}Z`;
 
