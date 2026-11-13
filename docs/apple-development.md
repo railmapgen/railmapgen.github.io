@@ -53,9 +53,9 @@ RMT_APPLE_BUILD_NUMBER=4 npm run apple:generate
 
 Priority is `--build-number`, then `RMT_APPLE_BUILD_NUMBER`, then the local default `1`. The number must contain one to three dot-separated integers, such as `4` or `84.1`. Generation records it as the iOS target's `CURRENT_PROJECT_VERSION`, and `CFBundleVersion` references that build setting. Subsequent Xcode builds retain the selected number. To change it without regenerating, edit `CURRENT_PROJECT_VERSION` in Xcode or pass `CURRENT_PROJECT_VERSION=5` to `xcodebuild`. Regeneration uses the option/environment/default again, so supply the desired number when regenerating. These settings apply to iOS; macOS packaging keeps its existing version behavior.
 
-The iOS GitHub Actions workflow supplies `RMT_APPLE_BUILD_NUMBER` as `github.run_number.github.run_attempt`. For example, run 84 produces `84.1`, its first rerun produces `84.2`, and a new run produces `85.1`. Both channels use this sequence. The workflow verifies the release version and build number in the archive and exported unsigned IPA. It does not upload to App Store Connect. See [GitHub's variable reference](https://docs.github.com/en/actions/reference/workflows-and-actions/variables) for the counter behavior.
+The iOS GitHub Actions workflow supplies `RMT_APPLE_BUILD_NUMBER` as `github.run_number.github.run_attempt`. For example, run 84 produces `84.1`, its first rerun produces `84.2`, and a new run produces `85.1`. Both upload channels use this sequence. The workflow verifies the release version and build number in the signed archive before uploading it to App Store Connect, and disables Xcode's automatic build-number changes during upload. See [GitHub's variable reference](https://docs.github.com/en/actions/reference/workflows-and-actions/variables) for the counter behavior.
 
-Before uploading a new build of the same version, ensure its build number is higher than the existing uploaded builds. When adopting or moving this workflow, compare its initial number against the app's upload history and choose a higher starting offset if needed. The run counter belongs to one workflow, so additional publishing workflows or local uploads need a coordinated numbering source. New run numbers do not guarantee upload order: if `85.1` has already uploaded, rerunning 84 as `84.2` still produces an older number. Start a new run for that code, and check the build number before uploading older artifacts. Local-only debugging may reuse a number. A TestFlight build selected directly for App Review keeps its existing number; generating a different binary needs a new number.
+Before uploading a new build of the same version, ensure its build number is higher than the existing uploaded builds. When adopting, moving or renaming this workflow, compare its initial number against the app's upload history and adjust the numbering source if needed. The run counter belongs to one workflow, so additional publishing workflows or local uploads need a coordinated numbering source. New run numbers do not guarantee upload order: if `85.1` has already uploaded, rerunning 84 as `84.2` still produces an older number. Start a new run for that code. Local-only debugging may reuse a number. An App Store-eligible TestFlight build selected directly for App Review keeps its existing number; generating a different binary needs a new number.
 
 ### Appearance and language on iPhone and iPad
 
@@ -98,7 +98,7 @@ npm run apple:generate -- --channel stable
 npm run apple:generate -- --channel TestFlight
 ```
 
-The generated iOS and macOS projects expose the user-defined build setting `RMT_APPLE_CHANNEL`. Set it to `stable` or `testflight` in Xcode, or override it with `xcodebuild ... RMT_APPLE_CHANNEL=testflight`. Direct build commands also accept `node scripts/apple/apple.mjs build ios --channel TestFlight` (or `macos`). The selection is independent of Debug/Release. Priority is the explicit command option, Xcode/environment value, generated project selection, then `stable`. The GitHub Actions iOS build has the same channel choice for manual runs.
+The generated iOS and macOS projects expose the user-defined build setting `RMT_APPLE_CHANNEL`. Set it to `stable` or `testflight` in Xcode, or override it with `xcodebuild ... RMT_APPLE_CHANNEL=testflight`. Direct build commands also accept `node scripts/apple/apple.mjs build ios --channel TestFlight` (or `macos`). The selection is independent of Debug/Release. Priority is the explicit command option, Xcode/environment value, generated project selection, then `stable`. The GitHub Actions upload choices map `appstore` to `stable` and `internal` to `testflight`; local command options remain unchanged.
 
 Apple controls the actual payment environment. [TestFlight purchases use Sandbox](https://developer.apple.com/documentation/storekit/testing-in-app-purchases-with-sandbox), and [App Review also tests purchases in Sandbox](https://developer.apple.com/help/app-review/before-submitting-for-review/configure-in-app-purchases). Every channel uses the original API at `https://railmapgen.org/v1`, configured by `API_URL` in `src/util/constants.ts`. Login, token refresh, cloud saves and subscription verification share this address and the original account and synchronization storage keys. Bundled child applications use the same canonical API directly. There is no separate Sandbox server or request rerouting.
 
@@ -143,7 +143,42 @@ npm run tauri -- dev
 npm run tauri -- build --bundles app
 ```
 
-The iOS CI produces an unsigned device IPA. It must be signed through an appropriate distribution workflow before installation on an iPhone or iPad.
+### Upload iOS from GitHub Actions
+
+Run **Upload iOS to App Store Connect** ([`upload-ios.yml`](../.github/workflows/upload-ios.yml)) from the repository's Actions tab. Its manual inputs are:
+
+| Input     | Default    | Meaning                                                                                                    |
+| --------- | ---------- | ---------------------------------------------------------------------------------------------------------- |
+| `channel` | `internal` | `appstore` permits App Store submission and external TestFlight; `internal` permits internal testing only. |
+| `branch`  | `main`     | Source branch used for checks, resource preparation, archiving and upload.                                 |
+
+GitHub's separate **Use workflow from** selector chooses the workflow definition. The `branch` input chooses the application source and must contain the Apple build scripts used by that definition. PRs and pushes to `main` or `codex/**` run checks only; uploading requires a manual run.
+
+The workflow runs on `macos-26` with Xcode 26.6, creates a signed Release archive, verifies its device binary and offline resources, then uploads through `xcodebuild -exportArchive` with `destination: upload`. It does not export a standalone IPA or publish an IPA/archive artifact. Apple has required [Xcode 26 and the iOS 26 SDK or later](https://developer.apple.com/news/upcoming-requirements/?id=04282026a) for uploads since April 28, 2026.
+
+`internal` also sets `testFlightInternalTestingOnly: true`: that build cannot later be used for external TestFlight or App Store submission. Choose `appstore` and create a new build when either is needed. A successful upload still needs Apple processing; it does not submit the app for review or release it publicly. Manage tester groups and review submission in App Store Connect.
+
+Before the first upload, add these repository secrets in **Settings → Secrets and variables → Actions**:
+
+| Secret                              | Value                                                                                                 |
+| ----------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `APPLE_CERTIFICATE_P12_BASE64`      | Base64 of an **Apple Distribution** `.p12` containing its private key.                                |
+| `APPLE_CERTIFICATE_PASSWORD`        | Password used to export that `.p12`.                                                                  |
+| `APPLE_PROVISIONING_PROFILE_BASE64` | Base64 of an App Store Connect distribution profile for `org.railmapgen`, including that certificate. |
+| `APPLE_DEVELOPMENT_TEAM`            | Apple Developer Team ID associated with the certificate and profile.                                  |
+| `APP_STORE_CONNECT_API_KEY_ID`      | App Store Connect team API key ID.                                                                    |
+| `APP_STORE_CONNECT_API_ISSUER_ID`   | Issuer ID for that team API key.                                                                      |
+| `APP_STORE_CONNECT_API_PRIVATE_KEY` | Full, unencoded contents of the downloaded `.p8` private key.                                         |
+
+Use a team API key with permission to upload this app, such as the App Manager role. The app record and matching bundle ID must already exist in App Store Connect. To copy each file value on macOS:
+
+```sh
+base64 -i AppleDistribution.p12 | pbcopy
+base64 -i AppStore.mobileprovision | pbcopy
+pbcopy < AuthKey_KEYID.p8
+```
+
+Paste each result into its corresponding secret before copying the next. The workflow imports signing material into a temporary keychain and removes it after the run. See [GitHub's certificate and provisioning-profile guide](https://docs.github.com/en/actions/how-tos/deploy/deploy-to-third-party-platforms/sign-xcode-applications) for exporting the files. Only sanitized diagnostic logs are retained as the `ios-upload-logs` artifact, for seven days.
 
 ### Test a local RMP build
 

@@ -1,0 +1,267 @@
+name: Upload iOS to App Store Connect
+run-name: iOS ${{ inputs.channel || 'checks' }} · ${{ inputs.branch || github.head_ref || github.ref_name }}
+
+on:
+    workflow_dispatch:
+        inputs:
+            channel:
+                description: 'Distribution: appstore or TestFlight internal only'
+                type: choice
+                required: true
+                default: internal
+                options:
+                    - appstore
+                    - internal
+            branch:
+                description: Source branch to build and upload
+                type: string
+                required: true
+                default: main
+    pull_request:
+        paths:
+            - 'tauri/**'
+            - 'package.json'
+            - 'package-lock.json'
+            - 'scripts/apple/**'
+            - 'src/**'
+            - 'public/**'
+            - 'contributors/**'
+            - 'runtime-demo/**'
+            - 'index.html'
+            - 'info.json'
+            - 'vite.config.mts'
+            - 'tsconfig*.json'
+            - 'postcss.config.cjs'
+            - '.github/workflows/upload-ios.yml'
+    push:
+        branches: ['main', 'codex/**']
+        paths:
+            - 'tauri/**'
+            - 'package.json'
+            - 'package-lock.json'
+            - 'scripts/apple/**'
+            - 'src/**'
+            - 'public/**'
+            - 'contributors/**'
+            - 'runtime-demo/**'
+            - 'index.html'
+            - 'info.json'
+            - 'vite.config.mts'
+            - 'tsconfig*.json'
+            - 'postcss.config.cjs'
+            - '.github/workflows/upload-ios.yml'
+
+permissions:
+    contents: read
+
+concurrency:
+    group: ios-${{ github.event_name == 'workflow_dispatch' && 'app-store-connect' || github.ref }}
+    cancel-in-progress: false
+
+jobs:
+    build:
+        name: Check iOS and upload manual builds
+        runs-on: macos-26
+        timeout-minutes: 90
+        env:
+            RMT_DISTRIBUTION_CHANNEL: ${{ inputs.channel || 'internal' }}
+            RMT_APPLE_CHANNEL: ${{ inputs.channel == 'appstore' && 'stable' || 'testflight' }}
+            RMT_APPLE_BUILD_NUMBER: ${{ github.run_number }}.${{ github.run_attempt }}
+            CARGO_BUILD_JOBS: '3'
+            CARGO_INCREMENTAL: '0'
+            CARGO_PROFILE_RELEASE_DEBUG: '0'
+            CARGO_PROFILE_RELEASE_STRIP: symbols
+            CARGO_TERM_COLOR: never
+            HOMEBREW_NO_AUTO_UPDATE: '1'
+            HOMEBREW_NO_INSTALL_CLEANUP: '1'
+        defaults:
+            run:
+                shell: bash
+        steps:
+            - name: Select source branch
+              id: source
+              env:
+                  EVENT_NAME: ${{ github.event_name }}
+                  SOURCE_BRANCH: ${{ inputs.branch }}
+                  EVENT_SHA: ${{ github.sha }}
+              run: |
+                  if [[ "$EVENT_NAME" == workflow_dispatch ]]; then
+                    git check-ref-format "refs/heads/$SOURCE_BRANCH" >/dev/null || {
+                      echo '::error::branch must be a valid branch name'
+                      exit 1
+                    }
+                    printf 'ref=refs/heads/%s\n' "$SOURCE_BRANCH" >> "$GITHUB_OUTPUT"
+                  else
+                    printf 'ref=%s\n' "$EVENT_SHA" >> "$GITHUB_OUTPUT"
+                  fi
+            - uses: actions/checkout@v4
+              with:
+                  ref: ${{ steps.source.outputs.ref }}
+                  persist-credentials: false
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: '22.14.0'
+            - uses: dtolnay/rust-toolchain@stable
+              with:
+                  toolchain: '1.93.1'
+                  targets: aarch64-apple-ios
+            - name: Install native build tools
+              working-directory: tauri
+              run: |
+                  mkdir -p .build/logs .build/artifacts
+                  {
+                    sudo xcode-select --switch /Applications/Xcode_26.6.app/Contents/Developer
+                    xcodebuild -version
+                    brew install xcodegen
+                    rustc --version
+                  } 2>&1 | tee .build/logs/tools.log
+                  # Keep runner paths out of Rust binaries built by the standalone Xcode phase.
+                  printf 'CARGO_TARGET_AARCH64_APPLE_IOS_RUSTFLAGS=--remap-path-prefix=%s=/toolchain --remap-path-prefix=%s=/src\n' \
+                    "$HOME" "$GITHUB_WORKSPACE" >> "$GITHUB_ENV"
+            - name: Test bundle resource loading
+              working-directory: tauri
+              run: |
+                  rustc --edition 2021 --test src/ios_asset_files.rs -o .build/ios-asset-tests
+                  .build/ios-asset-tests
+                  rustc --edition 2021 --test src/apple_export_files.rs -o .build/export-file-tests
+                  .build/export-file-tests
+            - name: Install locked frontend and Tauri CLI dependencies
+              run: |
+                  npm ci
+                  node node_modules/@tauri-apps/cli/tauri.js --version | tee -a tauri/.build/logs/tools.log
+            - name: Test Apple build helpers and frontend
+              run: |
+                  npm run apple:test
+                  python3 -m unittest discover -s scripts/apple/tests -p 'test_*.py'
+                  npm run lint
+                  npm run test
+            - name: Test native image text rendering without host system fonts
+              working-directory: tauri
+              run: |
+                  TAURI_CONFIG='{"build":{"frontendDist":[]},"bundle":{"resources":[]}}' \
+                    cargo test --locked --lib resvg::tests
+            # PRs and pushes run checks only. Signing and uploading require an explicit dispatch.
+            - name: Install distribution signing and Connect API key
+              if: github.event_name == 'workflow_dispatch'
+              working-directory: tauri
+              env:
+                  APPLE_CERTIFICATE_P12_BASE64: ${{ secrets.APPLE_CERTIFICATE_P12_BASE64 }}
+                  APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+                  APPLE_PROVISIONING_PROFILE_BASE64: ${{ secrets.APPLE_PROVISIONING_PROFILE_BASE64 }}
+                  APPLE_DEVELOPMENT_TEAM: ${{ secrets.APPLE_DEVELOPMENT_TEAM }}
+                  APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+                  APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+                  APP_STORE_CONNECT_API_PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_API_PRIVATE_KEY }}
+              run: python3 ../scripts/apple/connect.py prepare
+            - name: Generate standalone iOS project and offline resources
+              if: github.event_name == 'workflow_dispatch'
+              env:
+                  APPLE_DEVELOPMENT_TEAM: ${{ secrets.APPLE_DEVELOPMENT_TEAM }}
+              run: |
+                  set -o pipefail
+                  npm run apple:generate -- --ios-only --ci 2>&1 | tee tauri/.build/logs/init.log
+            - name: Build signed release archive
+              if: github.event_name == 'workflow_dispatch'
+              working-directory: tauri
+              env:
+                  APPLE_DEVELOPMENT_TEAM: ${{ secrets.APPLE_DEVELOPMENT_TEAM }}
+              run: |
+                  set -o pipefail
+                  xcodebuild \
+                    -hideShellScriptEnvironment \
+                    -project gen/apple/railmapgen.xcodeproj \
+                    -scheme railmapgen_iOS \
+                    -configuration Release \
+                    -sdk iphoneos \
+                    -destination 'generic/platform=iOS' \
+                    -archivePath "$PWD/gen/apple/build/railmapgen.xcarchive" \
+                    CODE_SIGNING_ALLOWED=YES \
+                    CODE_SIGNING_REQUIRED=YES \
+                    CODE_SIGN_STYLE=Manual \
+                    DEVELOPMENT_TEAM="$APPLE_DEVELOPMENT_TEAM" \
+                    CODE_SIGN_IDENTITY="$RMT_SIGNING_CERTIFICATE" \
+                    PROVISIONING_PROFILE_SPECIFIER="$RMT_PROVISIONING_PROFILE_UUID" \
+                    OTHER_CODE_SIGN_FLAGS="--keychain $RMT_SIGNING_KEYCHAIN" \
+                    archive 2>&1 | tee .build/logs/build.log
+                  git diff --exit-code -- Cargo.lock
+            - name: Verify signed device archive
+              if: github.event_name == 'workflow_dispatch'
+              working-directory: tauri
+              env:
+                  APPLE_DEVELOPMENT_TEAM: ${{ secrets.APPLE_DEVELOPMENT_TEAM }}
+              run: |
+                  set -o pipefail
+                  python3 ../scripts/apple/connect.py verify 2>&1 | tee .build/logs/verify.log
+            - name: Upload archive to App Store Connect
+              if: github.event_name == 'workflow_dispatch'
+              working-directory: tauri
+              env:
+                  APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+                  APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+              run: |
+                  set -o pipefail
+                  xcodebuild \
+                    -exportArchive \
+                    -archivePath "$PWD/gen/apple/build/railmapgen.xcarchive" \
+                    -exportOptionsPlist "$RMT_EXPORT_OPTIONS_PLIST" \
+                    -authenticationKeyPath "$RMT_CONNECT_API_KEY_PATH" \
+                    -authenticationKeyID "$APP_STORE_CONNECT_API_KEY_ID" \
+                    -authenticationKeyIssuerID "$APP_STORE_CONNECT_API_ISSUER_ID" \
+                    2>&1 | tee .build/logs/upload.log
+            - name: Record uploaded build
+              if: github.event_name == 'workflow_dispatch'
+              run: |
+                  python3 - <<'PY'
+                  import json
+                  import os
+                  import pathlib
+
+                  manifest = json.loads(pathlib.Path('tauri/.build/artifacts/ui-sources.json').read_text())
+                  lines = [
+                      '## Uploaded to App Store Connect',
+                      '',
+                      f"- Channel: `{os.environ['RMT_DISTRIBUTION_CHANNEL']}`",
+                      f"- Version: `{manifest['appVersion']} ({os.environ['RMT_APPLE_BUILD_NUMBER']})`",
+                      f"- Source commit: `{manifest['host']['commit']}`",
+                      '',
+                      'Apple processes the uploaded build asynchronously. App Review has not been submitted.',
+                      '',
+                      '| Bundled application | Version | Commit |',
+                      '| --- | --- | --- |',
+                  ]
+                  for source in manifest['sources']:
+                      lines.append(f"| {source['component']} | {source['version']} | `{source['commit']}` |")
+                  with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as summary:
+                      summary.write('\n'.join(lines) + '\n')
+                  PY
+            - name: Remove temporary signing material
+              if: always() && github.event_name == 'workflow_dispatch'
+              run: |
+                  if [[ -f scripts/apple/connect.py ]]; then
+                    python3 scripts/apple/connect.py cleanup
+                  fi
+            - name: Prepare diagnostic logs
+              if: always()
+              run: |
+                  python3 - <<'PY'
+                  import os
+                  import pathlib
+                  import re
+
+                  root = pathlib.Path('tauri/.build/logs')
+                  output = root / 'public'
+                  output.mkdir(parents=True, exist_ok=True)
+                  for log in root.glob('*.log'):
+                      text = log.read_text(errors='replace')
+                      for key, replacement in [('GITHUB_WORKSPACE', '/src'), ('HOME', '/toolchain')]:
+                          text = text.replace(os.environ[key], replacement)
+                      text = re.sub(r'[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}', '[redacted-email]', text)
+                      (output / log.name).write_text(text)
+                  PY
+            - uses: actions/upload-artifact@v4
+              if: always()
+              with:
+                  name: ios-upload-logs
+                  path: tauri/.build/logs/public/*.log
+                  if-no-files-found: ignore
+                  retention-days: 7
