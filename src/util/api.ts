@@ -100,14 +100,6 @@ export const getAppleConfiguration = async (bridge = getAppleSubscriptionBridge(
     return configuration;
 };
 
-/** This may prompt for App Store authentication; call only after an explicit user action. */
-export const refreshAppleConfiguration = async (bridge = getAppleSubscriptionBridge()): Promise<AppleConfiguration> => {
-    const configuration = validateConfiguration(await bridge.postMessage({ type: 'refreshConfiguration' }));
-    if (configuration.environmentSource !== undefined && configuration.environmentSource !== 'appTransaction')
-        throw new Error('Unable to determine the App Store purchase environment.');
-    return configuration;
-};
-
 /**
  * A helper method to add json headers.
  */

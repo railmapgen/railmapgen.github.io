@@ -14,7 +14,6 @@ import path from 'node:path';
 import { spawn, spawnSync } from 'node:child_process';
 import { setTimeout as delay } from 'node:timers/promises';
 import { withResourceLock } from './common.mjs';
-import { JSDOM } from 'jsdom';
 
 test('optional public mirror preserves canonical source and rejects credential-bearing endpoints', () => {
     assert.equal(repositoryUrl('rmp', ''), 'https://github.com/railmapgen/rmp.git');
@@ -110,37 +109,6 @@ test('offline cache failure keeps previously prepared resources untouched', asyn
         assert.equal(await readFile(path.join(directory, 'tauri/ui/index.html'), 'utf8'), 'previous working bundle');
     } finally {
         await rm(directory, { recursive: true, force: true });
-    }
-});
-
-test('child adapter reserves the existing burger slot and leaves nested/App Clip headers alone', async () => {
-    const dom = new JSDOM(
-        `<html class="rmt-native-edge-to-edge" data-rmt-component="rmp"><head><style>.rmg-window__header {margin-left:40px}</style></head><body>
-        <div class="rmg-window"><div id="screen" class="rmg-window__header"></div>
-          <div class="rmg-window"><div id="nested" class="rmg-window__header"></div></div>
-          <div id="clip" class="rmg-window__header rmg-window__app-clip-header"></div>
-        </div></body></html>`,
-        { pretendToBeVisual: true, runScripts: 'outside-only' }
-    );
-    const observers = [];
-    const MutationObserver = dom.window.MutationObserver;
-    dom.window.MutationObserver = class extends MutationObserver {
-        constructor(callback) {
-            super(callback);
-            observers.push(this);
-        }
-    };
-    try {
-        dom.window.eval(await readFile(new URL('./edge-to-edge.js', import.meta.url), 'utf8'));
-        await new Promise(resolve => dom.window.requestAnimationFrame(resolve));
-        const doc = dom.window.document;
-        assert.ok(doc.getElementById('screen').hasAttribute('data-rmt-screen-header'));
-        assert.equal(doc.getElementById('screen').style.getPropertyValue('--rmt-header-slot-left'), '40px');
-        assert.equal(doc.getElementById('nested').hasAttribute('data-rmt-screen-header'), false);
-        assert.equal(doc.getElementById('clip').hasAttribute('data-rmt-screen-header'), false);
-    } finally {
-        for (const observer of observers) observer.disconnect();
-        dom.window.close();
     }
 });
 

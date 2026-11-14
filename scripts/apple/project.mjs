@@ -223,55 +223,7 @@ export function scaffoldIos(root) {
     const entitlements = path.join(root, 'railmapgen_iOS/railmapgen_iOS.entitlements');
     if (!existsSync(entitlements))
         writeFileSync(entitlements, '<?xml version="1.0" encoding="UTF-8"?>\n<plist version="1.0"><dict/></plist>\n');
-    writeJson(path.join(root, 'Assets.xcassets/Contents.json'), { info: { version: 1, author: 'xcode' } });
-    const slots = [
-        ['iphone', '20x20', '2x'],
-        ['iphone', '20x20', '3x'],
-        ['iphone', '29x29', '2x', '-1'],
-        ['iphone', '29x29', '3x'],
-        ['iphone', '40x40', '2x'],
-        ['iphone', '40x40', '3x'],
-        ['iphone', '60x60', '2x'],
-        ['iphone', '60x60', '3x'],
-        ['ipad', '20x20', '1x'],
-        ['ipad', '20x20', '2x', '-1'],
-        ['ipad', '29x29', '1x'],
-        ['ipad', '29x29', '2x'],
-        ['ipad', '40x40', '1x'],
-        ['ipad', '40x40', '2x', '-1'],
-        ['ipad', '76x76', '1x'],
-        ['ipad', '76x76', '2x'],
-        ['ipad', '83.5x83.5', '2x'],
-    ];
-    writeJson(path.join(root, 'Assets.xcassets/AppIcon.appiconset/Contents.json'), {
-        images: [
-            ...slots.map(([idiom, size, scale, suffix = '']) => ({
-                idiom,
-                size,
-                scale,
-                filename: `AppIcon-${size}@${scale}${suffix}.png`,
-            })),
-            { idiom: 'ios-marketing', size: '1024x1024', scale: '1x', filename: 'AppIcon-512@2x.png' },
-        ],
-        info: { version: 1, author: 'xcode' },
-    });
-}
-
-export function generateIosIcons(iconSet) {
-    // The iOS-only master includes padding and has no alpha channel. Resizing
-    // it directly preserves RGB; Tauri's iOS icon encoder produces RGBA PNGs.
-    const source = path.join(tauriRoot, 'icons/icon-ios.png');
-    for (const { size, scale, filename } of readJson(path.join(iconSet, 'Contents.json')).images) {
-        const pixels = String(Number(size.split('x')[0]) * Number(scale.replace('x', '')));
-        capture('/usr/bin/sips', [
-            '--resampleHeightWidth',
-            pixels,
-            pixels,
-            source,
-            '--out',
-            path.join(iconSet, filename),
-        ]);
-    }
+    cpSync(path.join(tauriRoot, 'icons/Assets.xcassets'), path.join(root, 'Assets.xcassets'), { recursive: true });
 }
 
 function findTool(name, advice, options = {}) {
@@ -354,9 +306,6 @@ export async function generate(options = {}) {
     // update checks. Swift plugins still compile through Tauri's Cargo hooks.
     scaffoldIos(appleRoot);
     writeJson(specPath, iosSpec({ version, team, channel, buildNumber }));
-    run(tools.node, [cli, 'icon', 'icons/icon512.png', '--output', '.build/icons'], { cwd: tauriRoot, env });
-    const iconSet = path.join(appleRoot, 'Assets.xcassets/AppIcon.appiconset');
-    generateIosIcons(iconSet);
     run(tools.xcodegen, ['generate', '--spec', specPath]);
     const projects = ['../apple/railmapgen.xcodeproj'];
     if (!options.iosOnly) {

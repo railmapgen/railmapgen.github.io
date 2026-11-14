@@ -39,7 +39,7 @@ Re-run generation after moving the checkout or changing Node, Cargo, or Xcode. G
 
 iPhone Duo fills all four screen edges, ignoring physical safe-area and corner insets in every orientation and fold state. Keyboard avoidance still applies. Other iPhones keep their existing notch-edge exclusion, and iPad keeps its existing top exclusion. Regenerate the Xcode project after changing this native device detection.
 
-iOS uses the separate `tauri/icons/icon-ios.png` master: an opaque RGB PNG with slightly more padding. Generation resizes it for every iPhone, iPad, and App Store icon slot without adding an alpha channel. Other platforms continue to use the shared icons. Regenerate the project after changing the iOS master.
+iOS uses the final RGB images and icon catalogue in `tauri/icons/Assets.xcassets`. Project generation copies this catalogue directly, without resizing or generating icons. Images with the same pixel size share one file across iPhone and iPad slots. Update the catalogue's images and regenerate the project when changing the iOS icon. Other platforms continue to use the shared icons.
 
 ### iOS version and build number
 

@@ -35,12 +35,6 @@
             const localLeft = screenHeader ? Math.max(0, Math.min(rect.width, menuRight - rect.left)) : 0;
             setProperty(element, '--rmt-control-safe-left', `${scale > 0 ? localLeft / scale : 0}px`);
             mark(element, 'data-rmt-screen-header', screenHeader);
-            mark(element, 'data-rmt-nested-header', Boolean(nested || clip));
-            setProperty(
-                element,
-                '--rmt-header-slot-left',
-                `${Math.max(0, parseFloat(getComputedStyle(element).marginLeft) || 0)}px`
-            );
         }
         for (const element of observed) {
             if (!active.has(element)) {

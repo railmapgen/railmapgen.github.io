@@ -15,8 +15,10 @@ describe('shared Apple viewport', () => {
             for (const side of ['top', 'left', 'right', '']) {
                 for (const userAgent of ['iPhone', 'iPad', 'Macintosh']) {
                     expect(getSharedViewport(userAgent, bounds, physical, side, 90, 'phone-duo', 5)).toEqual({
-                        enabled: true,
-                        insets: { top: 0, right: 0, bottom: 0, left: 0 },
+                        top: 0,
+                        right: 0,
+                        bottom: 0,
+                        left: 0,
                     });
                 }
             }
@@ -24,13 +26,13 @@ describe('shared Apple viewport', () => {
     });
 
     it('uses one shared notch boundary in both iPhone landscape directions', () => {
-        expect(getSharedViewport('iPhone', viewport, physical, 'left').insets).toEqual({
+        expect(getSharedViewport('iPhone', viewport, physical, 'left')).toEqual({
             top: 0,
             right: 0,
             bottom: 0,
             left: 62,
         });
-        expect(getSharedViewport('iPhone', viewport, physical, 'right').insets).toEqual({
+        expect(getSharedViewport('iPhone', viewport, physical, 'right')).toEqual({
             top: 0,
             right: 62,
             bottom: 0,
@@ -40,19 +42,21 @@ describe('shared Apple viewport', () => {
 
     it('uses only the top notch edge in iPhone portrait', () => {
         expect(getSharedViewport('iPhone', { ...viewport, width: 402, height: 874 }, physical, 'top')).toEqual({
-            enabled: true,
-            insets: { top: 32, right: 0, bottom: 0, left: 0 },
-        });
-    });
-
-    it('keeps the native notch edge when a keyboard or window size changes the aspect ratio', () => {
-        expect(getSharedViewport('iPhone', viewport, physical, 'top').insets).toEqual({
             top: 32,
             right: 0,
             bottom: 0,
             left: 0,
         });
-        expect(getSharedViewport('iPhone', { ...viewport, width: 402, height: 874 }, physical, 'left').insets).toEqual({
+    });
+
+    it('keeps the native notch edge when a keyboard or window size changes the aspect ratio', () => {
+        expect(getSharedViewport('iPhone', viewport, physical, 'top')).toEqual({
+            top: 32,
+            right: 0,
+            bottom: 0,
+            left: 0,
+        });
+        expect(getSharedViewport('iPhone', { ...viewport, width: 402, height: 874 }, physical, 'left')).toEqual({
             top: 0,
             right: 0,
             bottom: 0,
@@ -63,12 +67,12 @@ describe('shared Apple viewport', () => {
     it('uses the iPad status edge in full screen and narrow windows, including desktop user agents', () => {
         for (const width of [390, 874]) {
             const bounds = { ...viewport, width };
-            const expected = { enabled: true, insets: { top: 32, right: 0, bottom: 0, left: 0 } };
+            const expected = { top: 32, right: 0, bottom: 0, left: 0 };
             expect(getSharedViewport('iPad', bounds, physical)).toEqual(expected);
             expect(getSharedViewport('Macintosh', bounds, physical, '', 0, 'pad')).toEqual(expected);
             expect(getSharedViewport('Macintosh', bounds, physical, '', 0, undefined, 5)).toEqual(expected);
         }
-        expect(getSharedViewport('Macintosh', viewport, physical).insets).toEqual({
+        expect(getSharedViewport('Macintosh', viewport, physical)).toEqual({
             top: 0,
             right: 0,
             bottom: 0,
@@ -77,15 +81,15 @@ describe('shared Apple viewport', () => {
     });
 
     it('uses measured metadata, clamps exclusions, and never guesses symmetric corner margins', () => {
-        expect(getSharedViewport('iPhone', viewport, { ...physical, left: 53, right: 0 }).insets.left).toBe(53);
-        expect(getSharedViewport('iPhone', viewport, physical, undefined, -90).insets.right).toBe(62);
-        expect(getSharedViewport('iPhone', viewport, physical).insets).toEqual({
+        expect(getSharedViewport('iPhone', viewport, { ...physical, left: 53, right: 0 }).left).toBe(53);
+        expect(getSharedViewport('iPhone', viewport, physical, undefined, -90).right).toBe(62);
+        expect(getSharedViewport('iPhone', viewport, physical)).toEqual({
             top: 0,
             right: 0,
             bottom: 0,
             left: 0,
         });
-        expect(getSharedViewport('iPad', viewport, { ...physical, top: 1000 }).insets.top).toBe(402);
+        expect(getSharedViewport('iPad', viewport, { ...physical, top: 1000 }).top).toBe(402);
     });
 });
 
@@ -394,7 +398,6 @@ describe('shared native viewport bridge', () => {
         release = installNativeSafeAreaBridge();
         expect(child.documentElement.style.getPropertyValue('--rmt-host-menu-right')).toBe('40px');
         expect(header.style.getPropertyValue('--rmt-header-safe-left')).toBe('40px');
-        expect(header.style.getPropertyValue('--rmt-header-safe-top')).toBe('0px');
         expectNoExtraInsets(child);
     });
 

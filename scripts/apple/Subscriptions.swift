@@ -92,22 +92,21 @@ private func verifiedSubscriptionEnvironment(refresh: Bool = false) async throws
 }
 
 @available(iOS 17.0, macOS 14.0, *)
-private func subscriptionConfiguration(refresh: Bool) async throws -> [String: String] {
+private func subscriptionConfiguration() async throws -> [String: String] {
     do {
-        let environment = try await verifiedSubscriptionEnvironment(refresh: refresh)
+        let environment = try await verifiedSubscriptionEnvironment()
         return ["channel": subscriptionBuildChannel, "environment": environment, "environmentSource": "appTransaction"]
     } catch {
         #if RMT_DEVELOPMENT
         // A verified production install remains invalid for a TestFlight build.
         // This Debug hint reports incomplete local StoreKit setup; purchasing
         // still requires a real, verified App Store environment and transaction.
-        if !refresh {
-            if let failure = error as? SubscriptionError, case .testflightEnvironment = failure { throw error }
-            logSubscriptionError(error)
-            return ["channel": subscriptionBuildChannel, "environment": "SANDBOX", "environmentSource": "development"]
-        }
-        #endif
+        if let failure = error as? SubscriptionError, case .testflightEnvironment = failure { throw error }
+        logSubscriptionError(error)
+        return ["channel": subscriptionBuildChannel, "environment": "SANDBOX", "environmentSource": "development"]
+        #else
         throw error
+        #endif
     }
 }
 
@@ -179,10 +178,10 @@ private final class RMTSubscriptions: NSObject, WKScriptMessageHandlerWithReply 
                 }
                 replyHandler(["hasPendingTransactions": false], nil)
             }
-        case "configuration", "refreshConfiguration":
+        case "configuration":
             Task {
                 do {
-                    replyHandler(try await subscriptionConfiguration(refresh: type == "refreshConfiguration"), nil)
+                    replyHandler(try await subscriptionConfiguration(), nil)
                 } catch {
                     replySubscriptionError(error, reply: replyHandler)
                 }
@@ -278,21 +277,12 @@ private final class RMTSubscriptions: NSObject, WKScriptMessageHandlerWithReply 
             replySubscriptionError("The App Store subscription window is already open.", code: 6, reply: reply)
             return
         }
-        let productIDs = body["productIDs"] as? [String] ?? []
-        let groupID = ((body["subscriptionGroupID"] ?? body["groupID"]) as? String)?
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !productIDs.isEmpty || !(groupID ?? "").isEmpty,
+        guard let productIDs = body["productIDs"] as? [String], !productIDs.isEmpty,
+              let groupID = (body["subscriptionGroupID"] as? String)?.trimmingCharacters(in: .whitespacesAndNewlines),
+              !groupID.isEmpty,
               productIDs.allSatisfy({ !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }) else {
             replySubscriptionError("No App Store subscription products have been configured.", code: 3, reply: reply)
             return
-        }
-        var token: UUID?
-        if let value = body["appAccountToken"] {
-            guard let string = value as? String, let validToken = UUID(uuidString: string) else {
-                replySubscriptionError("The App Store account token is invalid.", code: 7, reply: reply)
-                return
-            }
-            token = validToken
         }
         preparingPurchase = true
         Task { [self] in
@@ -302,7 +292,7 @@ private final class RMTSubscriptions: NSObject, WKScriptMessageHandlerWithReply 
                 startTransactionUpdates()
                 let session = RMTSubscriptionPresentation(
                     productIDs: Array(Set(productIDs)).sorted(), groupID: groupID,
-                    appAccountToken: token, language: body["language"] as? String,
+                    language: body["language"] as? String,
                     environment: environment
                 ) { [weak self] response, error in
                     if let transactions = response?["transactions"] as? [[String: String]] {
@@ -325,8 +315,7 @@ private final class RMTSubscriptions: NSObject, WKScriptMessageHandlerWithReply 
 @MainActor
 private final class RMTSubscriptionPresentation: NSObject, ObservableObject {
     let productIDs: [String]
-    let groupID: String?
-    let appAccountToken: UUID?
+    let groupID: String
     let language: String
     let labels: SubscriptionLabels
     let environment: String
@@ -345,12 +334,11 @@ private final class RMTSubscriptionPresentation: NSObject, ObservableObject {
     #endif
 
     init(
-        productIDs: [String], groupID: String?, appAccountToken: UUID?, language: String?, environment: String,
+        productIDs: [String], groupID: String, language: String?, environment: String,
         completion: @escaping ([String: Any]?, Error?) -> Void
     ) {
         self.productIDs = productIDs
         self.groupID = groupID
-        self.appAccountToken = appAccountToken
         let preferredLanguage = language ?? UserDefaults.standard.string(forKey: "rmtLanguage")
         self.language = SubscriptionLabels.supportedLanguage(preferredLanguage)
         self.labels = SubscriptionLabels(language: self.language)
@@ -360,15 +348,10 @@ private final class RMTSubscriptionPresentation: NSObject, ObservableObject {
 
     func present(from webView: WKWebView) async {
         do {
-            if !productIDs.isEmpty {
-                let products = try await Product.products(for: productIDs)
-                guard Set(products.map(\.id)) == Set(productIDs),
-                      products.allSatisfy({ $0.type == .autoRenewable }),
-                      Set(products.compactMap { $0.subscription?.subscriptionGroupID }).count == 1,
-                      groupID == nil || groupID?.isEmpty == true ||
-                        products.allSatisfy({ $0.subscription?.subscriptionGroupID == groupID }) else {
-                    throw SubscriptionError.unavailableProducts
-                }
+            let products = try await Product.products(for: productIDs)
+            guard Set(products.map(\.id)) == Set(productIDs),
+                  products.allSatisfy({ $0.type == .autoRenewable && $0.subscription?.subscriptionGroupID == groupID }) else {
+                throw SubscriptionError.unavailableProducts
             }
             #if os(iOS)
             guard var presenter = webView.window?.rootViewController else {
@@ -462,8 +445,7 @@ private final class RMTSubscriptionPresentation: NSObject, ObservableObject {
     private func accepts(_ transaction: StoreKit.Transaction) -> Bool {
         transaction.productType == .autoRenewable &&
             subscriptionEnvironment(transaction.environment) == environment &&
-            (productIDs.contains(transaction.productID) ||
-                (productIDs.isEmpty && transaction.subscriptionGroupID == groupID))
+            productIDs.contains(transaction.productID)
     }
 
     private func finish(status: String, transactions: [[String: String]] = []) {
@@ -586,11 +568,8 @@ private struct RMTSubscriptionView: View {
                     .disabled(session.busy)
             }
             .padding()
-            store
+            SubscriptionStoreView(productIDs: session.productIDs)
                 .storeButton(.hidden, for: .restorePurchases, .cancellation)
-                .inAppPurchaseOptions { _ in
-                    session.appAccountToken.map { [.appAccountToken($0)] } ?? []
-                }
                 .onInAppPurchaseStart { _ in session.busy = true }
                 .onInAppPurchaseCompletion { _, result in session.purchased(result) }
         }
@@ -602,15 +581,6 @@ private struct RMTSubscriptionView: View {
             Button(session.labels.ok, role: .cancel) { session.errorMessage = nil }
         } message: { Text(session.errorMessage ?? "") }
         .environment(\.locale, Locale(identifier: session.language))
-    }
-
-    @ViewBuilder
-    private var store: some View {
-        if session.productIDs.isEmpty, let groupID = session.groupID {
-            SubscriptionStoreView(groupID: groupID)
-        } else {
-            SubscriptionStoreView(productIDs: session.productIDs)
-        }
     }
 }
 

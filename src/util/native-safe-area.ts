@@ -41,17 +41,17 @@ export const getSharedViewport = (
     orientationAngle?: number,
     nativeDevice?: string,
     maxTouchPoints = 0
-): { enabled: boolean; insets: SafeAreaInsets } => {
+): SafeAreaInsets => {
     const none = { top: 0, right: 0, bottom: 0, left: 0 };
-    if (nativeDevice === 'phone-duo') return { enabled: true, insets: none };
+    if (nativeDevice === 'phone-duo') return none;
     const phone = nativeDevice === 'phone' || (!nativeDevice && /iPhone/.test(userAgent));
     const pad =
         nativeDevice === 'pad' ||
         (!nativeDevice && (/iPad/.test(userAgent) || (/Macintosh/.test(userAgent) && maxTouchPoints > 1)));
-    if (!phone && !pad) return { enabled: false, insets: none };
+    if (!phone && !pad) return none;
     const nativeLandscape = nativeNotchSide === 'left' || nativeNotchSide === 'right';
     if (pad || nativeNotchSide === 'top' || (!nativeLandscape && viewport.width <= viewport.height)) {
-        return { enabled: true, insets: { ...none, top: Math.max(0, Math.min(insets.top, viewport.height)) } };
+        return { ...none, top: Math.max(0, Math.min(insets.top, viewport.height)) };
     }
     let side = nativeLandscape ? nativeNotchSide : undefined;
     if (!side && insets.left !== insets.right) side = insets.left > insets.right ? 'left' : 'right';
@@ -63,12 +63,9 @@ export const getSharedViewport = (
     // Native metadata (or orientation) selects the actual cutout side. Do not
     // turn symmetric corner insets into two independent control boundaries.
     return {
-        enabled: true,
-        insets: {
-            ...none,
-            left: side === 'left' ? Math.max(0, Math.min(insets.left, viewport.width)) : 0,
-            right: side === 'right' ? Math.max(0, Math.min(insets.right, viewport.width)) : 0,
-        },
+        ...none,
+        left: side === 'left' ? Math.max(0, Math.min(insets.left, viewport.width)) : 0,
+        right: side === 'right' ? Math.max(0, Math.min(insets.right, viewport.width)) : 0,
     };
 };
 
@@ -150,14 +147,9 @@ export const installNativeSafeAreaBridge = (rootDocument: Document = document): 
     const frames = new Map<HTMLIFrameElement, () => void>();
     const resizeObserver = typeof ResizeObserver === 'undefined' ? undefined : new ResizeObserver(() => schedule());
 
-    const writeInsets = (
-        element: HTMLElement,
-        insets: SafeAreaInsets,
-        scale: { x: number; y: number },
-        prefix = '--rmt-safe-area-'
-    ) => {
+    const writeInsets = (element: HTMLElement, insets: SafeAreaInsets, scale: { x: number; y: number }) => {
         for (const edge of edges) {
-            const property = prefix + edge;
+            const property = `--rmt-safe-area-${edge}`;
             const factor = edge === 'top' || edge === 'bottom' ? scale.y : scale.x;
             const value = `${factor > 0 ? insets[edge] / factor : 0}px`;
             // Avoid creating a MutationObserver loop for unchanged geometry.
@@ -214,7 +206,7 @@ export const installNativeSafeAreaBridge = (rootDocument: Document = document): 
                   height: visualViewport.height,
               }
             : viewport;
-        const sharedViewport = getSharedViewport(
+        const viewportInsets = getSharedViewport(
             rootWindow.navigator.userAgent,
             viewport,
             physicalInsets,
@@ -225,7 +217,7 @@ export const installNativeSafeAreaBridge = (rootDocument: Document = document): 
         );
         // Keyboard/panning exclusions apply to the same viewport as the system
         // edge. The canvas never extends behind a separately inset toolbar.
-        const insets = getVisibleSafeArea(viewport, visibleViewport, sharedViewport.insets);
+        const insets = getVisibleSafeArea(viewport, visibleViewport, viewportInsets);
         if (!rootDocument.documentElement.classList.contains(sharedViewportClass)) {
             rootDocument.documentElement.classList.add(sharedViewportClass);
         }
@@ -263,9 +255,13 @@ export const installNativeSafeAreaBridge = (rootDocument: Document = document): 
                 const right = getHeaderMenuRight(menuBounds, rect);
                 if (right && scale.x > 0) menuRight = Math.max(menuRight, (right - origin.left) / scale.x);
                 if (header.matches('[data-rmt-auxiliary] > .rm-window__header')) {
-                    const headerInsets = getFrameSafeArea(rect, viewport, insets);
-                    headerInsets.left = Math.max(headerInsets.left, Math.min(rect.width, right - rect.left));
-                    writeInsets(header, headerInsets, scale, '--rmt-header-safe-');
+                    const left = Math.max(
+                        getFrameSafeArea(rect, viewport, insets).left,
+                        Math.min(rect.width, right - rect.left)
+                    );
+                    const value = `${scale.x > 0 ? left / scale.x : 0}px`;
+                    if (header.style.getPropertyValue('--rmt-header-safe-left') !== value)
+                        header.style.setProperty('--rmt-header-safe-left', value);
                 }
             }
             const menuValue = `${menuRight}px`;

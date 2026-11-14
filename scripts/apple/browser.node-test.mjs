@@ -398,8 +398,10 @@ function setupLayout() {
           style="--rmt-host-menu-right:40px">
         <head></head><body><div class="rmg-window">
           <div id="header" class="rmg-window__header" style="margin-left:40px"></div>
-          <div class="rmg-window rm-window--is-app-clip"><div id="nested-header" class="rmg-window__header"></div>
+          <div class="rmg-window"><div id="nested-header" class="rmg-window__header"></div>
             <div id="nested-footer" class="rmg-page__footer"></div></div>
+          <div id="clip-header" class="rmg-window__header rmg-window__app-clip-header"></div>
+          <div class="rm-window--is-app-clip"><div id="clip-container-header" class="rm-window__header"></div></div>
           <div id="footer" class="rmg-page__footer"></div>
           <div id="offscreen-footer" class="rmg-page__footer"></div>
           <div class="mantine-Modal-root" data-full-screen><div id="modal-inner" class="mantine-Modal-inner" style="padding:0">
@@ -447,6 +449,7 @@ test('children fill the shared viewport without physical control padding and set
     try {
         const header = page.box('header', 40, 0, 804, 40);
         const nestedHeader = page.box('nested-header', 100, 100, 200, 40);
+        const clipHeaders = ['clip-header', 'clip-container-header'].map(id => page.box(id, 0, 0, 844, 40));
         const nestedFooter = page.box('nested-footer', 100, 200, 200, 40);
         const footer = page.box('footer', 0, 350, 844, 40);
         const offscreenFooter = page.box('offscreen-footer', 0, 450, 844, 200);
@@ -465,8 +468,12 @@ test('children fill the shared viewport without physical control padding and set
         assert.equal(footer.style.getPropertyValue('--rmt-control-safe-bottom'), '');
         assert.equal(offscreenFooter.style.getPropertyValue('--rmt-control-safe-bottom'), '');
         assert.equal(page.window.getComputedStyle(page.window.document.getElementById('modal-inner')).padding, '0px');
+        assert.equal(header.hasAttribute('data-rmt-screen-header'), true);
         assert.equal(nestedHeader.hasAttribute('data-rmt-screen-header'), false);
-        assert.equal(nestedHeader.hasAttribute('data-rmt-nested-header'), true);
+        for (const clipHeader of clipHeaders) {
+            assert.equal(clipHeader.hasAttribute('data-rmt-screen-header'), false);
+            assert.equal(clipHeader.style.getPropertyValue('--rmt-control-safe-left'), '0px');
+        }
         const count = page.scheduled();
         await page.tick();
         assert.equal(page.scheduled(), count, 'unchanged geometry must not keep scheduling itself');
@@ -486,7 +493,6 @@ test('runtime menu margin changes refresh header geometry and hidden controls ne
         header.style.marginLeft = '0px';
         await page.tick();
         assert.equal(header.style.getPropertyValue('--rmt-control-safe-left'), '40px');
-        assert.equal(header.style.getPropertyValue('--rmt-header-slot-left'), '0px');
         page.box('header', 0, 0, 0, 0);
         header.classList.add('hidden');
         await page.tick();
@@ -509,7 +515,6 @@ test('a shifted host menu reserves its measured right edge only in the outer scr
         await page.tick();
         assert.equal(header.style.getPropertyValue('--rmt-control-safe-left'), '32px');
         assert.equal(nested.style.getPropertyValue('--rmt-control-safe-left'), '0px');
-        assert.equal(header.style.getPropertyValue('--rmt-header-slot-left'), '40px');
 
         root.style.setProperty('--rmt-host-menu-right', '0px');
         await page.tick();

@@ -246,12 +246,7 @@ describe('shared account and sync session', () => {
         vi.restoreAllMocks();
     });
 
-    it.each([
-        ['stable', 'PRODUCTION'],
-        ['stable', 'SANDBOX'],
-        ['testflight', 'SANDBOX'],
-    ])('restores the original account and sync data for %s / %s', (channel, environment) => {
-        postMessage.mockResolvedValue({ channel, environment });
+    it('restores the original account and sync data without consulting StoreKit', () => {
         const store = initializeStores();
         expect(store.getState().account).toMatchObject({ isLoggedIn: true, id: 11, token: savedAccount.token });
         expect(store.getState().rmpSave).toMatchObject(savedSync);
@@ -261,15 +256,6 @@ describe('shared account and sync session', () => {
 
     it('restores the original session when the App Store bridge is unavailable', () => {
         Reflect.deleteProperty(window, 'webkit');
-        const store = initializeStores();
-        expect(store.getState().account).toMatchObject({ isLoggedIn: true, id: 11, token: savedAccount.token });
-        expect(store.getState().rmpSave).toMatchObject(savedSync);
-    });
-
-    it('keeps old test-server credentials separate from the original server session', () => {
-        const suffix = '__sandbox_' + encodeURIComponent('https://sandbox.example.test/v1');
-        rmgRuntime.storage.set(LocalStorageKey.ACCOUNT + suffix, JSON.stringify({ ...savedAccount, id: 111 }));
-        rmgRuntime.storage.set(LocalStorageKey.RMP_SAVE + suffix, JSON.stringify({ baseUserId: 111 }));
         const store = initializeStores();
         expect(store.getState().account).toMatchObject({ isLoggedIn: true, id: 11, token: savedAccount.token });
         expect(store.getState().rmpSave).toMatchObject(savedSync);

@@ -7,7 +7,6 @@ import {
     checkTokenAndRefresh,
     getAppleConfiguration,
     getAppleSubscriptionBridge,
-    refreshAppleConfiguration,
 } from './api';
 import { API_ENDPOINT, API_URL } from './constants';
 
@@ -73,18 +72,6 @@ describe('Apple native connection diagnostics and purchase environment', () => {
             code: 14,
             nativeMessage: 'Invalid offer price.',
         });
-    });
-
-    it('only asks to refresh App Store authentication through the explicit helper', async () => {
-        const configuration = { channel: 'stable', environment: 'SANDBOX', environmentSource: 'appTransaction' };
-        postMessage.mockResolvedValue(configuration);
-        await expect(refreshAppleConfiguration()).resolves.toEqual(configuration);
-        expect(postMessage).toHaveBeenCalledExactlyOnceWith({ type: 'refreshConfiguration' });
-    });
-
-    it('rejects a refresh that only provides a development environment hint', async () => {
-        postMessage.mockResolvedValue({ channel: 'stable', environment: 'SANDBOX', environmentSource: 'development' });
-        await expect(refreshAppleConfiguration()).rejects.toThrow('Unable to determine');
     });
 
     it('does not accept Production purchases in a TestFlight build', async () => {
