@@ -53,7 +53,7 @@ RMT_APPLE_BUILD_NUMBER=4 npm run apple:generate
 
 Priority is `--build-number`, then `RMT_APPLE_BUILD_NUMBER`, then the local default `1`. The number must contain one to three dot-separated integers, such as `4` or `84.1`. Generation records it as the iOS target's `CURRENT_PROJECT_VERSION`, and `CFBundleVersion` references that build setting. Subsequent Xcode builds retain the selected number. To change it without regenerating, edit `CURRENT_PROJECT_VERSION` in Xcode or pass `CURRENT_PROJECT_VERSION=5` to `xcodebuild`. Regeneration uses the option/environment/default again, so supply the desired number when regenerating. These settings apply to iOS; macOS packaging keeps its existing version behavior.
 
-The iOS GitHub Actions workflow supplies `RMT_APPLE_BUILD_NUMBER` as `github.run_number.github.run_attempt`. For example, run 84 produces `84.1`, its first rerun produces `84.2`, and a new run produces `85.1`. Both upload channels use this sequence. The workflow verifies the release version and build number in the signed archive before uploading it to App Store Connect, and disables Xcode's automatic build-number changes during upload. See [GitHub's variable reference](https://docs.github.com/en/actions/reference/workflows-and-actions/variables) for the counter behavior.
+The iOS GitHub Actions workflow supplies `RMT_APPLE_BUILD_NUMBER` as `github.run_number.github.run_attempt`. For example, run 84 produces `84.1`, its first rerun produces `84.2`, and a new run produces `85.1`. Both upload channels use this sequence. The workflow passes this value as Tauri's `bundle.iOS.bundleVersion`, verifies the release version and build number in the signed IPA before uploading it to App Store Connect, and disables Xcode's automatic build-number changes during export. See [GitHub's variable reference](https://docs.github.com/en/actions/reference/workflows-and-actions/variables) for the counter behavior.
 
 Before uploading a new build of the same version, ensure its build number is higher than the existing uploaded builds. When adopting, moving or renaming this workflow, compare its initial number against the app's upload history and adjust the numbering source if needed. The run counter belongs to one workflow, so additional publishing workflows or local uploads need a coordinated numbering source. New run numbers do not guarantee upload order: if `85.1` has already uploaded, rerunning 84 as `84.2` still produces an older number. Start a new run for that code. Local-only debugging may reuse a number. An App Store-eligible TestFlight build selected directly for App Review keeps its existing number; generating a different binary needs a new number.
 
@@ -154,31 +154,28 @@ Run **Upload iOS to App Store Connect** ([`upload-ios.yml`](../.github/workflows
 
 GitHub's separate **Use workflow from** selector chooses the workflow definition. The `branch` input chooses the application source and must contain the Apple build scripts used by that definition. PRs and pushes to `main` or `codex/**` run checks only; uploading requires a manual run.
 
-The workflow runs on `macos-26` with Xcode 26.6, creates a signed Release archive, verifies its device binary and offline resources, then uploads through `xcodebuild -exportArchive` with `destination: upload`. It does not export a standalone IPA or publish an IPA/archive artifact. Apple has required [Xcode 26 and the iOS 26 SDK or later](https://developer.apple.com/news/upcoming-requirements/?id=04282026a) for uploads since April 28, 2026.
+The workflow runs on `macos-26` with Xcode 26.6. The pinned Tauri CLI builds and exports a signed IPA with `ios build --ci --export-method app-store-connect`. The App Store Connect API key lets Xcode automatically manage distribution certificates and provisioning profiles. The workflow verifies the IPA's signature, version, device binary and offline resources before uploading it with `xcrun altool --upload-app`. The IPA exists only on the runner for verification and upload; no IPA/archive artifact is published. Apple has required [Xcode 26 and the iOS 26 SDK or later](https://developer.apple.com/news/upcoming-requirements/?id=04282026a) for uploads since April 28, 2026.
 
 `internal` also sets `testFlightInternalTestingOnly: true`: that build cannot later be used for external TestFlight or App Store submission. Choose `appstore` and create a new build when either is needed. A successful upload still needs Apple processing; it does not submit the app for review or release it publicly. Manage tester groups and review submission in App Store Connect.
 
 Before the first upload, add these repository secrets in **Settings → Secrets and variables → Actions**:
 
-| Secret                              | Value                                                                                                 |
-| ----------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| `APPLE_CERTIFICATE_P12_BASE64`      | Base64 of an **Apple Distribution** `.p12` containing its private key.                                |
-| `APPLE_CERTIFICATE_PASSWORD`        | Password used to export that `.p12`.                                                                  |
-| `APPLE_PROVISIONING_PROFILE_BASE64` | Base64 of an App Store Connect distribution profile for `org.railmapgen`, including that certificate. |
-| `APPLE_DEVELOPMENT_TEAM`            | Apple Developer Team ID associated with the certificate and profile.                                  |
-| `APP_STORE_CONNECT_API_KEY_ID`      | App Store Connect team API key ID.                                                                    |
-| `APP_STORE_CONNECT_API_ISSUER_ID`   | Issuer ID for that team API key.                                                                      |
-| `APP_STORE_CONNECT_API_PRIVATE_KEY` | Full, unencoded contents of the downloaded `.p8` private key.                                         |
+| Secret                              | Value                                                        |
+| ----------------------------------- | ------------------------------------------------------------ |
+| `APPLE_DEVELOPMENT_TEAM`             | Apple Developer Team ID for `org.railmapgen`.                  |
+| `APP_STORE_CONNECT_API_KEY_ID`       | App Store Connect team API key ID.                            |
+| `APP_STORE_CONNECT_API_ISSUER_ID`    | Issuer ID for that team API key.                              |
+| `APP_STORE_CONNECT_API_PRIVATE_KEY`  | Full, unencoded contents of the downloaded `.p8` private key. |
 
-Use a team API key with permission to upload this app, such as the App Manager role. The app record and matching bundle ID must already exist in App Store Connect. To copy each file value on macOS:
+Create a **team API key with Admin access** in App Store Connect's **Users and Access → Integrations**, as required by [Tauri's automatic signing guide](https://v2.tauri.app/distribute/sign/ios/). The app record and matching bundle ID must already exist in App Store Connect. Download the private key once and copy its contents on macOS:
 
 ```sh
-base64 -i AppleDistribution.p12 | pbcopy
-base64 -i AppStore.mobileprovision | pbcopy
 pbcopy < AuthKey_KEYID.p8
 ```
 
-Paste each result into its corresponding secret before copying the next. The workflow imports signing material into a temporary keychain and removes it after the run. See [GitHub's certificate and provisioning-profile guide](https://docs.github.com/en/actions/how-tos/deploy/deploy-to-third-party-platforms/sign-xcode-applications) for exporting the files. Only sanitized diagnostic logs are retained as the `ios-upload-logs` artifact, for seven days.
+Paste the result into `APP_STORE_CONNECT_API_PRIVATE_KEY`. Distribution certificates and profiles no longer need to be exported or renewed in GitHub secrets: [Apple rotates cloud-managed certificates automatically](https://developer.apple.com/help/account/certificates/cloud-managed-certificates/) as signing requests arrive. Keep the Apple Developer membership active and the API key valid. Existing certificate, certificate-password and provisioning-profile secrets can be removed. This CI signing flow does not change local Xcode signing.
+
+The workflow writes the API private key to a temporary file and removes it after the run. Only sanitized diagnostic logs are retained as the `ios-upload-logs` artifact, for seven days.
 
 ### Test a local RMP build
 

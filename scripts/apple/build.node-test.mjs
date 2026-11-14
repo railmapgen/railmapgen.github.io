@@ -441,7 +441,7 @@ test('Xcode exposes the selected channel independently of Debug and Release', ()
         const mac = macSpec({ channel: input });
         assert.equal(ios.targets.railmapgen_iOS.settings.base.RMT_APPLE_CHANNEL, appleChannel(input));
         assert.equal(mac.settings.base.RMT_APPLE_CHANNEL, appleChannel(input));
-        assert.deepEqual(ios.configs, { Debug: 'debug', Release: 'release' });
+        assert.deepEqual(ios.configs, { debug: 'debug', release: 'release' });
         assert.deepEqual(mac.configs, { Debug: 'debug', Release: 'release' });
     }
     assert.equal(iosSpec({ version: '1.2.3' }).targets.railmapgen_iOS.settings.base.RMT_APPLE_CHANNEL, 'stable');
@@ -571,6 +571,7 @@ test(
             const target = Object.values(project.objects).find(object => object.isa === 'PBXNativeTarget');
             const configurations = project.objects[target.buildConfigurationList].buildConfigurations;
             assert.equal(configurations.length, 2);
+            assert.deepEqual(configurations.map(id => project.objects[id].name).sort(), ['debug', 'release']);
             for (const identifier of configurations)
                 assert.equal(project.objects[identifier].buildSettings.CURRENT_PROJECT_VERSION, '84.2');
             const info = JSON.parse(

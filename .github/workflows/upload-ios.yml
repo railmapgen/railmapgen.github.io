@@ -141,13 +141,10 @@ jobs:
                   TAURI_CONFIG='{"build":{"frontendDist":[]},"bundle":{"resources":[]}}' \
                     cargo test --locked --lib resvg::tests
             # PRs and pushes run checks only. Signing and uploading require an explicit dispatch.
-            - name: Install distribution signing and Connect API key
+            - name: Prepare automatic signing and Connect API key
               if: github.event_name == 'workflow_dispatch'
               working-directory: tauri
               env:
-                  APPLE_CERTIFICATE_P12_BASE64: ${{ secrets.APPLE_CERTIFICATE_P12_BASE64 }}
-                  APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
-                  APPLE_PROVISIONING_PROFILE_BASE64: ${{ secrets.APPLE_PROVISIONING_PROFILE_BASE64 }}
                   APPLE_DEVELOPMENT_TEAM: ${{ secrets.APPLE_DEVELOPMENT_TEAM }}
                   APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
                   APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
@@ -160,31 +157,25 @@ jobs:
               run: |
                   set -o pipefail
                   npm run apple:generate -- --ios-only --ci 2>&1 | tee tauri/.build/logs/init.log
-            - name: Build signed release archive
+            - name: Build and automatically sign release IPA with Tauri
               if: github.event_name == 'workflow_dispatch'
               working-directory: tauri
               env:
                   APPLE_DEVELOPMENT_TEAM: ${{ secrets.APPLE_DEVELOPMENT_TEAM }}
+                  APPLE_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+                  APPLE_API_ISSUER: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
               run: |
                   set -o pipefail
-                  xcodebuild \
-                    -hideShellScriptEnvironment \
-                    -project gen/apple/railmapgen.xcodeproj \
-                    -scheme railmapgen_iOS \
-                    -configuration Release \
-                    -sdk iphoneos \
-                    -destination 'generic/platform=iOS' \
-                    -archivePath "$PWD/gen/apple/build/railmapgen.xcarchive" \
-                    CODE_SIGNING_ALLOWED=YES \
-                    CODE_SIGNING_REQUIRED=YES \
-                    CODE_SIGN_STYLE=Manual \
-                    DEVELOPMENT_TEAM="$APPLE_DEVELOPMENT_TEAM" \
-                    CODE_SIGN_IDENTITY="$RMT_SIGNING_CERTIFICATE" \
-                    PROVISIONING_PROFILE_SPECIFIER="$RMT_PROVISIONING_PROFILE_UUID" \
-                    OTHER_CODE_SIGN_FLAGS="--keychain $RMT_SIGNING_KEYCHAIN" \
-                    archive 2>&1 | tee .build/logs/build.log
+                  export APPLE_API_KEY_PATH="$RMT_CONNECT_API_KEY_PATH"
+                  cp "$RMT_EXPORT_OPTIONS_PLIST" gen/apple/ExportOptions.plist
+                  rmt_ios_config=$(node -e 'console.log(JSON.stringify({
+                    version: require("../package.json").version,
+                    bundle: { iOS: { bundleVersion: process.env.RMT_APPLE_BUILD_NUMBER } }
+                  }))')
+                  npm run tauri -- ios build --ci --export-method app-store-connect \
+                    --config "$rmt_ios_config" 2>&1 | tee .build/logs/build.log
                   git diff --exit-code -- Cargo.lock
-            - name: Verify signed device archive
+            - name: Verify signed device IPA
               if: github.event_name == 'workflow_dispatch'
               working-directory: tauri
               env:
@@ -192,7 +183,7 @@ jobs:
               run: |
                   set -o pipefail
                   python3 ../scripts/apple/connect.py verify 2>&1 | tee .build/logs/verify.log
-            - name: Upload archive to App Store Connect
+            - name: Upload verified IPA to App Store Connect
               if: github.event_name == 'workflow_dispatch'
               working-directory: tauri
               env:
@@ -200,13 +191,11 @@ jobs:
                   APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
               run: |
                   set -o pipefail
-                  xcodebuild \
-                    -exportArchive \
-                    -archivePath "$PWD/gen/apple/build/railmapgen.xcarchive" \
-                    -exportOptionsPlist "$RMT_EXPORT_OPTIONS_PLIST" \
-                    -authenticationKeyPath "$RMT_CONNECT_API_KEY_PATH" \
-                    -authenticationKeyID "$APP_STORE_CONNECT_API_KEY_ID" \
-                    -authenticationKeyIssuerID "$APP_STORE_CONNECT_API_ISSUER_ID" \
+                  API_PRIVATE_KEYS_DIR="$(dirname "$RMT_CONNECT_API_KEY_PATH")" \
+                    xcrun altool --upload-app --type ios \
+                    --file 'gen/apple/build/arm64/Rail Map Toolkit.ipa' \
+                    --apiKey "$APP_STORE_CONNECT_API_KEY_ID" \
+                    --apiIssuer "$APP_STORE_CONNECT_API_ISSUER_ID" \
                     2>&1 | tee .build/logs/upload.log
             - name: Record uploaded build
               if: github.event_name == 'workflow_dispatch'
@@ -234,7 +223,7 @@ jobs:
                   with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as summary:
                       summary.write('\n'.join(lines) + '\n')
                   PY
-            - name: Remove temporary signing material
+            - name: Remove temporary Connect API key
               if: always() && github.event_name == 'workflow_dispatch'
               run: |
                   if [[ -f scripts/apple/connect.py ]]; then

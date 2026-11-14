@@ -137,7 +137,7 @@ async function buildIos(tools, config, channel) {
         }
         run(tools.cargo, cargoArguments(platform, arch, config), { cwd: tauriRoot, env });
         const source = path.join(env.CARGO_TARGET_DIR, triple, config.toLowerCase(), 'libapp_lib.a');
-        const destination = path.join(appleRoot, 'Externals', platform, arch, config);
+        const destination = path.join(appleRoot, 'Externals', platform, arch, process.env.CONFIGURATION);
         if (!existsSync(source)) throw new Error(`Cargo succeeded without creating ${source}.`);
         mkdirSync(destination, { recursive: true });
         cpSync(source, path.join(destination, 'libapp.a'));

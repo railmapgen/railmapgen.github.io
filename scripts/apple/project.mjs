@@ -37,7 +37,8 @@ export function iosSpec({ version, team = '', channel = 'stable', buildNumber = 
     return {
         name: 'railmapgen',
         options: { bundleIdPrefix: 'org.railmapgen', deploymentTarget: { iOS: '15.0' } },
-        configs: { Debug: 'debug', Release: 'release' },
+        // Match the configuration names used by `tauri ios build`.
+        configs: { debug: 'debug', release: 'release' },
         fileGroups: ['../../src', '../../../scripts/apple'],
         targets: {
             railmapgen_iOS: {
@@ -116,8 +117,8 @@ export function iosSpec({ version, team = '', channel = 'stable', buildNumber = 
                         OTHER_LDFLAGS: ['$(inherited)', '-lapp', '-lc++'],
                     },
                     configs: {
-                        Debug: { ONLY_ACTIVE_ARCH: true },
-                        Release: { ONLY_ACTIVE_ARCH: false, ENABLE_NS_ASSERTIONS: false },
+                        debug: { ONLY_ACTIVE_ARCH: true },
+                        release: { ONLY_ACTIVE_ARCH: false, ENABLE_NS_ASSERTIONS: false },
                     },
                 },
                 dependencies: [
