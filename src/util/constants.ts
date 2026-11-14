@@ -52,12 +52,14 @@ export enum API_ENDPOINT {
     USER = '/users',
     SUBSCRIPTION = '/subscription',
     SUBSCRIPTION_REDEEM = '/subscription/redeem',
+    APPLE_IAP_CONTEXT = '/iap/context',
+    APPLE_IAP_TRANSACTIONS = '/iap/apple/transactions',
     SAVES = '/saves',
     SHARE = '/share',
 }
 
 export const API_URL = 'https://railmapgen.org/v1';
-// export const API_URL = 'http://localhost:3000/v1';
+// export const API_URL = 'https://516wjy.thekingofcity.com/v1';
 
 type Timestamp = `${number}-${number}-${number}T${number}:${number}:${number}Z`;
 

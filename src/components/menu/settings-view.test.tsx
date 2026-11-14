@@ -14,7 +14,7 @@ describe('SettingsView', () => {
         render(<SettingsView />);
 
         // default - unchecked
-        const cookiesCheckbox = screen.getByRole('switch', { name: 'Allow cookies to help improve our website' });
+        const cookiesCheckbox = screen.getByRole('switch', { name: 'Allow cookies to help improve our application' });
         expect(cookiesCheckbox).not.toBeChecked();
 
         // click to check

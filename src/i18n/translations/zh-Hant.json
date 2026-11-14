@@ -67,10 +67,10 @@
     },
 
     "CookiesModal": {
-        "header": "本網站的 Cookies",
-        "text1": "在 RMG，我們使用 Cookies 以確保本網站及服務可以正常運作。這些 Cookies 是必需的，因此已預設啟用。",
+        "header": "本應用的 Cookies",
+        "text1": "在 RMG，我們使用 Cookies 以確保本應用及服務可以正常運作。這些 Cookies 是必需的，因此已預設啟用。",
         "text2": "我們亦會以 Cookies 的方式：",
-        "item1": "分析閣下的使用模式，用來改進本網站",
+        "item1": "分析閣下的使用模式，用來改進本應用",
         "text3": "這些 Cookies 是可選的。如果閣下想容許所有可選 Cookies，請選擇「接受所有 Cookies」。如果閣下想禁用 Cookies，請選擇「拒絕」。",
         "accept": "接受所有 Cookies",
         "reject": "拒絕"
@@ -107,7 +107,7 @@
     "Collapse": "收起",
 
     "About": "關於",
-    "Allow cookies to help improve our website": "容許以 Cookies 幫助改進本網站",
+    "Allow cookies to help improve our application": "容許以 Cookies 幫助改進本應用程式",
     "Appearance": "外觀",
     "Back to production environment": "返回生產環境",
     "Close all tabs": "關閉所有分頁",
@@ -262,5 +262,27 @@
     "Delete Share": "刪除分享",
     "Create Share Link": "建立分享連結",
     "Please be aware that sharing this link does not create a separate copy of your work. Instead, everyone who opens the link will always see the most up-to-date version. So, if you make changes after sharing the link, those changes will be visible to everyone who has the link.": "請注意，分享此連結不會建立您作品的副本。相反，每個開啟連結的人都將始終看到最新版本。因此，如果您在分享連結後進行變更，這些變更將對擁有該連結的每個人可見。",
-    "Link will be valid as long as you have an active subscription. Otherwise, the link will be invalid after 1 day.": "只要您擁有有效訂閱，連結便會一直有效。否則，連結將在 1 天後失效。"
+    "Link will be valid as long as you have an active subscription. Otherwise, the link will be invalid after 1 day.": "只要您擁有有效訂閱，連結便會一直有效。否則，連結將在 1 天後失效。",
+
+    "Get subscription": "取得訂閱",
+    "Subscribe with App Store": "透過 App Store 訂閱",
+    "App Store subscription": "App Store 訂閱",
+    "Your purchase is awaiting approval.": "您的購買正在等待批准。",
+    "Unable to open App Store subscriptions.": "無法開啟 App Store 訂閱。",
+    "App Store purchases are unavailable in this version.": "此版本無法使用 App Store 購買。",
+    "Your account changed. Please try again.": "您的帳號已變更，請重試。",
+    "Unable to verify your App Store purchase. Please try again.": "無法驗證您的 App Store 購買，請重試。",
+    "App Store subscriptions are not available yet. Please try again later.": "App Store 訂閱暫時無法使用，請稍後重試。",
+    "Your purchase is awaiting verification. Please try restoring purchases later.": "您的購買正在等待驗證，請稍後回復購買。",
+
+    "Unable to determine the App Store purchase environment.": "無法確定 App Store 購買環境。",
+    "This TestFlight build cannot make production purchases.": "此 TestFlight 組建無法進行正式購買。",
+    "The App Store purchase environment does not match this build.": "App Store 購買環境與目前組建不符。",
+    "The App Store payment environment could not be verified.": "無法驗證 App Store 付款環境。",
+    "This TestFlight build only supports Sandbox purchases. Install it through TestFlight to continue.": "此 TestFlight 組建僅支援測試購買，請透過 TestFlight 安裝後繼續。",
+
+    "The subscription server environment does not match the App Store environment.": "訂閱伺服器與 App Store 的交易環境不一致。",
+    "Too many App Store verification requests. Please try again later.": "App Store 交易驗證請求過於頻繁，請稍後重試。",
+
+    "Unable to connect to the App Store. Please try again.": "暫時無法連線至 App Store，請重試。"
 }

@@ -2,13 +2,17 @@
 @import '@railmapgen/mantine-components/styles.css';
 
 :root {
-    background-color: #FFFFFF;
+    --rmt-page-background: #ffffff;
+    --rmt-page-color: #000000;
+    color-scheme: var(--mantine-color-scheme, light dark);
+    background-color: var(--mantine-color-body, var(--rmt-page-background));
+    color: var(--mantine-color-text, var(--rmt-page-color));
 }
 
 @media (prefers-color-scheme: dark) {
     :root {
-        background-color: #242424;
-        color: white;
+        --rmt-page-background: #242424;
+        --rmt-page-color: #ffffff;
     }
 }
 
@@ -43,4 +47,113 @@ div#root {
 
 * {
     box-sizing: border-box;
+}
+
+/* Native Apple pages use one shared rectangle for every resource. */
+html.rmt-native-edge-to-edge {
+    --rmt-viewport-height: 100vh;
+    --rmt-host-viewport-top: 0px;
+    --rmt-host-viewport-right: 0px;
+    --rmt-host-viewport-bottom: 0px;
+    --rmt-host-viewport-left: 0px;
+    --rmt-host-viewport-width: max(0px, calc(100vw - var(--rmt-host-viewport-left) - var(--rmt-host-viewport-right)));
+    --rmt-host-viewport-height: max(
+        0px,
+        calc(var(--rmt-viewport-height) - var(--rmt-host-viewport-top) - var(--rmt-host-viewport-bottom))
+    );
+    --rmt-physical-safe-area-top: env(safe-area-inset-top, 0px);
+    --rmt-physical-safe-area-right: env(safe-area-inset-right, 0px);
+    --rmt-physical-safe-area-bottom: env(safe-area-inset-bottom, 0px);
+    --rmt-physical-safe-area-left: env(safe-area-inset-left, 0px);
+    --rmt-safe-area-top: 0px;
+    --rmt-safe-area-right: 0px;
+    --rmt-safe-area-bottom: 0px;
+    --rmt-safe-area-left: 0px;
+    height: 100%;
+}
+
+@supports (height: 100dvh) {
+    html.rmt-native-edge-to-edge {
+        --rmt-viewport-height: 100dvh;
+        height: 100dvh;
+    }
+}
+
+html.rmt-native-edge-to-edge body {
+    width: 100%;
+    padding: 0;
+}
+
+/* The exposed system edge shares the application's resolved appearance. */
+html.rmt-native-edge-to-edge.rmt-shared-viewport {
+    background: var(--mantine-color-body, var(--rmt-page-background));
+}
+
+html.rmt-native-edge-to-edge.rmt-shared-viewport body {
+    position: absolute;
+    top: var(--rmt-host-viewport-top);
+    left: var(--rmt-host-viewport-left);
+    width: var(--rmt-host-viewport-width);
+    height: var(--rmt-host-viewport-height);
+    min-width: 0;
+    min-height: 0;
+    padding: 0 !important;
+    overflow: hidden;
+    background: var(--mantine-color-body, var(--rmt-page-background));
+}
+
+/* Native controls and auxiliary pages share the same cropped content area. */
+html.rmt-native-edge-to-edge [data-rmt-menu-button] {
+    top: 0;
+    left: 0;
+}
+
+html.rmt-native-edge-to-edge [data-rmt-auxiliary] .rm-page__body {
+    padding-bottom: var(--mantine-spacing-xs);
+}
+
+/* Auxiliary pages are already inside the cropped iframe. Only the host menu
+   button's normal slot can reserve header space; no screen inset is repeated. */
+html.rmt-native-edge-to-edge [data-rmt-auxiliary] > .rm-window__header {
+    flex-shrink: 0;
+    padding-top: 0;
+    padding-left: calc(var(--mantine-spacing-xs) + var(--rmt-header-safe-left, 0px));
+    padding-right: var(--mantine-spacing-xs);
+    height: 40px;
+}
+
+html.rmt-native-edge-to-edge [data-rmt-auxiliary] > .rm-page {
+    min-height: 0;
+}
+
+/* Body portals have viewport-relative fixed positioning. Constrain their
+   backgrounds and contents to the same rectangle as the root and canvas. */
+html.rmt-native-edge-to-edge.rmt-shared-viewport
+    :is(.mantine-Modal-inner, .mantine-Modal-overlay, .mantine-Drawer-inner, .mantine-Drawer-overlay) {
+    position: fixed;
+    top: var(--rmt-host-viewport-top);
+    right: var(--rmt-host-viewport-right);
+    bottom: var(--rmt-host-viewport-bottom);
+    left: var(--rmt-host-viewport-left);
+    width: var(--rmt-host-viewport-width);
+    height: var(--rmt-host-viewport-height);
+    max-width: var(--rmt-host-viewport-width);
+    max-height: var(--rmt-host-viewport-height);
+    overflow: hidden;
+}
+
+html.rmt-native-edge-to-edge.rmt-shared-viewport .mantine-Modal-root:not([data-full-screen]) {
+    --modal-x-offset: calc(var(--rmt-host-viewport-width) * 0.05);
+    --modal-y-offset: calc(var(--rmt-host-viewport-height) * 0.05);
+}
+
+html.rmt-native-edge-to-edge.rmt-shared-viewport .mantine-Modal-root:not([data-full-screen]) .mantine-Modal-content {
+    max-height: max(0px, calc(var(--rmt-host-viewport-height) - var(--modal-y-offset) * 2));
+}
+
+html.rmt-native-edge-to-edge.rmt-shared-viewport .mantine-Modal-root[data-full-screen] .mantine-Modal-content {
+    --modal-content-height: var(--rmt-host-viewport-height);
+    --modal-content-max-height: var(--rmt-host-viewport-height);
+    height: var(--rmt-host-viewport-height);
+    max-height: var(--rmt-host-viewport-height);
 }

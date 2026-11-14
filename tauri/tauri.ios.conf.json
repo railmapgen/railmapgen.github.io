@@ -1,0 +1,23 @@
+{
+  "build": {
+    "frontendDist": []
+  },
+  "bundle": {
+    "iOS": {
+      "minimumSystemVersion": "15.0"
+    },
+    "resources": {
+      "ui/": "ui/"
+    }
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "create": false,
+        "title": "Rail Map Toolkit",
+        "url": "index.html"
+      }
+    ]
+  }
+}
