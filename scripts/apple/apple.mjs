@@ -1,11 +1,10 @@
 import { existsSync, realpathSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { appleChannel, capture, cli, run, tauriRoot, workspace } from './common.mjs';
+import { appleBuildNumber, appleChannel, capture, cli, run, tauriRoot, workspace } from './common.mjs';
 import { generate } from './project.mjs';
 import { build, swift } from './build.mjs';
 import { prepareResources } from './resources.mjs';
-import { appleBuildNumber } from './build-number.mjs';
 
 const help = `Usage: node scripts/apple/apple.mjs <command> [options]
 

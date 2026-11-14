@@ -4,12 +4,14 @@ import path from 'node:path';
 import {
     appleRoot,
     appleChannel,
+    appleBuildNumber,
     buildRoot,
     capture,
     cli,
     hostTriple,
     readJson,
     repoRoot,
+    resolveAppleBuildNumber,
     run,
     shellQuote,
     tauriRoot,
@@ -18,7 +20,6 @@ import {
     xmlEscape,
 } from './common.mjs';
 import { prepareResources } from './resources.mjs';
-import { appleBuildNumber, resolveAppleBuildNumber } from './build-number.mjs';
 
 const buildScript = operation =>
     [
