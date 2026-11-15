@@ -296,16 +296,10 @@ export const syncAfterLogin = createAsyncThunk<undefined, undefined>(
 export const fetchSubscription = createAsyncThunk<undefined, undefined>(
     'account/fetchSubscription',
     async (_, { getState, dispatch, rejectWithValue }) => {
-        const { isLoggedIn, id, token } = (getState() as RootState).account;
+        const { isLoggedIn, token } = (getState() as RootState).account;
         if (!isLoggedIn || !token) return rejectWithValue('No token.');
-        const isCurrentAccount = () => {
-            const account = (getState() as RootState).account;
-            return account.isLoggedIn && account.id === id && (id !== undefined || account.token === token);
-        };
         const rep = await apiFetch(API_ENDPOINT.SUBSCRIPTION, {}, token);
-        if (!isCurrentAccount()) return rejectWithValue('Account session changed.');
         if (rep.status === 401) {
-            if ((getState() as RootState).account.token !== token) return rejectWithValue('Account token changed.');
             dispatch(
                 addNotification({
                     title: i18n.t('Unable to retrieve your subscriptions'),
@@ -318,28 +312,23 @@ export const fetchSubscription = createAsyncThunk<undefined, undefined>(
             return rejectWithValue('Login status expired.');
         }
         if (rep.status !== 200) {
-            const message = await rep.text();
-            if (!isCurrentAccount()) return rejectWithValue('Account session changed.');
             dispatch(
                 addNotification({
                     title: i18n.t('Unable to retrieve your subscriptions'),
-                    message,
+                    message: await rep.text(),
                     duration: 60,
                     type: 'error',
                 })
             );
-            return rejectWithValue(message);
+            return rejectWithValue(await rep.text());
         }
         const subscriptions = (await rep.json()).subscriptions as APISubscription[];
-        if (!isCurrentAccount()) return rejectWithValue('Account session changed.');
-        const activeSubscriptions = { ...defaultActiveSubscriptions };
+        const activeSubscriptions = structuredClone(defaultActiveSubscriptions);
         for (const subscription of subscriptions) {
-            const { type, expires } = subscription ?? {};
-            if (type !== 'RMP_CLOUD' && type !== 'RMP_EXPORT') continue;
-            if (typeof expires !== 'string' || !Number.isFinite(Date.parse(expires))) continue;
-            const previous = activeSubscriptions[type];
-            if (!previous || Date.parse(expires) > Date.parse(previous))
-                activeSubscriptions[type] = expires as DateTimeString;
+            const type = subscription.type;
+            if (type in activeSubscriptions) {
+                activeSubscriptions[type as keyof ActiveSubscriptions] = subscription.expires as DateTimeString;
+            }
         }
         dispatch(setActiveSubscriptions(activeSubscriptions));
     }
