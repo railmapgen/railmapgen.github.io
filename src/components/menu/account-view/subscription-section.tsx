@@ -5,6 +5,7 @@ import { MdWarning } from 'react-icons/md';
 import { useRootDispatch, useRootSelector } from '../../../redux';
 import { setIsRedeemModalOpen } from '../../../redux/app/app-slice';
 import RedeemModal from '../../modal/redeem-modal';
+import rmgRuntime from '@railmapgen/rmg-runtime';
 
 const DAYS_TO_REMIND_RENEW = 90;
 const MILLISECONDS_TO_REMIND_RENEW = DAYS_TO_REMIND_RENEW * 24 * 60 * 60 * 1000;
@@ -17,6 +18,7 @@ const SubscriptionSection = () => {
     const isRedeemModalOpen = useRootSelector(state => state.app.isRedeemModalOpen);
 
     const noneSubscription = !activeSubscriptions.RMP_CLOUD && !activeSubscriptions.RMP_EXPORT;
+    const isAppStore = rmgRuntime.getInstance() === 'AppStore';
 
     return (
         <RMSection>
@@ -25,7 +27,7 @@ const SubscriptionSection = () => {
                     {t('All subscriptions')}
                 </Title>
                 <Button variant="subtle" size="xs" ml="auto" onClick={() => dispatch(setIsRedeemModalOpen(true))}>
-                    {t('Redeem')}
+                    {t(isAppStore ? 'Get subscription' : 'Redeem')}
                 </Button>
             </RMSectionHeader>
 
@@ -70,13 +72,15 @@ const SubscriptionSection = () => {
                                 <Button color="blue" onClick={() => dispatch(setIsRedeemModalOpen(true))}>
                                     {t('Renew')}
                                 </Button>
-                                {new Date(expires).getTime() - new Date().getTime() < MILLISECONDS_TO_REMIND_RENEW && (
-                                    <Alert
-                                        title={t('Renew now and get an extra 45 days!')}
-                                        color="yellow"
-                                        icon={<MdWarning />}
-                                    />
-                                )}
+                                {!isAppStore &&
+                                    new Date(expires).getTime() - new Date().getTime() <
+                                        MILLISECONDS_TO_REMIND_RENEW && (
+                                        <Alert
+                                            title={t('Renew now and get an extra 45 days!')}
+                                            color="yellow"
+                                            icon={<MdWarning />}
+                                        />
+                                    )}
                             </Stack>
                         </Card>
                     ))}

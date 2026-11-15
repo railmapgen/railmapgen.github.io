@@ -8,7 +8,7 @@ export default function AppRoot() {
 
     return (
         <RMMantineProvider>
-            <RMWindow>
+            <RMWindow data-rmt-auxiliary="">
                 <RMWindowHeader>
                     <Title>{t('Contributors')}</Title>
                 </RMWindowHeader>

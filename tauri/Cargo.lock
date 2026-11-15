@@ -2340,6 +2340,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d87d638e33c06f577498cbcc50491496a3ed4246998a7fbba7ccb98b1e7eab22"
 dependencies = [
  "bitflags 2.11.0",
+ "block2",
  "objc2",
  "objc2-core-foundation",
  "objc2-foundation",
@@ -2901,6 +2902,10 @@ checksum = "f8dcc9c7d52a811697d2151c701e0d08956f92b0e24136cf4cf27b57a6a0d9bf"
 name = "railmapgen"
 version = "0.1.0"
 dependencies = [
+ "block2",
+ "objc2",
+ "objc2-foundation",
+ "objc2-ui-kit",
  "resvg",
  "serde",
  "serde_json",
@@ -2909,6 +2914,7 @@ dependencies = [
  "tauri-plugin-dialog",
  "tauri-plugin-http",
  "tauri-plugin-updater",
+ "ttf-parser",
  "xmltree",
 ]
 

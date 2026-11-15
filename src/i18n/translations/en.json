@@ -99,5 +99,27 @@
     },
 
     "Expand": "Expand",
-    "Collapse": "Collapse"
+    "Collapse": "Collapse",
+
+    "Get subscription": "Get subscription",
+    "Subscribe with App Store": "Subscribe with App Store",
+    "App Store subscription": "App Store subscription",
+    "Your purchase is awaiting approval.": "Your purchase is awaiting approval.",
+    "Unable to open App Store subscriptions.": "Unable to open App Store subscriptions.",
+    "App Store purchases are unavailable in this version.": "App Store purchases are unavailable in this version.",
+    "Your account changed. Please try again.": "Your account changed. Please try again.",
+    "Unable to verify your App Store purchase. Please try again.": "Unable to verify your App Store purchase. Please try again.",
+    "App Store subscriptions are not available yet. Please try again later.": "App Store subscriptions are not available yet. Please try again later.",
+    "Your purchase is awaiting verification. Please try restoring purchases later.": "Your purchase is awaiting verification. Please try restoring purchases later.",
+
+    "Unable to determine the App Store purchase environment.": "Unable to determine the App Store purchase environment.",
+    "This TestFlight build cannot make production purchases.": "This TestFlight build cannot make production purchases.",
+    "The App Store purchase environment does not match this build.": "The App Store purchase environment does not match this build.",
+    "The App Store payment environment could not be verified.": "The App Store payment environment could not be verified.",
+    "This TestFlight build only supports Sandbox purchases. Install it through TestFlight to continue.": "This TestFlight build only supports Sandbox purchases. Install it through TestFlight to continue.",
+
+    "The subscription server environment does not match the App Store environment.": "The subscription server environment does not match the App Store environment.",
+    "Too many App Store verification requests. Please try again later.": "Too many App Store verification requests. Please try again later.",
+
+    "Unable to connect to the App Store. Please try again.": "Unable to connect to the App Store. Please try again."
 }

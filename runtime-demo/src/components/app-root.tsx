@@ -8,7 +8,7 @@ import NotificationsDemo from './notifications-demo';
 export default function AppRoot() {
     return (
         <RMMantineProvider>
-            <RMWindow>
+            <RMWindow data-rmt-auxiliary="">
                 <WindowHeader />
                 <RMPage w={{ base: '100%', sm: 600 }} style={{ alignSelf: 'center' }}>
                     <RMPageBody className={classes.body} direction="column">

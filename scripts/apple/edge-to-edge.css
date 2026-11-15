@@ -1,0 +1,63 @@
+/* Apple documents fill the host's already-cropped content rectangle. */
+html.rmt-native-edge-to-edge {
+    --rmt-viewport-height: 100vh;
+    --rmt-safe-area-top: 0px;
+    --rmt-safe-area-right: 0px;
+    --rmt-safe-area-bottom: 0px;
+    --rmt-safe-area-left: 0px;
+}
+
+html.rmt-native-edge-to-edge,
+.rmt-native-edge-to-edge body,
+.rmt-native-edge-to-edge #root {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+}
+
+.rmt-native-edge-to-edge body {
+    padding: 0 !important;
+    overflow: hidden;
+}
+
+html.rmt-native-edge-to-edge:not([data-rmt-component='host']) {
+    height: var(--rmt-viewport-height);
+    overscroll-behavior: none;
+}
+
+@supports (height: 100dvh) {
+    html.rmt-native-edge-to-edge {
+        --rmt-viewport-height: 100dvh;
+    }
+}
+
+.rmt-native-edge-to-edge:not([data-rmt-component='host']) :is(.rmg-window, .rm-window) {
+    height: 100% !important;
+    min-height: 0;
+    min-width: 0;
+}
+
+/* Preserve ordinary application spacing. Only the shell's floating menu button
+   can require extra space beyond a legacy header's own 40px menu slot. */
+.rmt-native-edge-to-edge:not([data-rmt-component='host']) [data-rmt-screen-header] {
+    padding-left: calc(var(--mantine-spacing-xs, 8px) + var(--rmt-control-safe-left, 0px)) !important;
+}
+
+/* Viewport units are local to the iframe, which already excludes the host's
+   physical cutout and keyboard. Keep the iOS 15 fallback for portal sizing. */
+.rmt-native-edge-to-edge:not([data-rmt-component='host']) .mantine-Modal-root:not([data-full-screen]) {
+    --modal-y-offset: calc(var(--rmt-viewport-height) * 0.05);
+}
+
+.rmt-native-edge-to-edge:not([data-rmt-component='host'])
+    .mantine-Modal-root:not([data-full-screen])
+    .mantine-Modal-content {
+    max-height: max(0px, calc(var(--rmt-viewport-height) - 2 * var(--modal-y-offset)));
+}
+
+.rmt-native-edge-to-edge:not([data-rmt-component='host']) .mantine-Modal-root[data-full-screen] .mantine-Modal-content {
+    --modal-content-height: var(--rmt-viewport-height);
+    height: var(--rmt-viewport-height);
+    max-height: var(--rmt-viewport-height);
+}

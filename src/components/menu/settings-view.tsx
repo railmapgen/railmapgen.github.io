@@ -61,7 +61,7 @@ export default function SettingsView() {
                     data={appearanceOptions}
                 />
                 <Switch
-                    label={t('Allow cookies to help improve our website')}
+                    label={t('Allow cookies to help improve our application')}
                     labelPosition="left"
                     checked={allowCookies}
                     onChange={({ currentTarget: { checked } }) => handleChangeCookiesSetting(checked)}

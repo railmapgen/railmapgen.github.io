@@ -7,3 +7,12 @@
     width: 320px;
     max-width: 90dvw;
 }
+
+:global(html.rmt-native-edge-to-edge) .root {
+    top: calc(var(--rmt-host-viewport-top) + var(--mantine-spacing-lg));
+    right: calc(var(--rmt-host-viewport-right) + var(--mantine-spacing-xs));
+    margin-left: 0;
+    max-width: max(0px, calc(var(--rmt-host-viewport-width) - 2 * var(--mantine-spacing-xs)));
+    max-height: max(0px, calc(var(--rmt-host-viewport-height) - 2 * var(--mantine-spacing-lg)));
+    overflow-y: auto;
+}
