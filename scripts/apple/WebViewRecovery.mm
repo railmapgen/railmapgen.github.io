@@ -20,9 +20,7 @@ static BOOL RMTIsTerminatedError(NSError *error) {
 
 // These controls remain usable even when no web content process is running.
 static NSString *RMTRecoveryText(NSUInteger index) {
-    NSString *language = [NSUserDefaults.standardUserDefaults stringForKey:@"rmtLanguage"];
-    if (!language || [language isEqualToString:@"system"])
-        language = NSBundle.mainBundle.preferredLocalizations.firstObject;
+    NSString *language = NSBundle.mainBundle.preferredLocalizations.firstObject;
     NSDictionary<NSString *, NSArray<NSString *> *> *strings = @{
         @"en": @[@"Restoring page…", @"The page is not responding.", @"Reload"],
         @"zh-Hans": @[@"正在恢复页面…", @"页面暂时没有响应。", @"重新加载"],

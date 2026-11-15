@@ -4,9 +4,6 @@
 #import <sys/utsname.h>
 #import "WebViewRecovery.h"
 
-void RMTRegisterPreferencesWebView(WKWebView *webView);
-void RMTRefreshPreferences(void);
-
 @class RMTSceneDelegate;
 @interface RMTViewportProbe : UIView
 @property(nonatomic, weak) RMTSceneDelegate *owner;
@@ -58,10 +55,6 @@ static BOOL RMTIsIPhoneDuo(void) {
 - (void)safeAreaInsetsDidChange {
     [super safeAreaInsetsDidChange];
     [self setNeedsUpdateConstraints];
-}
-- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
-    [super traitCollectionDidChange:previousTraitCollection];
-    RMTRefreshPreferences();
 }
 - (void)layoutSubviews {
     [super layoutSubviews];
@@ -162,7 +155,6 @@ static BOOL RMTIsIPhoneDuo(void) {
         __weak RMTSceneDelegate *owner = self;
         recovery.didRecover = ^{
             [owner attachWindow];
-            RMTRefreshPreferences();
         };
         if (!CGRectEqualToRect(probe.frame, view.bounds)) probe.frame = view.bounds;
         [probe setNeedsUpdateConstraints];
@@ -192,7 +184,6 @@ static BOOL RMTIsIPhoneDuo(void) {
 
 + (void)registerWebView:(WKWebView *)webView {
     NSAssert([NSThread isMainThread], @"The Tauri WebView must be registered on the main thread");
-    RMTRegisterPreferencesWebView(webView);
     [RMTWebViewRecovery registerWebView:webView];
     if (!rmtAttachmentProbes) rmtAttachmentProbes = [NSMapTable weakToWeakObjectsMapTable];
     RMTViewportProbe *probe = [rmtAttachmentProbes objectForKey:webView];
@@ -221,7 +212,6 @@ static BOOL RMTIsIPhoneDuo(void) {
         (rmtConnectedDelegate.scene && window.windowScene != rmtConnectedDelegate.scene);
     rmtMainWindow = window;
     if (needsAttachment) [rmtConnectedDelegate attachWindow];
-    RMTRefreshPreferences();
 }
 
 - (void)attachWindow {
@@ -257,7 +247,6 @@ static BOOL RMTIsIPhoneDuo(void) {
 
 - (void)sceneDidBecomeActive:(UIScene *)scene {
     [self attachWindow];
-    RMTRefreshPreferences();
     // With scenes enabled UIKit no longer calls these AppDelegate methods.
     // Tao uses them to emit its Resumed/Suspended events and update focus.
     UIApplication *app = UIApplication.sharedApplication;

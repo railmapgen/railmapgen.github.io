@@ -11,6 +11,8 @@ export default function FontsSection() {
 
     const { remoteFonts } = useRootSelector(state => state.app);
 
+    if (rmgRuntime.getInstance() === 'AppStore') return null;
+
     return (
         <RMSection>
             <RMSectionHeader>

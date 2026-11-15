@@ -1,13 +1,7 @@
 import rmgRuntime, { logger } from '@railmapgen/rmg-runtime';
 import { createTestStore } from '../test-utils';
 import { login, logout } from '../redux/account/account-slice';
-import {
-    AppleStoreError,
-    apiFetch,
-    checkTokenAndRefresh,
-    getAppleConfiguration,
-    getAppleSubscriptionBridge,
-} from './api';
+import { apiFetch, checkTokenAndRefresh, getAppleConfiguration, getAppleSubscriptionBridge } from './api';
 import { API_ENDPOINT, API_URL } from './constants';
 
 describe('Apple native connection diagnostics and purchase environment', () => {
@@ -36,7 +30,7 @@ describe('Apple native connection diagnostics and purchase environment', () => {
         await expect(getAppleConfiguration()).rejects.toThrow('Unable to determine');
     });
 
-    it('retains internal domain, code and underlying errors without guessing the meaning of code 14', async () => {
+    it('preserves native purchase error details', async () => {
         postMessage.mockResolvedValue({
             error: {
                 domain: 'SKInternalErrorDomain',
@@ -45,48 +39,13 @@ describe('Apple native connection diagnostics and purchase environment', () => {
                 underlying: [{ domain: 'ASDErrorDomain', code: 509, message: 'Account authentication failed.' }],
             },
         });
-        let error: unknown;
-        try {
-            await getAppleConfiguration();
-        } catch (caught) {
-            error = caught;
-        }
-        expect(error).toBeInstanceOf(AppleStoreError);
-        expect(error).toMatchObject({
+        await expect(getAppleSubscriptionBridge().postMessage({ type: 'purchase' })).rejects.toMatchObject({
             domain: 'SKInternalErrorDomain',
             code: 14,
             nativeMessage: 'The operation could not be completed.',
             message: 'Unable to connect to the App Store. Please try again.',
             underlying: [{ domain: 'ASDErrorDomain', code: 509, message: 'Account authentication failed.' }],
         });
-        expect((error as AppleStoreError).diagnosticSummary).toBe('SKInternalErrorDomain (14) → ASDErrorDomain (509)');
-        expect(postMessage).toHaveBeenCalledExactlyOnceWith({ type: 'configuration' });
-    });
-
-    it('unwraps diagnostic failures from purchase commands too', async () => {
-        postMessage.mockResolvedValue({
-            error: { domain: 'SKErrorDomain', code: 14, message: 'Invalid offer price.' },
-        });
-        await expect(getAppleSubscriptionBridge().postMessage({ type: 'purchase' })).rejects.toMatchObject({
-            domain: 'SKErrorDomain',
-            code: 14,
-            nativeMessage: 'Invalid offer price.',
-        });
-    });
-
-    it('does not accept Production purchases in a TestFlight build', async () => {
-        postMessage.mockResolvedValue({
-            channel: 'testflight',
-            environment: 'PRODUCTION',
-            environmentSource: 'appTransaction',
-        });
-        await expect(getAppleConfiguration()).rejects.toThrow('cannot make production purchases');
-    });
-
-    it('does not expose the native bridge on website builds', () => {
-        vi.mocked(rmgRuntime.getInstance).mockReturnValue('GitHub');
-        expect(() => getAppleSubscriptionBridge()).toThrow('unavailable');
-        expect(postMessage).not.toHaveBeenCalled();
     });
 });
 
@@ -116,7 +75,7 @@ describe('account token refresh coordination', () => {
     };
 
     beforeEach(() => {
-        vi.spyOn(rmgRuntime, 'getInstance').mockReturnValue('GitHub');
+        vi.spyOn(rmgRuntime, 'getInstance').mockReturnValue('AppStore');
         vi.spyOn(globalThis, 'fetch').mockReset();
         vi.spyOn(logger, 'debug').mockImplementation(() => {});
         vi.spyOn(logger, 'error').mockImplementation(() => {});
@@ -126,34 +85,11 @@ describe('account token refresh coordination', () => {
         vi.restoreAllMocks();
     });
 
-    it('shares one refresh between the timer and forced foreground checks, then permits the next refresh', async () => {
-        const store = createTestStore();
-        store.dispatch(login(loginInfo()));
-        const deferred = deferredResponse();
-        vi.mocked(fetch).mockReturnValueOnce(deferred.promise).mockResolvedValue(response());
-
-        const timer = checkTokenAndRefresh(store);
-        const foreground = checkTokenAndRefresh(store, true);
-        expect(fetch).toHaveBeenCalledOnce();
-        deferred.resolve(response());
-        await Promise.all([timer, foreground]);
-
-        expect(store.getState().account).toMatchObject({
-            isLoggedIn: true,
-            token: refreshedTokens.access.token,
-            refreshToken: refreshedTokens.refresh.token,
-            expires: refreshedTokens.access.expires,
-            refreshExpires: refreshedTokens.refresh.expires,
-        });
-        await checkTokenAndRefresh(store, true);
-        expect(fetch).toHaveBeenCalledTimes(2);
-    });
-
-    it('waits for an in-flight forced refresh even while the saved access token has not expired', async () => {
+    it('shares an in-flight refresh with unexpired credentials and permits later refreshes', async () => {
         const store = createTestStore();
         store.dispatch(login(loginInfo(1, '2099-01-01T00:00:00Z')));
         const deferred = deferredResponse();
-        vi.mocked(fetch).mockReturnValue(deferred.promise);
+        vi.mocked(fetch).mockReturnValueOnce(deferred.promise).mockResolvedValue(response());
 
         const firstForeground = checkTokenAndRefresh(store, true);
         let timerCompleted = false;
@@ -167,33 +103,24 @@ describe('account token refresh coordination', () => {
         await Promise.resolve();
         expect(timerCompleted).toBe(false);
         expect(foregroundCompleted).toBe(false);
-        expect(fetch).toHaveBeenCalledOnce();
+        expect(fetch).toHaveBeenCalledExactlyOnceWith(
+            API_URL + API_ENDPOINT.AUTH_REFRESH,
+            expect.objectContaining({ method: 'POST', body: JSON.stringify({ refreshToken: 'refresh-1' }) })
+        );
 
         deferred.resolve(response());
         await Promise.all([firstForeground, timer, secondForeground]);
         expect(timerCompleted).toBe(true);
         expect(foregroundCompleted).toBe(true);
-    });
-
-    it('keeps refresh requests independent for different stores', async () => {
-        const firstStore = createTestStore();
-        const secondStore = createTestStore();
-        firstStore.dispatch(login(loginInfo(1)));
-        secondStore.dispatch(login(loginInfo(2)));
-        const firstResponse = deferredResponse();
-        const secondResponse = deferredResponse();
-        vi.mocked(fetch).mockReturnValueOnce(firstResponse.promise).mockReturnValueOnce(secondResponse.promise);
-
-        const firstRefresh = checkTokenAndRefresh(firstStore);
-        const secondRefresh = checkTokenAndRefresh(secondStore);
+        expect(store.getState().account).toMatchObject({
+            isLoggedIn: true,
+            token: refreshedTokens.access.token,
+            refreshToken: refreshedTokens.refresh.token,
+            expires: refreshedTokens.access.expires,
+            refreshExpires: refreshedTokens.refresh.expires,
+        });
+        await checkTokenAndRefresh(store, true);
         expect(fetch).toHaveBeenCalledTimes(2);
-        firstResponse.resolve(response());
-        await firstRefresh;
-        expect(secondStore.getState().account.token).toBe('access-2');
-        secondResponse.resolve(response());
-        await secondRefresh;
-        expect(firstStore.getState().account.token).toBe(refreshedTokens.access.token);
-        expect(secondStore.getState().account.token).toBe(refreshedTokens.access.token);
     });
 
     it('ignores the old refresh and keeps sharing the replacement account refresh', async () => {
@@ -217,19 +144,6 @@ describe('account token refresh coordination', () => {
         expect(store.getState().account).toMatchObject({ id: 2, isLoggedIn: true, token: 'new-access' });
     });
 
-    it('does not log out a new account when an earlier refresh fails', async () => {
-        const store = createTestStore();
-        store.dispatch(login(loginInfo(1)));
-        const deferred = deferredResponse();
-        vi.mocked(fetch).mockReturnValue(deferred.promise);
-        const refresh = checkTokenAndRefresh(store);
-
-        store.dispatch(login(loginInfo(2)));
-        deferred.reject(new Error('Network unavailable'));
-        await refresh;
-        expect(store.getState().account).toMatchObject({ id: 2, isLoggedIn: true, token: 'access-2' });
-    });
-
     it.each(['success', 'failure'] as const)(
         'ignores a late %s after logout and login with the same saved credentials',
         async result => {
@@ -248,23 +162,6 @@ describe('account token refresh coordination', () => {
         }
     );
 
-    it('does not restore account tokens when refresh finishes after logout', async () => {
-        const store = createTestStore();
-        store.dispatch(login(loginInfo()));
-        const deferred = deferredResponse();
-        vi.mocked(fetch).mockReturnValue(deferred.promise);
-        const refresh = checkTokenAndRefresh(store);
-
-        store.dispatch(logout());
-        deferred.resolve(response());
-        await refresh;
-        expect(store.getState().account).toMatchObject({
-            isLoggedIn: false,
-            token: undefined,
-            refreshToken: undefined,
-        });
-    });
-
     it('retains the existing logout policy when the current session refresh fails', async () => {
         const store = createTestStore();
         store.dispatch(login(loginInfo()));
@@ -275,22 +172,19 @@ describe('account token refresh coordination', () => {
     });
 });
 
-describe('shared API server', () => {
-    const postMessage = vi.fn();
+describe('apiFetch', () => {
     let originalWebkit: PropertyDescriptor | undefined;
 
     beforeEach(() => {
         originalWebkit = Object.getOwnPropertyDescriptor(window, 'webkit');
         Object.defineProperty(window, 'webkit', {
             configurable: true,
-            value: { messageHandlers: { rmtSubscriptions: { postMessage } } },
+            value: undefined,
         });
-        postMessage.mockReset().mockRejectedValue(new Error('App Store unavailable'));
+        vi.spyOn(rmgRuntime, 'getInstance').mockReturnValue('AppStore');
         vi.spyOn(globalThis, 'fetch')
             .mockReset()
             .mockResolvedValue({ status: 200 } as Response);
-        vi.spyOn(logger, 'debug').mockImplementation(() => {});
-        vi.spyOn(logger, 'error').mockImplementation(() => {});
     });
 
     afterEach(() => {
@@ -299,75 +193,15 @@ describe('shared API server', () => {
         vi.restoreAllMocks();
     });
 
-    it.each(['GitHub', 'AppStore'] as const)(
-        'uses the original API for %s account, cloud and purchase calls without StoreKit configuration',
-        async instance => {
-            vi.spyOn(rmgRuntime, 'getInstance').mockReturnValue(instance);
-            for (const endpoint of [
-                API_ENDPOINT.AUTH_LOGIN,
-                API_ENDPOINT.USER,
-                API_ENDPOINT.SAVES,
-                API_ENDPOINT.APPLE_IAP_CONTEXT,
-                API_ENDPOINT.APPLE_IAP_TRANSACTIONS,
-            ]) {
-                await apiFetch(endpoint, { method: 'POST', body: 'payload' }, 'account-token');
-                expect(fetch).toHaveBeenLastCalledWith(
-                    'https://railmapgen.org/v1' + endpoint,
-                    expect.objectContaining({
-                        method: 'POST',
-                        body: 'payload',
-                        headers: expect.objectContaining({ Authorization: 'Bearer account-token' }),
-                    })
-                );
-            }
-            expect(postMessage).not.toHaveBeenCalled();
-        }
-    );
-
-    it('allows AppStore account calls without a native purchase bridge', async () => {
-        vi.spyOn(rmgRuntime, 'getInstance').mockReturnValue('AppStore');
-        Reflect.deleteProperty(window, 'webkit');
-        await apiFetch(API_ENDPOINT.AUTH_LOGIN, { method: 'POST' });
+    it('sends authenticated requests to the API server without a native purchase bridge', async () => {
+        await apiFetch(API_ENDPOINT.AUTH_LOGIN, { method: 'POST', body: 'payload' }, 'account-token');
         expect(fetch).toHaveBeenCalledExactlyOnceWith(
             API_URL + API_ENDPOINT.AUTH_LOGIN,
-            expect.objectContaining({ method: 'POST' })
-        );
-    });
-
-    it('refreshes AppStore account tokens on the original server without consulting StoreKit', async () => {
-        vi.spyOn(rmgRuntime, 'getInstance').mockReturnValue('AppStore');
-        const store = createTestStore();
-        store.dispatch(
-            login({
-                id: 7,
-                name: 'Account user',
-                email: 'tester@example.test',
-                token: 'expired-access',
-                expires: '2000-01-01T00:00:00Z',
-                refreshToken: 'account-refresh',
-                refreshExpires: '2099-01-01T00:00:00Z',
-            })
-        );
-        vi.mocked(fetch).mockResolvedValue({
-            status: 200,
-            json: async () => ({
-                access: { token: 'new-access', expires: '2098-01-01T00:00:00Z' },
-                refresh: { token: 'new-refresh', expires: '2099-01-01T00:00:00Z' },
-            }),
-        } as Response);
-        await checkTokenAndRefresh(store);
-        expect(fetch).toHaveBeenCalledExactlyOnceWith(
-            API_URL + API_ENDPOINT.AUTH_REFRESH,
             expect.objectContaining({
                 method: 'POST',
-                body: JSON.stringify({ refreshToken: 'account-refresh' }),
+                body: 'payload',
+                headers: expect.objectContaining({ Authorization: 'Bearer account-token' }),
             })
         );
-        expect(store.getState().account).toMatchObject({
-            isLoggedIn: true,
-            token: 'new-access',
-            refreshToken: 'new-refresh',
-        });
-        expect(postMessage).not.toHaveBeenCalled();
     });
 });

@@ -339,8 +339,7 @@ private final class RMTSubscriptionPresentation: NSObject, ObservableObject {
     ) {
         self.productIDs = productIDs
         self.groupID = groupID
-        let preferredLanguage = language ?? UserDefaults.standard.string(forKey: "rmtLanguage")
-        self.language = SubscriptionLabels.supportedLanguage(preferredLanguage)
+        self.language = SubscriptionLabels.supportedLanguage(language)
         self.labels = SubscriptionLabels(language: self.language)
         self.environment = environment
         self.completion = completion

@@ -59,13 +59,9 @@ Before uploading a new build of the same version, ensure its build number is hig
 
 ### Appearance and language on iPhone and iPad
 
-The app's Appearance preference also appears in iOS Settings under Rail Map Toolkit. Changes in either place are saved to the same native preference and applied when the app becomes active. Existing in-app preferences migrate the first time the native settings bridge connects.
+Appearance and language use the same in-app controls as the web application. Appearance supports Light, Dark, and System; System follows the device appearance through Mantine. Language is selected explicitly in the app and saved by the shared runtime.
 
-Appearance supports Light, Dark, and System. The exposed screen edges and native presentation backgrounds use the same appearance as the app. System follows the device appearance, including changes while the app is running.
-
-Language supports English, Simplified Chinese, Traditional Chinese, Japanese, Korean, and System. System follows the preferred language selected for this app in iOS Settings, falling back to the device's preferred supported language. iOS Settings uses the system's Preferred Language entry; the Settings bundle only supplies Appearance. Explicit in-app language choices remain saved in native preferences and do not rewrite the system's Preferred Language setting.
-
-Regenerate the Xcode project after updating the native settings implementation so the Settings bundle and preference bridge are included. To validate on a simulator or device, change appearance both inside the app and in iOS Settings. Select System for the in-app language, change the system's Preferred Language entry in iOS Settings, and return to the app. Confirm there is only one language entry in iOS Settings, then check System mode, rotation, and iPad window resizing.
+Native subscription screens receive the app's selected language. Native WebView recovery controls use the system's preferred supported language.
 
 ### Links on iPhone and iPad
 
@@ -116,7 +112,7 @@ For actual IAP failures, the native bridge returns the error domain, code and up
 
 The native host monitors termination of the main WebView's content process. If termination occurs in the background, recovery waits until the scene becomes active. The host reloads the existing WebView and preserves Tauri's navigation delegate, bridge, and website data. Ordinary foreground transitions probe the content process without reloading the page. A slow or unanswered probe alone does not trigger an automatic reload.
 
-Automatic recovery is limited to one attempt per 60 seconds. Repeated termination or an unsuccessful recovery displays a native Reload button. Native recovery controls follow the app's language and appearance. This handles native process/lifecycle failures; a successful navigation does not establish that a child application's UI is healthy, and recovery cannot restore edits that were never persisted by that application.
+Automatic recovery is limited to one attempt per 60 seconds. Repeated termination or an unsuccessful recovery displays a native Reload button. Native recovery controls follow the system's language and appearance. This handles native process/lifecycle failures; a successful navigation does not establish that a child application's UI is healthy, and recovery cannot restore edits that were never persisted by that application.
 
 Regenerate the Xcode project after changing `SceneDelegate.mm` or `WebViewRecovery.h/.mm`. Run the isolated UIKit/WebKit tests with an installed iOS simulator runtime:
 

@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { execFileSync, spawn, spawnSync } from 'node:child_process';
 import {
     cpSync,
+    existsSync,
     mkdtempSync,
     mkdirSync,
     readFileSync,
@@ -140,22 +141,21 @@ test('iOS scaffold can be regenerated and preserves local plugin entitlements', 
         scaffoldIos(temporary);
         const entitlements = path.join(temporary, 'railmapgen_iOS/railmapgen_iOS.entitlements');
         writeFileSync(entitlements, 'plugin entitlements');
+        const preferences = path.join(temporary, 'Sources/railmapgen/Preferences.mm');
+        const settings = path.join(temporary, 'railmapgen_iOS/Settings.bundle');
+        writeFileSync(preferences, 'retired preference bridge');
+        mkdirSync(settings, { recursive: true });
+        writeFileSync(path.join(settings, 'Root.plist'), 'retired settings');
         scaffoldIos(temporary);
         assert.equal(readFileSync(entitlements, 'utf8'), 'plugin entitlements');
+        assert.equal(existsSync(preferences), false);
+        assert.equal(existsSync(settings), false);
         assert.match(readFileSync(path.join(temporary, 'Sources/railmapgen/main.mm'), 'utf8'), /start_app/);
-        assert.match(
-            readFileSync(path.join(temporary, 'Sources/railmapgen/Preferences.mm'), 'utf8'),
-            /rmt-native-preferences/
-        );
         for (const file of ['WebViewRecovery.h', 'WebViewRecovery.mm'])
             assert.equal(
                 readFileSync(path.join(temporary, 'Sources/railmapgen', file), 'utf8'),
                 readFileSync(new URL(`./${file}`, import.meta.url), 'utf8')
             );
-        const settings = path.join(temporary, 'railmapgen_iOS/Settings.bundle');
-        assert.match(readFileSync(path.join(settings, 'Root.plist'), 'utf8'), /rmtAppearance/);
-        for (const language of ['en', 'zh-Hans', 'zh-Hant', 'ja', 'ko'])
-            assert.match(readFileSync(path.join(settings, `${language}.lproj/Root.strings`), 'utf8'), /"Appearance"/);
         const icons = JSON.parse(
             readFileSync(path.join(temporary, 'Assets.xcassets/AppIcon.appiconset/Contents.json'))
         );
@@ -181,11 +181,11 @@ test('packaged iOS app icons have the required dimensions and RGB format', () =>
 });
 
 test(
-    'Xcode packages the complete Settings bundle and declares all web UI languages',
+    'Xcode declares the supported native UI languages',
     { skip: process.platform !== 'darwin' },
     t => {
         if (spawnSync('xcodegen', ['--version']).status !== 0) return t.skip('XcodeGen is not installed');
-        const temporary = mkdtempSync(path.join(os.tmpdir(), 'rmt settings bundle '));
+        const temporary = mkdtempSync(path.join(os.tmpdir(), 'rmt native languages '));
         try {
             scaffoldIos(temporary);
             const spec = iosSpec({ version: '3.2.41' });
@@ -193,30 +193,6 @@ test(
             const specPath = path.join(temporary, 'project.json');
             writeFileSync(specPath, JSON.stringify(spec));
             execFileSync('xcodegen', ['generate', '--spec', specPath], { stdio: 'pipe' });
-            const project = JSON.parse(
-                execFileSync('/usr/bin/plutil', [
-                    '-convert',
-                    'json',
-                    '-o',
-                    '-',
-                    path.join(temporary, 'railmapgen.xcodeproj/project.pbxproj'),
-                ])
-            );
-            const [referenceId, reference] =
-                Object.entries(project.objects).find(
-                    ([, object]) => object.isa === 'PBXFileReference' && object.path.endsWith('Settings.bundle')
-                ) ?? [];
-            assert.ok(referenceId, 'Settings.bundle must remain an intact resource reference');
-            assert.equal(reference.lastKnownFileType, 'folder');
-            const [buildFileId] =
-                Object.entries(project.objects).find(
-                    ([, object]) => object.isa === 'PBXBuildFile' && object.fileRef === referenceId
-                ) ?? [];
-            assert.ok(
-                Object.values(project.objects).some(
-                    object => object.isa === 'PBXResourcesBuildPhase' && object.files.includes(buildFileId)
-                )
-            );
             const info = JSON.parse(
                 execFileSync('/usr/bin/plutil', [
                     '-convert',
@@ -227,21 +203,6 @@ test(
                 ])
             );
             assert.deepEqual(info.CFBundleLocalizations, ['en', 'zh-Hans', 'zh-Hant', 'ja', 'ko']);
-            const settings = JSON.parse(
-                execFileSync('/usr/bin/plutil', [
-                    '-convert',
-                    'json',
-                    '-o',
-                    '-',
-                    path.join(temporary, 'railmapgen_iOS/Settings.bundle/Root.plist'),
-                ])
-            );
-            const preferences = settings.PreferenceSpecifiers.filter(preference => preference.Key);
-            assert.deepEqual(
-                preferences.map(preference => [preference.Key, preference.DefaultValue]),
-                [['rmtAppearance', 'system']]
-            );
-            assert.deepEqual(preferences[0].Values, ['system', 'light', 'dark']);
         } finally {
             rmSync(temporary, { recursive: true, force: true });
         }

@@ -17,7 +17,6 @@ import { registerOnRMPSaveChange } from './util/local-storage-save';
 import { RMErrorBoundary, RMMantineProvider } from '@railmapgen/mantine-components';
 import { LoadingOverlay } from '@mantine/core';
 import { addRemoteNotification } from './redux/notification/notification-slice';
-import { installPreferences } from './util/preferences';
 import { installAppleSubscriptions, registerSubscriptionRedemption } from './util/subscription-redemption';
 
 let root: Root;
@@ -42,7 +41,6 @@ const renderApp = () => {
 };
 
 rmgRuntime.ready().then(async () => {
-    installPreferences();
     initStore(store);
 
     // If the user is logged in previously, check and refresh the token if needed,
@@ -56,6 +54,18 @@ rmgRuntime.ready().then(async () => {
     registerSubscriptionRedemption(store);
     installAppleSubscriptions(store);
     renderApp();
+
+    // FIXME: Broadcast current theme to chakra UI apps. Do not remove until all apps are migrated.
+    const colourMode = rmgRuntime.getColourMode();
+    if (colourMode === 'system') {
+        if (window.matchMedia?.('(prefers-color-scheme: dark)')?.matches) {
+            window.localStorage.setItem('chakra-ui-color-mode', 'dark');
+        } else {
+            window.localStorage.setItem('chakra-ui-color-mode', 'light');
+        }
+    } else {
+        window.localStorage.setItem('chakra-ui-color-mode', colourMode);
+    }
 
     rmgRuntime.onAppOpen(app => {
         const allowedAssetTypes = getAllowedAssetTypes(isShowDevtools(store.getState().app.lastShowDevtools));

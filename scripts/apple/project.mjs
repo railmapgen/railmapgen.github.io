@@ -1,4 +1,4 @@
-import { chmodSync, cpSync, existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import { chmodSync, cpSync, existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {
@@ -48,8 +48,7 @@ export function iosSpec({ version, team = '', channel = 'stable', buildNumber = 
                     'Sources',
                     'Assets.xcassets',
                     { path: 'Externals', excludes: ['**/*.a'] },
-                    { path: 'railmapgen_iOS', excludes: ['Settings.bundle'] },
-                    { path: 'railmapgen_iOS/Settings.bundle', type: 'folder', buildPhase: 'resources' },
+                    'railmapgen_iOS',
                 ],
                 info: {
                     path: 'railmapgen_iOS/Info.plist',
@@ -209,8 +208,10 @@ export function nodeLauncher(nodePath, args = []) {
 export function scaffoldIos(root) {
     const sources = path.join(root, 'Sources/railmapgen');
     mkdirSync(sources, { recursive: true });
+    // Remove retired preference resources when regenerating an existing project.
+    rmSync(path.join(sources, 'Preferences.mm'), { force: true });
+    rmSync(path.join(root, 'railmapgen_iOS/Settings.bundle'), { recursive: true, force: true });
     cpSync(path.join(repoRoot, 'scripts/apple/SceneDelegate.mm'), path.join(sources, 'SceneDelegate.mm'));
-    cpSync(path.join(repoRoot, 'scripts/apple/Preferences.mm'), path.join(sources, 'Preferences.mm'));
     for (const file of ['WebViewRecovery.h', 'WebViewRecovery.mm'])
         cpSync(path.join(repoRoot, 'scripts/apple', file), path.join(sources, file));
     writeFileSync(
@@ -219,9 +220,6 @@ export function scaffoldIos(root) {
     );
     mkdirSync(path.join(root, 'Externals'), { recursive: true });
     mkdirSync(path.join(root, 'railmapgen_iOS'), { recursive: true });
-    cpSync(path.join(repoRoot, 'scripts/apple/Settings.bundle'), path.join(root, 'railmapgen_iOS/Settings.bundle'), {
-        recursive: true,
-    });
     const entitlements = path.join(root, 'railmapgen_iOS/railmapgen_iOS.entitlements');
     if (!existsSync(entitlements))
         writeFileSync(entitlements, '<?xml version="1.0" encoding="UTF-8"?>\n<plist version="1.0"><dict/></plist>\n');

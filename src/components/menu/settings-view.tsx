@@ -1,23 +1,17 @@
 import { useTranslation } from 'react-i18next';
 import rmgRuntime from '@railmapgen/rmg-runtime';
 import { Events } from '../../util/constants';
-import { useState, useSyncExternalStore } from 'react';
+import { useState } from 'react';
 import { useRootDispatch, useRootSelector } from '../../redux';
 import { hideDevtools, isShowDevtools, requireRefresh, showDevtools } from '../../redux/app/app-slice';
 import LocalStorageModal from '../modal/local-storage-modal';
 import { RMLabelledSegmentedControl, RMSection, RMSectionHeader } from '@railmapgen/mantine-components';
-import { Alert, Button, Stack, Switch, Title } from '@mantine/core';
+import { Alert, Button, MantineColorScheme, Stack, Switch, Title, useMantineColorScheme } from '@mantine/core';
 import { MdOutlineInfo, MdOutlineSaveAlt } from 'react-icons/md';
-import {
-    Appearance,
-    getAppearancePreference,
-    setAppearancePreference,
-    subscribePreferences,
-} from '../../util/preferences';
 
 export default function SettingsView() {
     const { t } = useTranslation();
-    const appearance = useSyncExternalStore(subscribePreferences, getAppearancePreference);
+    const { setColorScheme } = useMantineColorScheme();
 
     const dispatch = useRootDispatch();
     const { lastShowDevtools, refreshRequired } = useRootSelector(state => state.app);
@@ -59,8 +53,11 @@ export default function SettingsView() {
                 <RMLabelledSegmentedControl
                     size="sm"
                     label={t('Appearance')}
-                    value={appearance}
-                    onChange={value => setAppearancePreference(value as Appearance)}
+                    defaultValue={rmgRuntime.getColourMode()}
+                    onChange={value => {
+                        setColorScheme(value === 'system' ? 'auto' : (value as MantineColorScheme));
+                        rmgRuntime.setColourMode(value as keyof typeof rmgRuntime.getColourMode);
+                    }}
                     data={appearanceOptions}
                 />
                 <Switch
